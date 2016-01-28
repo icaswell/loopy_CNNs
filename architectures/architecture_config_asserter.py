@@ -1,0 +1,34 @@
+# File: architecture_config_asserter.py
+# 
+# performs various assertions on some architecture that one has specified in 
+# architecture_config_readme.py.  These are for the purpose of sanity checking.
+
+def sanity_check(architecture):
+	for t_name, template in architecture['templates'].items():
+		assert "type" in template
+		assert template["type"] in ["conv", "fully_connected", "dropout"]
+
+	assert "input" in architecture["layers"]
+	assert "output" in architecture["layers"]	
+
+	stack_beginnings = []
+	stack_ends = []
+	all_used_layers = set()
+	for stack_name, stack in architecture["stacks"].items():
+		assert "type" in stack
+		assert  stack["type"] in ["main", "loop", "residual"]
+		stack_beginnings.append(stack["structure"][0])
+		stack_ends.append(stack["structure"][-1])
+		if stack["type"] == "loop":
+			assert "composition_node" in stack
+		all_used_layers |= set(stack["structure"])
+
+		assert all([layer_name in architecture["layers"] for layer_name in stack["structure"]])
+
+
+	assert stack_ends.count("output") == 1
+	assert stack_beginnings.count("input") >= 1
+
+
+	for layer_name, layer in architecture["layers"].items():
+		assert layer_name in all_used_layers
