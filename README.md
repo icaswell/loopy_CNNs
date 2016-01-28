@@ -1,5 +1,3 @@
-README.md
-
 Overview of the folders:
 ========================
 
