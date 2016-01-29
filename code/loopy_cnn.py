@@ -16,29 +16,78 @@
 # model = LoopyCNN(architecture_fpath="../architectures/simple_loop.py", 
 #         **kwargs)
 
+# keras.layers.core.Dense(output_dim,
+# init='glorot_uniform',
+# activation='linear',
+# weights=None,
+# W_regularizer=None,
+# b_regularizer=None,
+# activity_regularizer=None,
+# W_constraint=None,
+# b_constraint=None,
+# input_dim=None)
+
+# keras.layers.convolutional.Convolution2D(nb_filter,
+#  nb_row,
+#  nb_col,
+#  init='glorot_uniform',
+#  activation='linear',
+#  weights=None,
+#  border_mode='valid',
+#  subsample=(1, 1),
+#  dim_ordering='th',
+#  W_regularizer=None,
+#  b_regularizer=None,
+#  activity_regularizer=None,
+#  W_constraint=None,
+#  b_constraint=None)
 
 
-
+from collections import defaultdict
 import sys
 sys.path.append("../architectures")
 
-from architecture_config_asserter import sanity_check
+import keras
+from keras.models import Graph
+from keras.layers.core import Dense, Dropout, Activation
+from keras.optimizers import SGD
  
 
+from architecture_config_asserter import sanity_check
+
+
 class LoopyCNN():
-    def __init__(self, architecture_fpath, n_unrolls=2):
+    def __init__(self, architecture_fpath, 
+                    n_unrolls=2, 
+                    optimizer = "rmsprop"):
+
+        self._POSSIBLE_KERAS_OPTIONS = set(["init", "activation", "weights", "W_regularizer", "b_regularizer", "activity_regularizer", "W_constraint", "b_constraint", "input_dim", "border_mode", "subsample", "dim_ordering", "activity_regularizer"])
 
         self.description = "uninitialized LoopyCNN instance"        
         self.n_unrolls = n_unrolls
+        self._init_optimizer(optimizer)
 
         self._build_architecture(architecture_fpath)
-        self.params = {}
+        self.debug_model_color = "red"
+
+
  
     def train_model(self):
         pass
  
     def classify_batch(self):
         pass
+
+    def _prep_layer_dicts(self, architecture):
+        for layer_name, layer_dict in architecture["layers"].items():
+            template = architecture["templates"][layer_dict["template"]]
+            architecture["layers"][layer_name]["type"] = template["type"]
+
+            default = dict(architecture["layer_defaults"][template["type"]]) if template["type"] in architecture["layer_defaults"] else {}
+            default.update(template)
+            default.update(layer_dict)
+            default = {key:value for key, value in default.items() if key in self._POSSIBLE_KERAS_OPTIONS}
+            architecture["layers"][layer_name]["keras_options"] = default
  
     def _build_architecture(self, architecture_fpath):
         with open(architecture_fpath, "r") as f:
@@ -46,108 +95,95 @@ class LoopyCNN():
         architecture_dict = eval(string_representation)
  
         # sanity check: make sure that the architecture is consistent
-        # and wel configured.
+        # and well configured.
         sanity_check(architecture_dict)
  
+        self._prep_layer_dicts(architecture_dict)
         self._build_description(architecture_dict)
 
-        #===============================================================================
-        # TODO: 
-        # 0. look into Keras
-        # 1. make the parameters, with a private/temporary mapping of layer--> weight matrix
-        # 2. For each unroll:
-        #          loop through the main stack, inputting loop inputs from previous layer and storing loop outputs for next layer
 
- 
-         # all_hidden_activations = []
-         # if self.debug: util.colorprint("building architecture...", self.debug_model_color)
-         # # loop_inputs = a mapping from index to vector (dict), initialized to nothing
-         # # loop_outputs = a mapping from index to vector (dict), initialized to ones
- 
-         # loop_inputs = {}
-         # loop_outputs = defaultdict(list)
- 
-         # #======================================================
-         # # note that "output_layer" means output FROM the loop, and 
-         # # input_layer means input TO the loop.  Perhaps better names are in order.
-         # for input_layer, output_layer in self.loops:
-         #     loop_inputs[input_layer] = None
-         #     loop_output_shape = (self.all_layer_dims[output_layer], 1)
-         #     loop_outputs[output_layer].append(np.ones(loop_output_shape))
-         #     if self.debug:
-         #         util.colorprint("creating loop output of shape %s from layer %s to layer %s"%(loop_output_shape, input_layer, output_layer), self.debug_model_color)
- 
-         # for _ in range(self.n_unrolls):
-         #     hidden_activation = input
-         #     # hidden_activation = self._prepend_intercept(input)            
-         #     #====================================================
-         #     # put in all the weight matrices and populate the inputs to the loops
-         #     for layer_i, w_name in enumerate(w_names):
-         #         #optional addendum: terminate when the last loop is reached, unless it's the last unroll
-         #         # b_name = self._b_name_from_w_name(w_name)
-         #         if self.debug:
-         #             util.colorprint("Inserting parameters %s and (layer %s) into the graph..."%(w_name, layer_i), self.debug_model_color)
- 
-         #         if layer_i in loop_outputs:
-         #             for loop_output in loop_outputs[layer_i]:
-         #                 if self.debug:
-         #                     util.colorprint("\tInserting incoming loop activation...", self.debug_model_color)
-         #                 hidden_activation *= loop_output
-         #             loop_outputs[layer_i] = []
- 
-         #         hidden_activation = T.dot(self.tparams[w_name], hidden_activation) 
- 
-         #         # print (1, hidden_activation.shape[1])
-         #         # hidden_activation += T.tile(self.tparams[b_name], (1, hidden_activation.shape[1]))
-         #         # hidden_activation += self.tparams[b_name]
-         #         # hidden_activation = T.tanh(hidden_activation)
-         #         hidden_activation = T.nnet.sigmoid(hidden_activation)
-         #         # hidden_activation = self._prepend_intercept(hidden_activation)
- 
-         #         #---------------------------------------------------
-         #         if layer_i in loop_inputs:
-         #             if self.debug:
-         #                 util.colorprint("\tStoring outgoing loop activation...", self.debug_model_color)
-         #             loop_inputs[layer_i] = hidden_activation
- 
-         #         #---------------------------------------------------                    
-         #         all_hidden_activations.append(hidden_activation)
-         #     #====================================================
-         #     # calculate the outputs 
-         #     for u_i, u_name in enumerate(u_names):
-         #         input_layer, output_layer = self.loops[u_i]
-         #         # b_name = self._b_name_from_w_name(u_name)
-         #         if self.debug:
-         #             util.colorprint("inserting %s and %s into the graph, ready to feed into layer %s"%(u_name, b_name, output_layer), self.debug_model_color)
-         #         loop_output = T.dot(self.tparams[u_name], loop_inputs[input_layer])# +  self.tparams[b_name]
-         #         loop_output = T.nnet.sigmoid(loop_output)
-         #         loop_outputs[output_layer].append(loop_output)
- 
-         # # final_activation = all_hidden_activations[-1]
-         # self.final_activation = T.nnet.softmax(all_hidden_activations[-1].T)
-         # all_hidden_activations.append(self.final_activation)
- 
-         # self.all_hidden_activations = all_hidden_activations
- 
-         # # self.final_activation = 1.0/(1.0 + T.nnet.sigmoid(final_activation))
- 
-         # # off = 1e-8
-         # # if final_activation.dtype == 'float16':
-         # #     off = 1e-6
- 
-         # # self.cost = -T.log(final_activation[self.y, 0] + off)        
+        #TODO: remove
+        return
+        self.model = Graph()
+
+        loop_outputs = {} # outputs from loops
+        loops = [stack for stack_name, stack in architecture_dict['stacks'].items() if stack['type']=='loop']
+        main_stack = architecture_dict['stacks']['main_stack']
+
+        cur_layer_name="input"
+        #TODO: don't hardcode input value
+        self.model.add_input(name=cur_layer_name, input_shape=(32,))
+        # TODO: add input
+        for unroll_i in range(self.n_unrolls):
+            for layer_name in main_stack['structure'][1:]:
+                layer_dict = architecture_dict['layers'][layer_name]
+
+
+                merge_mode = None # this will be set to non-none iff there is an incoming loop
+                if layer_name in loop_outputs:
+                    cur_layer_name = [cur_layer_name, loop_outputs[layer_name][0]]
+                    merge_mode = loop_outputs[layer_name][1]
+
+                cur_layer_name = self._add_layer(layer_dict, name=layer_name, id=unroll_i, input_layers=cur_layer_name, merge_mode=merge_mode)
+            # TODO: add output
+                
+            #====================================================
+            # calculate the loop outputs 
+            if unroll_i < self.n_unrolls - 1:
+                #don't calculate outputs for the last unroll
+                for loop_dict in loops:
+                    loop_output_name = self._add_loop(loop_dict, unroll_i=unroll_i, architecture_dict=architecture_dict)
+                    loop_outputs[loop['structure'][-1]] = loop_output_name, loop_dict["mode"]
+
+    def _add_layer(self, layer_dict, name, id, input_layers, merge_mode=None):
+        """
+        input_layers may be either a string or a list.  If it's a list (meaning that there's 
+            some loop input), all incoming acivations are merged via merge_mode.
+        """
         
-         # cost = self.loss_function(self.final_activation, self.y) + self.L1_reg * self.L1
- 
-         # return cost    
+        layer_options = layer_dict["keras_options"]
+        layer=None
+        if layer_dict["type"]=="conv2d":
+            #TODO: remove below
+            nb_filter, nb_row, nb_col = 3,3,3
+            layer = keras.layers.convolutional.Convolution2D(nb_filter, nb_row, nb_col, **layer_options)
+        elif layer_dict["type"]=="dense":
+            layer = keras.layers.core.Dense(**layer_options)       
+        else:
+            print "ur sol"
+            sys.exit(0)
+        # TODO: one of the layers is a string
+        if isinstance(input_layers, list):
+            #this means that there is input from a loop to this layer
+            merged_name = " * ".join(layers_to_merge) #TODO-this assumes all merges are multiplication            
+            self.model.add_node(layer, name=layer_name, inputs=input_layers, merge_mode=merge_mode)
+        else:
+            layer_name = self._label(name, id)
+            self.model.add_node(layer, name=layer_name, input=input_layers)
+
+        return layer_name      
+
+
+    def _add_loop(self, loop_dict, unroll_i, architecture_dict):
+        #get the input from the previous layer
+        cur_layer = self._label(loop_dict["structure"][0], unroll_i - 1.0)
+        for loop_layer_name in loop_dict["structure"][1:-1]: #don't include the input or the output
+            cur_layer = self._add_layer(architecture_dict["layers"][loop_layer_name], 
+                                        name=loop_layer_name,
+                                        id=unroll_i,
+                                        input_layer=cur_layer)
+        return cur_layer
+
+    def _label(self, name, unroll_i):
+        return name + "_unroll=%s"%unroll_i
 
 
     def _build_description(self, architecture_dict):
         title_color = 95
         layer_colors = {
                 "input": 93,
-                "conv": 96,
-                "fully_connected": 97,
+                "conv2d": 96,
+                "dense": 97,
         }
         self.description = "LoopyCNN instance with the following hyperparameters, layers and loops:"
         self.description += "\033[%sm"%title_color + "\nHYPERPARAMETERS:" + '\033[0m'
@@ -163,12 +199,30 @@ class LoopyCNN():
                     layer=template
                 # TODO: replace this with looping through the actual layers, each of which will have a __str__() method
                 layer_desc = layer_name
-                layer_desc += " [%s layer; dim=%s]"%(layer["type"], layer["dim"])
+                layer_desc += " [%s layer; output_dim=%s]"%(layer["type"], layer["output_dim"])
                 layer_color = layer_colors[layer["type"]]
                 self.description += "\n\t\033[%sm"%layer_color + layer_desc + '\033[0m'
 
 
-
+    def _init_optimizer(self, optimizer):
+        """
+        converts a string to a keras optimizer
+        """
+        if optimizer == "rmsprop":
+            self.optimizer = keras.optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=1e-06)
+        elif optimizer == "adagrad":
+            self.optimizer = keras.optimizers.Adagrad(lr=0.01, epsilon=1e-06)
+        elif optimizer == "adadelta":
+            self.optimizer = keras.optimizers.Adadelta(lr=1.0, rho=0.95, epsilon=1e-06)
+        elif optimizer == "adam":
+            self.optimizer = keras.optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
+        elif optimizer == "adamax":
+            self.optimizer = keras.optimizers.Adamax(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=1e-08)                                  
+        elif hasattr(optimizer, __call__):
+            self.optimizer = optimizer
+        else:
+            print "Error: unsupported optimizer %s"%optimizer
+            sys.exit(0)
     def __repr__(self):
         """
         returns a descriptive string representation of the model.

@@ -11,7 +11,7 @@
 def sanity_check(architecture):
 	for t_name, template in architecture['templates'].items():
 		assert "type" in template
-		assert template["type"] in ["conv", "fully_connected", "dropout", "input"]
+		assert template["type"] in ["conv2d", "dense", "dropout", "input"]
 
 	assert "input" in architecture["layers"]
 	assert "output" in architecture["layers"]	
@@ -27,7 +27,7 @@ def sanity_check(architecture):
 		stack_beginnings.append(stack["structure"][0])
 		stack_ends.append(stack["structure"][-1])
 		if stack["type"] == "loop":
-			assert "composition_node" in stack
+			assert "composition_mode" in stack
 		all_used_layers |= set(stack["structure"])
 
 		assert all([layer_name in architecture["layers"] for layer_name in stack["structure"]])

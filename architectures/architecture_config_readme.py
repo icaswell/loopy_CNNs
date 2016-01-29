@@ -22,40 +22,41 @@
 #-------------------------------------------------------------------------------
 # the "type" field may be one of:
 #  	"conv": a conv layer
-#	"fully_connected": a fully connected layer
+#	"dense": a fully connected layer
 #-------------------------------------------------------------------------------
-
+# note that these are merged into the defaults (defined at the end of this file)
 "templates": #parser asserts that each has a type
 	{
 	"input": {"type": "input"},
-	"conv_1": {"type": "conv",
+	"conv_1": {"type": "conv2d",
 				"stride": 1,
 				"width": 5,
-				"weight_init": "Xavier_by_2",},
-	"fully_connected": {"type": "fully_connected", 
-				    	"weight_init": "Xavier_by_2"},
-	# "loop_composition": {"type": "composition_node",
+				"init": "glorot_uniform",}, #weight init
+	"dense": {"type": "dense", 
+				    	"init": "glorot_uniform"},
+	# "loop_composition": {"type": "composition_mode",
 	# 					"descriptor": "elementwise_multiplication",
 	# 					"function": lambda x, y: x*y} #parser asserts that composition_function field exists
 	},
+
+
 #===============================================================================
 # Here's where you define your layers.  You'll wire them together later.
 
 "layers": #parser asserts that there exists a layer called "input" and a layer called "output"
 	{
-	"input":{"dim":374, "template": "input"},
-	"layer_1":{"dim":500, "template": "conv_1"},
-	"layer_2":{"dim":500, "template": "conv_1"}, 
-	"output":{"dim":10, "template": "fully_connected"},
+	"input":{"output_dim":374, "template": "input"},
+	"layer_1":{"output_dim":500, "template": "conv_1"},
+	"layer_2":{"output_dim":500, "template": "conv_1"}, 
+	"output":{"output_dim":10, "template": "dense"},
 	#------------------------------------------------------------------------------
-	"loop_1.1":{"dim":500, "template": "conv_1"},
+	"loop_1.1":{"output_dim":500, "template": "conv_1"},
 
 	#------------------------------------------------------------------------------
-	#"width" is being overridden from the "conv_1" template!	
-	"loop_2.1":{"dim":500, "template": "conv_1", "width": 3},	
-	"loop_2.2":{"dim":500, "template": "conv_1", "width": 3},
+	#"init" is being overridden from the "conv_1" template (which in turn comes from the "conv" default!	
+	"loop_2.1":{"output_dim":500, "template": "conv_1", "init": "zero"},	
+	"loop_2.2":{"output_dim":500, "template": "conv_1", "init": "zero"},
 	},
-
 #===============================================================================
 # the type must be one of the following:
 # 	"main" - a normal bit of architecture
@@ -74,17 +75,52 @@
 	# }
 	"loop_1":{
 		"type": "loop", 
-		# parser asserts that all loop layers have a composition_node
+		# parser asserts that all loop layers have a composition_mode
 		"structure": ["layer_2", "loop_1.1", "layer_1"],
-		"composition_node": "loop_composition"
+		"composition_mode": "loop_composition"
 		},
 	"loop_2":{
 		"type": "loop", 
-		# parser asserts that all loop layers have a composition_node
+		# parser asserts that all loop layers have a composition_mode
 		"structure": ["layer_2", "loop_2.1", "loop_2.2",  "layer_1"],
-		"composition_node": lambda x, y: x*y
+		"composition_mode": "mul"
 		},
 		
-	}
+	},
+
+#===============================================================================
+# the default parameters for layers.  Naming corresponds to keras conventions.
+#
+# activations: softplus, relu, tanh, sigmoid, hard_sigmoid, linear
+# init: uniform, lecun_uniform, normal, identity, orthogonal, zero, glorot_normal, glorot_uniform, he_normal, he_uniform, 
+"layer_defaults":
+	{
+	"dense": 
+		{
+		"init":'glorot_uniform',
+		"activation":'relu',
+		"weights":None,
+		"W_regularizer":None,
+		"b_regularizer":None,
+		"activity_regularizer":None,
+		"W_constraint":None,
+		"b_constraint":None,
+		"input_dim":None,
+		},
+	"conv2d": # keras.layers.convolutional.Convolution2D(nb_filter,
+		{
+		 "init":'glorot_uniform',
+		 "activation":'relu',
+		 "weights":None,
+		 "border_mode":'valid',
+		 "subsample":(1, 1),
+		 "dim_ordering":'th',
+		 "W_regularizer":None,
+		 "b_regularizer":None,
+		 "activity_regularizer":None,
+		 "W_constraint":None,
+		 "b_constraint":None,
+	 },	
+	},	
 }
 
