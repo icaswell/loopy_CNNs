@@ -1,12 +1,17 @@
 # File: architecture_config_asserter.py
+# @author: Isaac Caswell
+# @created: Jan 28 2016
 # 
 # performs various assertions on some architecture that one has specified in 
 # architecture_config_readme.py.  These are for the purpose of sanity checking.
+#
+# TODO: better warnings; check that each layer has only one input
+
 
 def sanity_check(architecture):
 	for t_name, template in architecture['templates'].items():
 		assert "type" in template
-		assert template["type"] in ["conv", "fully_connected", "dropout"]
+		assert template["type"] in ["conv", "fully_connected", "dropout", "input"]
 
 	assert "input" in architecture["layers"]
 	assert "output" in architecture["layers"]	

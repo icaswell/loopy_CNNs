@@ -1,10 +1,18 @@
+# File: architecture_config_readme.py
+# @author: Isaac Caswell
+# @created: Jan 28 2016
+# 
+# demonstrates how to specify the architecture of a (loopy) neural network using this
+# config format.  Builds a toy loopy CNN andannotates what the different fields mean.
+#
+# USAGE:
+#  from architecture_config_asserter import sanity_check
+#  d = open("architectures/architecture_config_readme.py", "r").read()
+#  architecture = eval(d)
+#  sanity_check(architecture)
 
-# EXAMPLE
-# --------------------------------------------------------------------------------
-# --------------------------------------------------------------------------------
-# --------------------------------------------------------------------------------
-
-ARCHITECTURE = {
+#
+{
 #===============================================================================
 # templates: this is where you define the different types of layers your network 
 # will use.  Each template is required to have a "type" field.  The options may be 
@@ -19,6 +27,7 @@ ARCHITECTURE = {
 
 "templates": #parser asserts that each has a type
 	{
+	"input": {"type": "input"},
 	"conv_1": {"type": "conv",
 				"stride": 1,
 				"width": 5,
@@ -79,8 +88,3 @@ ARCHITECTURE = {
 	}
 }
 
-from architecture_config_asserter import sanity_check
-
-sanity_check(ARCHITECTURE)
-
-#check to see that each layer has exactly one output and one input

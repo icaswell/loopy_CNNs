@@ -2,54 +2,22 @@
 # -*- coding: utf-8 -*-
 #
 # File: generic_util.py
-# @Author: Isaac Caswell
+# @author: Isaac Caswell
 # @created: 21 February 2015
-#
+# File: util.py
+# @author: Isaac Caswell
 #===============================================================================
 # DESCRIPTION:
 #
-# A file containing various useful functions I often find I have to write in my 
-# scripts/have to look up from other files.  For instance, how to plot things 
-# with legends, print things in color, and get command line arguments
+# Generically useful/organizational functions
 #
 #===============================================================================
 # CURRENT STATUS: Works!  In progress.
 #===============================================================================
 # USAGE:
-# import generic_util as gu
-# gu.colorprint("This text is flashing in some terminals!!", "flashing")
+# import util
+# util.colorprint("This text is flashing in some terminals!!", "flashing")
 # 
-#===============================================================================
-# CONTAINS:
-# 
-#-------------------------------------------------------------------------------
-# COSMETIC:
-#-------------------------------------------------------------------------------
-# colorprint: prints the given text in the given color
-# time_string:
-#       returns a string representing the date in the form '12-Jul-2013' etc.
-#       Handy naming of files.
-#-------------------------------------------------------------------------------
-# FOR (LARGE) FILES:
-#-------------------------------------------------------------------------------
-# randomly_sample_file: given the name of some unnecessarily large file that you
-#       have to work with, original_fname, randomly samples it to have a given
-#       number of lines.  This function is used for when you want to do some 
-#       testing of your script on a pared down file first.
-# scramble_file_lines:
-#       randomly permutes the lines in the input file.  If the input 
-#       file is a list, permutes all lines in the iput files in the asme way.
-#       Useful if you are doing SGD, for instance.
-# file_generator:
-#       streams a file line by line, and processes that line as a list of integers.
-# split_file: given the name of some unnecessarily large file that you have to 
-#       work with, original_fname, this function splits it into a bunch of
-#       smaller files that you can then do multithreaded operations on.
-#
-#===============================================================================
-# TODO: 
-# make general plotting function
-
 
 #standard modules
 import numpy as np
@@ -111,7 +79,7 @@ def colorprint(message, color="rand", newline=True):
         'green' : 92,
         'yellow' : 93,  
         'blue' : 94,
-        'magebta' : 95,
+        'magenta' : 95,
         'teal' : 96,
         'pink' : 97,
         'neutral' : 99,
