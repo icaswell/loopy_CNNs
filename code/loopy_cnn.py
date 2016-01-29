@@ -51,7 +51,13 @@ class LoopyCNN():
  
         self._build_description(architecture_dict)
 
- 
+        #===============================================================================
+        # TODO: 
+        # 0. look into Keras
+        # 1. make the parameters, with a private/temporary mapping of layer--> weight matrix
+        # 2. For each unroll:
+        #          loop through the main stack, inputting loop inputs from previous layer and storing loop outputs for next layer
+
  
          # all_hidden_activations = []
          # if self.debug: util.colorprint("building architecture...", self.debug_model_color)
@@ -133,7 +139,8 @@ class LoopyCNN():
         
          # cost = self.loss_function(self.final_activation, self.y) + self.L1_reg * self.L1
  
-         # return cost       
+         # return cost    
+
 
     def _build_description(self, architecture_dict):
         title_color = 95

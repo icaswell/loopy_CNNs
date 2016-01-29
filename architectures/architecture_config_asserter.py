@@ -19,9 +19,11 @@ def sanity_check(architecture):
 	stack_beginnings = []
 	stack_ends = []
 	all_used_layers = set()
+	stack_types = []
 	for stack_name, stack in architecture["stacks"].items():
 		assert "type" in stack
 		assert  stack["type"] in ["main", "loop", "residual"]
+		stack_types.append(stack["type"])
 		stack_beginnings.append(stack["structure"][0])
 		stack_ends.append(stack["structure"][-1])
 		if stack["type"] == "loop":
@@ -31,6 +33,9 @@ def sanity_check(architecture):
 		assert all([layer_name in architecture["layers"] for layer_name in stack["structure"]])
 
 
+	assert stack_types.count("main") > 0
+	if stack_types.count("main") > 1:
+		print "severe warning: use no more than one main stack until I get cleverer"
 	assert stack_ends.count("output") == 1
 	assert stack_beginnings.count("input") >= 1
 
