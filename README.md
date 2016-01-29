@@ -10,8 +10,10 @@ A folder defining different architectures used by our models.  Contains:
 
 code
 ------
- + *extraneous_scripts*: a folder of whatever random scripts we may create for, say, plotting graphs, cleaning data, etc.
- + *util.py*:  Contains some super clutch functions to do things like print in color and make really descriptive filenames. Highly recommended you run python util.py
+Contains the central scripts and models to our project.  All scripts have a demo that can be run by running them as __main__.  These include:
+ + **loopy_cnn.py**: defines the class LoopyCNN(), that will be the main character of this project. Note that this is a general model, so if e.g. we decide at the last minute to do ResNet, it'll take nothing but a new architecture config file!
+ + **util.py**:  Contains some super clutch functions to do things like print in color and make really descriptive filenames. Highly recommended you run python util.py
+ + **extraneous_scripts**: a folder of whatever random scripts we may create for, say, plotting graphs, cleaning data, etc.
 
 data
 -----
