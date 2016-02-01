@@ -5,44 +5,20 @@
 #===============================================================================
 # DESCRIPTION:
 #
-# Defines the LoopyCNN class.  It is designed to build architecture that's defined
+# Defines the LoopyCNN class, implemented in keras.  It is designed to build architecture that's defined
 # in a config file.  (see architecture_config_readme.py for an example)
 #
 #===============================================================================
-# CURRENT STATUS: Massively Unimplemented
+# CURRENT STATUS: Works, but doesn't have parameter sharing for loops (e.g. is basically a resnet)
+# Also only works for dense layers right now.
 #===============================================================================
 # USAGE:
 # from loopy_cnn import LoopyCNN
 # model = LoopyCNN(architecture_fpath="../architectures/simple_loop.py", 
 #         **kwargs)
 
-# keras.layers.core.Dense(output_dim,
-# init='glorot_uniform',
-# activation='linear',
-# weights=None,
-# W_regularizer=None,
-# b_regularizer=None,
-# activity_regularizer=None,
-# W_constraint=None,
-# b_constraint=None,
-# input_dim=None)
 
-# keras.layers.convolutional.Convolution2D(nb_filter,
-#  nb_row,
-#  nb_col,
-#  init='glorot_uniform',
-#  activation='linear',
-#  weights=None,
-#  border_mode='valid',
-#  subsample=(1, 1),
-#  dim_ordering='th',
-#  W_regularizer=None,
-#  b_regularizer=None,
-#  activity_regularizer=None,
-#  W_constraint=None,
-#  b_constraint=None)
-
-
+import numpy as np
 from collections import defaultdict
 import sys
 sys.path.append("../architectures")
@@ -53,7 +29,6 @@ from keras.layers.core import Dense, Dropout, Activation
 from keras.optimizers import SGD
  
 
-from architecture_config_asserter import sanity_check
 from abstract_loopy_network import AbstractLoopyNetwork
 
 
@@ -70,11 +45,11 @@ class LoopyNetwork(AbstractLoopyNetwork):
         self._init_optimizer(optimizer)
         self.model = Graph()
         self._POSSIBLE_KERAS_OPTIONS = set(["init", "activation", "weights", "W_regularizer", "b_regularizer", "activity_regularizer", "W_constraint", "b_constraint", "input_dim", "border_mode", "subsample", "dim_ordering", "activity_regularizer"])
-    
+
         #self.prep_layer also sets slf.__repr__
         architecture_dict = self._prep_layer_dicts(architecture_fpath)     
-
         self._build_architecture(architecture_dict)
+        self._build_description(architecture_dict)
 
 
         
@@ -84,6 +59,9 @@ class LoopyNetwork(AbstractLoopyNetwork):
  
     def classify_batch(self):
         pass
+
+    #===============================================================================
+    # private functions
 
     def _add_input(self, name, input_shape):
         self.model.add_input(name=name, input_shape=input_shape)
@@ -100,17 +78,20 @@ class LoopyNetwork(AbstractLoopyNetwork):
         input_layers may be either a string or a list.  If it's a list (meaning that there's 
             some loop input), all incoming acivations are merged via merge_mode.
         """
+        layer_dict = dict(layer_dict)
         if share_params_with is not None:
             print "Warning: ignoring share_params_with"
         
-        layer_options = layer_dict["keras_options"]
+        layer_options = layer_dict["options"]
         layer=None
         if layer_dict["type"]=="conv2d":
             #TODO: remove below
             nb_filter, nb_row, nb_col = 3,3,3
             layer = keras.layers.convolutional.Convolution2D(nb_filter, nb_row, nb_col, **layer_options)
         elif layer_dict["type"]=="dense":
-            layer = keras.layers.core.Dense(**layer_options)       
+            dim  = layer_dict["output_dim"]
+            # del layer_options["output_dim"]
+            layer = keras.layers.core.Dense(dim, **layer_options)       
         else:
             print "ur sol"
             RaiseError()
@@ -122,46 +103,6 @@ class LoopyNetwork(AbstractLoopyNetwork):
             self.model.add_node(layer, name=layer_name, input=input_layers)
 
         return layer_name      
-
-
-    def _add_loop(self, loop_dict, unroll_i, architecture_dict):
-        #get the input from the previous layer
-        cur_layer = self._label(loop_dict["structure"][0], unroll_i - 1.0)
-        for loop_layer_name in loop_dict["structure"][1:-1]: #don't include the input or the output
-            cur_layer = self._add_layer(architecture_dict["layers"][loop_layer_name], 
-                                        name=loop_layer_name,
-                                        id=unroll_i,
-                                        input_layer=cur_layer)
-        return cur_layer
-
-    def _label(self, name, unroll_i):
-        return name + "_unroll=%s"%unroll_i
-
-
-    def _build_description(self, architecture_dict):
-        title_color = 95
-        layer_colors = {
-                "input": 93,
-                "conv2d": 96,
-                "dense": 97,
-        }
-        self.description = "LoopyCNN instance with the following hyperparameters, layers and loops:"
-        self.description += "\033[%sm"%title_color + "\nHYPERPARAMETERS:" + '\033[0m'
-        self.description += "\n\tn_unrolls=%s"%self.n_unrolls
-        self.description += "\033[%sm"%title_color + "\n\nARCHITECTURE:" + '\033[0m'
-        for stack_name, stack in architecture_dict["stacks"].items():
-            self.description +="\n%s:"%stack_name
-            for layer_name in stack["structure"]:
-                layer = architecture_dict["layers"][layer_name]
-                if "template" in layer:
-                    template = architecture_dict["templates"][layer["template"]]
-                    template.update(layer)
-                    layer=template
-                # TODO: replace this with looping through the actual layers, each of which will have a __str__() method
-                layer_desc = layer_name
-                layer_desc += " [%s layer; output_dim=%s]"%(layer["type"], layer["output_dim"])
-                layer_color = layer_colors[layer["type"]]
-                self.description += "\n\t\033[%sm"%layer_color + layer_desc + '\033[0m'
 
 
     def _init_optimizer(self, optimizer):
@@ -192,7 +133,26 @@ class LoopyNetwork(AbstractLoopyNetwork):
 
 
 if __name__=="__main__":
-     model = LoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py")
+    model = LoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=1)
 
-     print repr(model)
+    print repr(model)
+    X_train = np.zeros((0,5))
+    y_train = np.zeros((0,2))
+    with open("../data/toy_data_5d.txt", "r") as f:
+        for line in f:
+            splitline=line.split()
+            yi = int(splitline[-1])
+            xi = [float(xij) for xij in splitline[0:-1]]
+            d = len(xi)
+            xi = np.array(xi)
+            xi = xi.reshape((1, d))
 
+            yi_expanded = np.zeros((1,2))
+            yi_expanded[0,yi] = 1.0
+
+            X_train = np.vstack([X_train, xi])
+            y_train = np.vstack([y_train, yi_expanded])
+
+
+
+    model.train_model(X_train, y_train, n_epochs=1200)

@@ -285,6 +285,8 @@ if __name__ == '__main__':
     print descriptive_filename(run_attributes, timestamp_precision="second") 
     print descriptive_filename(run_attributes, timestamp_precision="second", random_stamp=True, extension=".lol")
 
+    make_toy_data(outfile="../data/toy_data_5d.txt", dim=5, n_examples=100, misclassification_prob=0.0, predictor="dot", seeds=(2,3))
+
     # parser = argparse.ArgumentParser()
     # parser.add_argument('-stuff', type=str, default="yeah")
     # ARGS = parser.parse_args()
