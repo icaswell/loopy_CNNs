@@ -27,10 +27,12 @@
 
 from collections import defaultdict
 import sys
+from pprint import pprint
 sys.path.append("../architectures")
 
 
 from architecture_config_asserter import sanity_check
+import util
 
 class AbstractLoopyNetwork():
     def __init__(self, architecture_fpath, n_unrolls):
@@ -97,31 +99,56 @@ class AbstractLoopyNetwork():
         Assumptions:
             -there is oly one main_stack, which begins in the input and ends in the output.
         unrolls the nework self.n_unrolls times, duplicating the entire main_stack each time.
-        
+
         """
         loop_outputs = {} # outputs from loops
         loops = [stack for stack_name, stack in architecture_dict['stacks'].items() if stack['type']=='loop']
         main_stack = architecture_dict['stacks']['main_stack']
 
-        cur_layer_name="input"
-        #TODO: don't hardcode input value
-        self._add_input(name=cur_layer_name, input_shape=architecture_dict["layers"]["input"]["output_dim"])
-        # TODO: add input
+        layers_with_loops = [loop_layer for loop in loops for loop_layer in loop['structure']]
+        main_stack_layers_interacting_with_loops = [i for i, layer in enumerate(main_stack['structure']) if layer in layers_with_loops]
+        
+        last_layer_added="input"
+        self._add_input(name=last_layer_added, input_shape=architecture_dict["layers"]["input"]["output_dim"])
+
+        #==========================================================================
+        for underlying_layer_name in main_stack['structure'][1:main_stack_layers_interacting_with_loops[0]]:
+            layer_dict = architecture_dict['layers'][underlying_layer_name]
+            
+            last_layer_added = self._add_layer(layer_dict, 
+                                            layer_name=underlying_layer_name,
+                                            input_layers=last_layer_added
+                                            )       
+        #===============================================================================
+        # 
+
+        first_layer_in_loopy_section = last_layer_added
         for unroll_i in range(self.n_unrolls):
-            for layer_name in main_stack['structure'][1:]:
-                layer_dict = architecture_dict['layers'][layer_name]
+            #===============================================================================
+            # NOTE: this is an interesting structureal decision to add the input at the 
+            # beginning of every unroll, and abstracts it from the resnetty feel.
+            # TODO: I want to add a time decay factor here/an increasingly powerful dropout mask/something
+            last_layer_added=first_layer_in_loopy_section
+            #===============================================================================
+            # Nomenclature note: 
+            # 'underlying layer name' corresponds to the layer in the loopy graph, e.g. "layer_1"
+            # 'last_layer_added' is the name of the layer in the unrolled graph, e.g. "layer_1_unroll=0"
+            print "loop_outputs: ", loop_outputs
+            for underlying_layer_name in main_stack['structure'][main_stack_layers_interacting_with_loops[0]:main_stack_layers_interacting_with_loops[-1]+1]:
+                layer_dict = architecture_dict['layers'][underlying_layer_name]
 
-
+                util.colorprint(self._label(underlying_layer_name, unroll_i), 'red')
+                
                 merge_mode = None # this will be set to non-none iff there is an incoming loop
-                if layer_name in loop_outputs:
-                    cur_layer_name = [cur_layer_name, loop_outputs[layer_name][0]]
-                    merge_mode = loop_outputs[layer_name][1]
-
-                cur_layer_name = self._add_layer(layer_dict, 
-                                                layer_name=self._label(layer_name, unroll_i),
-                                                input_layers=cur_layer_name, 
+                if underlying_layer_name in loop_outputs:
+                    last_layer_added = [last_layer_added, loop_outputs[underlying_layer_name][0]]
+                    merge_mode = loop_outputs[underlying_layer_name][1]
+                util.colorprint("%s with input %s"%(self._label(underlying_layer_name, unroll_i), last_layer_added), 'blue')
+                last_layer_added = self._add_layer(layer_dict, 
+                                                layer_name=self._label(underlying_layer_name, unroll_i),
+                                                input_layers=last_layer_added, 
                                                 merge_mode=merge_mode,
-                                                share_params_with = self._label(layer_name, 0) if unroll_i else None
+                                                share_params_with = self._label(underlying_layer_name, 0) if unroll_i else None
                                                 )
             #====================================================
             # calculate the loop outputs 
@@ -129,26 +156,42 @@ class AbstractLoopyNetwork():
                 #don't calculate outputs for the last unroll
                 for loop_dict in loops:
                     loop_output_name = self.add_loop(loop_dict, unroll_i=unroll_i, architecture_dict=architecture_dict)
-                    loop_outputs[loop['structure'][-1]] = loop_output_name, loop_dict["mode"]
+                    loop_outputs[loop_dict['structure'][-1]] = loop_output_name, loop_dict["composition_mode"]
+
+        #==========================================================================
+        # finishe the man stack after the loopy part
+
+        for underlying_layer_name in main_stack['structure'][main_stack_layers_interacting_with_loops[-1]+1:]:
+            layer_dict = architecture_dict['layers'][underlying_layer_name]
+            
+            last_layer_added = self._add_layer(layer_dict, 
+                                            layer_name=underlying_layer_name,
+                                            input_layers=last_layer_added
+                                            )       
+        #===============================================================================
+        #                     
         #===============================================================================
         # Adds the last added layer as an output
-        self._add_output(name="output", input_layer=cur_layer_name)
+        self._add_output(name="output", input_layer=last_layer_added)
 
 
     def add_loop(self, loop_dict, unroll_i, architecture_dict):
         """
         adds a loop to the model, by linking the beginning of the 
-        loop to the relevant layer from the last unroll.
+        loop to the relevant layer from THIS unroll.
 
         Note that this does NOT connect the end of the loop--
-        that's left hanging, for the callign function to deal with.
+        that's left hanging, for the calling function to deal with.
         """
         #get the input from the previous layer
-        cur_layer = self._label(loop_dict["structure"][0], unroll_i - 1.0)
+
+        cur_layer = self._label(loop_dict["structure"][0], unroll_i)
         for loop_layer_name in loop_dict["structure"][1:-1]: #don't include the input or the output
-            cur_layer = self._add_layer(architecture_dict["layers"][loop_layer_name], 
+            print "adding %s to the loop"%loop_layer_name
+            pprint(architecture_dict["layers"][loop_layer_name])
+            cur_layer = self._add_layer(layer_dict=architecture_dict["layers"][loop_layer_name], 
                                         layer_name=self._label(loop_layer_name, unroll_i),
-                                        input_layer=cur_layer,
+                                        input_layers=cur_layer,
                                         share_params_with = self._label(loop_layer_name, 0) if unroll_i else None
                                         )
         return cur_layer
@@ -207,7 +250,7 @@ class AbstractLoopyNetwork():
 
 
 if __name__=="__main__":
-     model = AbstractLoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=2)
+     model = AbstractLoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=3)
 
      print repr(model)
 

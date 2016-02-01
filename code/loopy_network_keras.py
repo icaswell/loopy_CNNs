@@ -27,9 +27,12 @@ import keras
 from keras.models import Graph
 from keras.layers.core import Dense, Dropout, Activation
 from keras.optimizers import SGD
+# from keras.utils.dot_utils import Grapher
  
 
 from abstract_loopy_network import AbstractLoopyNetwork
+import util
+import plot_keras as plotter
 
 
 class LoopyNetwork(AbstractLoopyNetwork):
@@ -39,7 +42,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
                     loss="mse"):
 
         print "WARNING: this does not actually create a loopy network (parameters are not shared)"
-        
+        self.short_name = "loopy_keras"        
         self.n_unrolls = n_unrolls        
         self.loss=loss
         self._init_optimizer(optimizer)
@@ -78,7 +81,11 @@ class LoopyNetwork(AbstractLoopyNetwork):
         input_layers may be either a string or a list.  If it's a list (meaning that there's 
             some loop input), all incoming acivations are merged via merge_mode.
         """
+        util.colorprint(layer_name, 'teal')
+                        
         layer_dict = dict(layer_dict)
+        util.colorprint(layer_dict, 'red')
+                        
         if share_params_with is not None:
             print "Warning: ignoring share_params_with"
         
@@ -125,6 +132,11 @@ class LoopyNetwork(AbstractLoopyNetwork):
             print "Error: unsupported optimizer %s"%optimizer
             sys.exit(0)
 
+    def plot_model(self):
+        # grapher = Grapher()
+        # grapher.plot(self.model, '%s.png'%self.short_name)
+        plotter.plot_model(self.model, '%s.png'%self.short_name)
+
     def __repr__(self):
         """
         returns a descriptive string representation of the model.
@@ -133,9 +145,10 @@ class LoopyNetwork(AbstractLoopyNetwork):
 
 
 if __name__=="__main__":
-    model = LoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=1)
+    model = LoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=3)
 
     print repr(model)
+    model.plot_model()
     X_train = np.zeros((0,5))
     y_train = np.zeros((0,2))
     with open("../data/toy_data_5d.txt", "r") as f:
@@ -155,4 +168,4 @@ if __name__=="__main__":
 
 
 
-    model.train_model(X_train, y_train, n_epochs=1200)
+    model.train_model(X_train, y_train, n_epochs=1000)
