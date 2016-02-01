@@ -40,20 +40,23 @@ class LoopyNetwork(AbstractLoopyNetwork):
                     n_unrolls=2, 
                     optimizer = "rmsprop",
                     loss="mse"):
+        #===============================================================================
+        # Call the superclass init function.  The commented out line is for python 3.
+        # super(LoopyNetwork, self).__init__(architecture_fpath, n_unrolls)
+        AbstractLoopyNetwork.__init__(self, architecture_fpath, n_unrolls)
 
         print "WARNING: this does not actually create a loopy network (parameters are not shared)"
         self.short_name = "loopy_keras"        
-        self.n_unrolls = n_unrolls        
+
         self.loss=loss
         self._init_optimizer(optimizer)
         self.model = Graph()
         self._POSSIBLE_KERAS_OPTIONS = set(["init", "activation", "weights", "W_regularizer", "b_regularizer", "activity_regularizer", "W_constraint", "b_constraint", "input_dim", "border_mode", "subsample", "dim_ordering", "activity_regularizer"])
 
         #self.prep_layer also sets slf.__repr__
-        architecture_dict = self._prep_layer_dicts(architecture_fpath)     
-        self._build_architecture(architecture_dict)
-        self._build_description(architecture_dict)
-
+           
+        #self.archicecture_dict gets set in the superclass' constructor, caled with super()
+        self._build_architecture(self.architecture_dict)
 
         
     def train_model(self, X_train, y_train, n_epochs=10):
@@ -100,7 +103,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
             # del layer_options["output_dim"]
             layer = keras.layers.core.Dense(dim, **layer_options)       
         else:
-            print "ur sol"
+            print "Ursol Major"
             RaiseError()
         # TODO: one of the layers is a string
         if isinstance(input_layers, list):
@@ -135,13 +138,8 @@ class LoopyNetwork(AbstractLoopyNetwork):
     def plot_model(self):
         # grapher = Grapher()
         # grapher.plot(self.model, '%s.png'%self.short_name)
-        plotter.plot_model(self.model, '%s.png'%self.short_name)
+        plotter.plot_model(self.model, '%s_%s.png'%(self.short_name, util.time_string()))
 
-    def __repr__(self):
-        """
-        returns a descriptive string representation of the model.
-        """
-        return self.description
 
 
 if __name__=="__main__":
