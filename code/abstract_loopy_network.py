@@ -28,6 +28,7 @@
 from collections import defaultdict
 import sys
 from pprint import pprint
+import hashlib
 sys.path.append("../architectures")
 
 
@@ -102,6 +103,10 @@ class AbstractLoopyNetwork():
 
         layers_with_loops = [loop_layer for loop in loops for loop_layer in loop['structure']]
         main_stack_layers_interacting_with_loops = [i for i, layer in enumerate(main_stack['structure']) if layer in layers_with_loops]
+        if not main_stack_layers_interacting_with_loops:
+            #there are no loops
+            main_stack_layers_interacting_with_loops  = [len(main_stack['structure'])]
+
         
         last_layer_added="input"
         self._add_input(name=last_layer_added, input_shape=architecture_dict["layers"]["input"]["output_dim"])
@@ -212,10 +217,11 @@ class AbstractLoopyNetwork():
         :param dict architecture_dict: a dict from the config file, that 
             represents the architecture of the model
         makes a pretty colored string that represents the architecture of the 
-        model.  Does not yer represent the loops, which is a pity.  But how is one 
+        model.  Does not yet represent the loops, which is a pity.  But how is one 
         to do that graphically on terminal?
         """
         #TODO: once one handles outputs properly, color them differently.
+
         title_color = 95
         layer_colors = {
                 "input": 93,
@@ -241,6 +247,21 @@ class AbstractLoopyNetwork():
                 layer_color = layer_colors[layer["type"]]
                 self.description += "\n\t\033[%sm"%layer_color + layer_desc + '\033[0m'
 
+        #===============================================================================
+        # get hash id and short descriptor
+        self.get_hash_id()
+        n_loops = sum(1 for stack in architecture_dict["stacks"].values() if stack["type"] =="loop")
+        n_layers_in_main_stack = len(architecture_dict["stacks"]["main_stack"]["structure"]) -1
+        self.short_description = "\033[104m %s-layer network with %s loops (architecture ID: %s)\033[0m"%(n_layers_in_main_stack, n_loops, self._hash_id)
+
+
+
+    def get_hash_id(self):
+        """
+        makes a unique hash for a model.  This is useful if you want to know whether two 
+        models are identical or not.
+        """
+        self._hash_id = hashlib.sha1(self.description).hexdigest()
 
     def __repr__(self):
         """
@@ -248,9 +269,16 @@ class AbstractLoopyNetwork():
         """
         return self.description
 
+    def __str__(self):
+        """
+        returns a short string representation of the model.
+        """
+        return self.short_description     
 
 if __name__=="__main__":
      model = AbstractLoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=3)
 
      print repr(model)
+
+     print "The model is called %s"%model
 

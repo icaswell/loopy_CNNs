@@ -1,4 +1,4 @@
-# loopy_cnn.py
+# loopy_network_lasagne.py
 # @author: Isaac Caswell
 # @created: Jan 31 2016
 #
@@ -33,33 +33,87 @@ class LoopyNetwork(AbstractLoopyNetwork):
                     n_unrolls=2, 
                     optimizer = "rmsprop",
                     loss="mse"):
+        #===============================================================================
+        # Call the superclass init function.  The commented out line is for python 3.
+        # super(LoopyNetwork, self).__init__(architecture_fpath, n_unrolls)
+        AbstractLoopyNetwork.__init__(self, architecture_fpath, n_unrolls)
+        assert self.architecture_dict["framework"] == "lasagne", "Don't try use this on a keras architecture!"
 
-        
-        self.n_unrolls = n_unrolls        
-        self.loss=loss
-        self._init_optimizer(optimizer)
         self.outputs = {} #mapping from output layer name to the layer that it refers to.
-        # self.model = Graph()
-
-        #self.prep_layer also sets slf.__repr__
-        architecture_dict = self._prep_layer_dicts(architecture_fpath)     
-        self._build_architecture(architecture_dict)
-        self._build_description(architecture_dict)
-
         # self.names_to_layers: a mapping of string (e.g. "layer_1_unroll=2") to a lasagne layer object
         self._names_to_layers = {}
 
+        self._build_architecture(self.architecture_dict)
 
         
     def train_model(self, X_train, y_train, n_epochs=10):
-        self.model.compile(optimizer=self.optimizer, loss={self.output :self.loss})
-        return self.model.fit({'input':X_train, self.output:y_train}, nb_epoch=n_epochs)
+        network = self.network
+        loss = self.loss
+        # network = self.outputs.values()[1]
+        params = lasagne.layers.get_all_params(network, trainable=True)
+        #NOTE: assumes only one output
+        #TODO: specify learning_rate and momentum elsewhere
+        updates = lasagne.updates.nesterov_momentum(network, params, learning_rate=0.01, momentum=0.9)
+
+        test_prediction = lasagne.layers.get_output(network, deterministic=True)
+        test_loss = lasagne.objectives.categorical_crossentropy(test_prediction, self.target_var)
+        test_loss = test_loss.mean()
+        test_acc = T.mean(T.eq(T.argmax(test_prediction, axis=1), self.target_var),
+                  dtype=theano.config.floatX)
+
+        input_var = self._names_to_layers["input"]
+        train_fn = theano.function([input_var, target_var], loss, updates=updates)
+        val_fn = theano.function([input_var, target_var], [test_loss, test_acc])
+
+
+        for epoch in range(num_epochs):
+            # In each epoch, we do a full pass over the training data:
+            train_err = 0
+            train_batches = 0
+            start_time = time.time()
+            for batch in self._iterate_minibatches(X_train, y_train, 500, shuffle=True):
+                inputs, targets = batch
+                train_err += train_fn(inputs, targets)
+                train_batches += 1
+
+            # TODO: uncomment below!
+            # And a full pass over the validation data:
+            # val_err = 0
+            # val_acc = 0
+            # val_batches = 0
+            # for batch in iterate_minibatches(X_val, y_val, 500, shuffle=False):
+            #     inputs, targets = batch
+            #     err, acc = val_fn(inputs, targets)
+            #     val_err += err
+            #     val_acc += acc
+            #     val_batches += 1
+
+            # Then we print the results for this epoch:
+            print("Epoch {} of {} took {:.3f}s".format(
+                epoch + 1, num_epochs, time.time() - start_time))
+            print("  training loss:\t\t{:.6f}".format(train_err / train_batches))
+            # print("  validation loss:\t\t{:.6f}".format(val_err / val_batches))
+            # print("  validation accuracy:\t\t{:.2f} %".format(
+                # val_acc / val_batches * 100))
  
     def classify_batch(self):
         pass
 
     #===============================================================================
     # private functions
+
+    def _iterate_minibatches(self, X, y, batchsize, shuffle=False):
+        """
+        X.shape = (N, input_dim)
+        y.shape = (N, output_dim)
+        """
+        N = X.shape[0]
+        order = range(N)
+        if shuffle:
+            np.random.shuffle(order)
+        for i in range(N/batchsize):
+            batch_idx = order[i:i + batchsize]
+            yield X[batch_idx], y[batch_idx]
 
     def _add_input(self, name, input_shape):
         input_layer = lasagne.layers.InputLayer(shape=input_shape,
@@ -70,9 +124,15 @@ class LoopyNetwork(AbstractLoopyNetwork):
         """
         input_layer is a string, e.g. "dense1"
         """
-        self.outputs[name] = self._names_to_layers[input_layer]
+        # input_layer = self._names_to_layers[input_layer]
+        prediction = lasagne.layers.get_output(input_layer)
+        self.target_var = T.ivector('targets')
+        #TODO: get this from self._architecture_dict["layers"]
+        loss = lasagne.objectives.categorical_crossentropy(prediction, self.target_var)
+        loss = loss.mean()
+        self.outputs[name] = loss
 
-    def _convert_layer_options(layer_options):
+    def _convert_layer_options(self, layer_options):
         """
         takes a mapping of 
             parameter name: description of that parameter
@@ -99,7 +159,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
             }[layer_options["nonlinearity"]]
             layer_options["nonlinearity"] = nonlinearity
 
-        #TODO: everything.
+        self._initialize_params(layer_options)
 
 
     def _add_layer(self, layer_dict, layer_name, input_layers, merge_mode=None, share_params_with=None):
@@ -110,13 +170,17 @@ class LoopyNetwork(AbstractLoopyNetwork):
         layer_dict = dict(layer_dict)
         assert isinstance(input_layers, str) #TODO: remove after figuring out layers in lasagne
         
-        layer_options = layer_dict["lasagne_options"]
+        layer_options = layer_dict["options"]
         layer_options = self._convert_layer_options(layer_options)
         layer=None
 
+        #===============================================================================
+        # deal with parametere sharing
         if share_params_with is not None:
-            layer_options["W"] = ....
+            layer_options.update(self.saved_params[share_params_with])
 
+        #===============================================================================
+        # layer-specific initializations
         if layer_dict["type"]=="conv2d":
             #TODO: remove below
             RaiseError()
@@ -125,15 +189,12 @@ class LoopyNetwork(AbstractLoopyNetwork):
         elif layer_dict["type"]=="dense":
             dim  = layer_dict["output_dim"]
             # del layer_options["output_dim"]
-
             layer = lasagne.layers.DenseLayer(
                         self._names_to_layers[input_layers], 
+                        name = layer_name,
                         num_units=dim,
-                        **layer_options, 
-                        # nonlinearity=lasagne.nonlinearities.rectify,
-                        # W=lasagne.init.GlorotUniform(),
+                        **layer_options 
                     )
-
         else:
             print "ur sol"
             RaiseError()
@@ -144,40 +205,41 @@ class LoopyNetwork(AbstractLoopyNetwork):
         # else:
         #     self.model.add_node(layer, name=layer_name, input=input_layers)
 
+        self._names_to_layers[layer_name] = layer
         return layer_name      
 
 
-    def _init_optimizer(self, optimizer):
-        """
-        converts a string to a keras optimizer
-        """
-        if optimizer == "rmsprop":
-            self.optimizer = keras.optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=1e-06)
-        elif optimizer == "adagrad":
-            self.optimizer = keras.optimizers.Adagrad(lr=0.01, epsilon=1e-06)
-        elif optimizer == "adadelta":
-            self.optimizer = keras.optimizers.Adadelta(lr=1.0, rho=0.95, epsilon=1e-06)
-        elif optimizer == "adam":
-            self.optimizer = keras.optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
-        elif optimizer == "adamax":
-            self.optimizer = keras.optimizers.Adamax(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=1e-08)                                  
-        elif hasattr(optimizer, __call__):
-            self.optimizer = optimizer
+    def _initialize_params(self, layer_options):
+        params_options = {}
+        if layer_options["type"]=="dense":
+            spec = {#TODO: expand to include all types
+                # Constant([val]) Initialize weights with constant value.
+                # Normal([std, mean]) Sample initial weights from the Gaussian distribution.
+                # Uniform([range, std, mean]) Sample initial weights from the uniform distribution.
+                # Glorot(initializer[, gain, c01b])   Glorot weight initialization.
+                # GlorotNormal([gain, c01b])  Glorot with weights sampled from the Normal distribution.
+                # GlorotUniform([gain, c01b]) Glorot with weights sampled from the Uniform distribution.
+                # He(initializer[, gain, c01b])   He weight initialization.
+                # HeNormal([gain, c01b])  He initializer with weights sampled from the Normal distribution.
+                # HeUniform([gain, c01b]) He initializer with weights sampled from the Uniform distribution.
+                # Orthogonal([gain])  Intialize weights as Orthogonal matrix.
+                # Sparse([sparsity, std]) Initialize weights as sparse matrix.            
+                "glorot_uniform": lasagne.init.GlorotUniform('relu')
+            }.get(layer_options["W"], None)
+            assert spec is not None
+
+            W = lasagne.utils.create_param(spec, shape, name=None)
+            params_options['W'] = W
+            #TODO: change biases as well
         else:
-            print "Error: unsupported optimizer %s"%optimizer
-            sys.exit(0)
-
-    def __repr__(self):
-        """
-        returns a descriptive string representation of the model.
-        """
-        return self.description
-
+            print "ajystvbkjdfhbvksuydbvwlrtv"*70
+            dfkdnfjvsndk
 
 if __name__=="__main__":
-    model = LoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=1)
+    model = LoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=3)
 
     print repr(model)
+    model.plot_model()
     X_train = np.zeros((0,5))
     y_train = np.zeros((0,2))
     with open("../data/toy_data_5d.txt", "r") as f:
@@ -197,4 +259,4 @@ if __name__=="__main__":
 
 
 
-    model.train_model(X_train, y_train, n_epochs=120)
+    model.train_model(X_train, y_train, n_epochs=1000)

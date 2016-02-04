@@ -46,7 +46,6 @@ class LoopyNetwork(AbstractLoopyNetwork):
         AbstractLoopyNetwork.__init__(self, architecture_fpath, n_unrolls)
 
         print "WARNING: this does not actually create a loopy network (parameters are not shared)"
-        self.short_name = "loopy_keras"        
 
         self.loss=loss
         self._init_optimizer(optimizer)
@@ -135,10 +134,10 @@ class LoopyNetwork(AbstractLoopyNetwork):
             print "Error: unsupported optimizer %s"%optimizer
             sys.exit(0)
 
-    def plot_model(self):
+    def plot_model(self, name):
         # grapher = Grapher()
         # grapher.plot(self.model, '%s.png'%self.short_name)
-        plotter.plot_model(self.model, '%s_%s.png'%(self.short_name, util.time_string()))
+        plotter.plot_model(self.model, '%s_%s.png'%(name, util.time_string()))
 
 
 
@@ -146,7 +145,8 @@ if __name__=="__main__":
     model = LoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=3)
 
     print repr(model)
-    model.plot_model()
+    print str(model)
+    model.plot_model("keras_test.png")
     X_train = np.zeros((0,5))
     y_train = np.zeros((0,2))
     with open("../data/toy_data_5d.txt", "r") as f:
