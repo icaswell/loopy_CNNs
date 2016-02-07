@@ -19,6 +19,8 @@
 import numpy as np
 from collections import defaultdict
 import sys
+import time
+from pprint import pprint
 sys.path.append("../architectures")
 
 import theano
@@ -30,6 +32,7 @@ from abstract_loopy_network import AbstractLoopyNetwork
 
 class LoopyNetwork(AbstractLoopyNetwork):
     def __init__(self, architecture_fpath, 
+                    batch_size,
                     n_unrolls=2, 
                     optimizer = "rmsprop",
                     loss="mse"):
@@ -39,7 +42,9 @@ class LoopyNetwork(AbstractLoopyNetwork):
         AbstractLoopyNetwork.__init__(self, architecture_fpath, n_unrolls)
         assert self.architecture_dict["framework"] == "lasagne", "Don't try use this on a keras architecture!"
 
-        self.outputs = {} #mapping from output layer name to the layer that it refers to.
+        # unnecessary TODO: have input variable resized in train_model()?
+        self.batch_size = batch_size
+        self.outputs = {} # mapping from output layer name to the layer that it refers to.
         # self.names_to_layers: a mapping of string (e.g. "layer_1_unroll=2") to a lasagne layer object
         self._names_to_layers = {}
 
@@ -47,31 +52,36 @@ class LoopyNetwork(AbstractLoopyNetwork):
 
         
     def train_model(self, X_train, y_train, n_epochs=10):
+        """
+        """
+        #--------------------------------------------------------------------------------------------------
         network = self.network
         loss = self.loss
         # network = self.outputs.values()[1]
         params = lasagne.layers.get_all_params(network, trainable=True)
         #NOTE: assumes only one output
         #TODO: specify learning_rate and momentum elsewhere
-        updates = lasagne.updates.nesterov_momentum(network, params, learning_rate=0.01, momentum=0.9)
+        updates = lasagne.updates.nesterov_momentum(loss, params, learning_rate=0.01, momentum=0.9)
 
         test_prediction = lasagne.layers.get_output(network, deterministic=True)
+
         test_loss = lasagne.objectives.categorical_crossentropy(test_prediction, self.target_var)
         test_loss = test_loss.mean()
         test_acc = T.mean(T.eq(T.argmax(test_prediction, axis=1), self.target_var),
                   dtype=theano.config.floatX)
 
-        input_var = self._names_to_layers["input"]
-        train_fn = theano.function([input_var, target_var], loss, updates=updates)
-        val_fn = theano.function([input_var, target_var], [test_loss, test_acc])
+        input_var = self._names_to_layers["input"].input_var
+        train_fn = theano.function([input_var, self.target_var], loss, updates=updates)
+        val_fn = theano.function([input_var, self.target_var], [test_loss, test_acc])
 
 
-        for epoch in range(num_epochs):
+        for epoch in range(n_epochs):
             # In each epoch, we do a full pass over the training data:
             train_err = 0
             train_batches = 0
             start_time = time.time()
-            for batch in self._iterate_minibatches(X_train, y_train, 500, shuffle=True):
+            #TODO: nee to modify al layer adding to take into account batches????
+            for batch in self._iterate_minibatches(X_train, y_train, 1, shuffle=True):
                 inputs, targets = batch
                 train_err += train_fn(inputs, targets)
                 train_batches += 1
@@ -90,7 +100,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
 
             # Then we print the results for this epoch:
             print("Epoch {} of {} took {:.3f}s".format(
-                epoch + 1, num_epochs, time.time() - start_time))
+                epoch + 1, n_epochs, time.time() - start_time))
             print("  training loss:\t\t{:.6f}".format(train_err / train_batches))
             # print("  validation loss:\t\t{:.6f}".format(val_err / val_batches))
             # print("  validation accuracy:\t\t{:.2f} %".format(
@@ -116,23 +126,26 @@ class LoopyNetwork(AbstractLoopyNetwork):
             yield X[batch_idx], y[batch_idx]
 
     def _add_input(self, name, input_shape):
+        input_shape = self.batch_size, input_shape
         input_layer = lasagne.layers.InputLayer(shape=input_shape,
                                     input_var=None)
+        # print input_layer.input_var.type() --> <TensorType(float64, matrix)>
         self._names_to_layers[name] = input_layer
 
     def _add_output(self, name, input_layer):
         """
         input_layer is a string, e.g. "dense1"
+        Note that this assumes that there is only one output.  Other outputs will be overridden.
         """
-        # input_layer = self._names_to_layers[input_layer]
-        prediction = lasagne.layers.get_output(input_layer)
+        self.network = self._names_to_layers[input_layer]
+        prediction = lasagne.layers.get_output(self.network)
         self.target_var = T.ivector('targets')
         #TODO: get this from self._architecture_dict["layers"]
         loss = lasagne.objectives.categorical_crossentropy(prediction, self.target_var)
-        loss = loss.mean()
-        self.outputs[name] = loss
+        self.loss = loss.mean()
+        # self.outputs[name] = loss
 
-    def _convert_layer_options(self, layer_options):
+    def _convert_layer_options(self, layer_options, layer_type):
         """
         takes a mapping of 
             parameter name: description of that parameter
@@ -156,10 +169,42 @@ class LoopyNetwork(AbstractLoopyNetwork):
 
         if "nonlinearity" in layer_options:
             nonlinearity = {"relu": lasagne.nonlinearities.rectify,
-            }[layer_options["nonlinearity"]]
+                            "softmax": lasagne.nonlinearities.softmax,
+                    }.get(layer_options["nonlinearity"], None)
+            assert nonlinearity is not None
+
             layer_options["nonlinearity"] = nonlinearity
 
-        self._initialize_params(layer_options)
+        # self._initialize_params(layer_options, layer_type)
+        
+
+    # def _initialize_params(self, layer_options, layer_type):
+    #     params_options = {}
+        if layer_type=="dense":
+            spec = {#TODO: expand to include all types
+                # Constant([val]) Initialize weights with constant value.
+                # Normal([std, mean]) Sample initial weights from the Gaussian distribution.
+                # Uniform([range, std, mean]) Sample initial weights from the uniform distribution.
+                # Glorot(initializer[, gain, c01b])   Glorot weight initialization.
+                # GlorotNormal([gain, c01b])  Glorot with weights sampled from the Normal distribution.
+                # GlorotUniform([gain, c01b]) Glorot with weights sampled from the Uniform distribution.
+                # He(initializer[, gain, c01b])   He weight initialization.
+                # HeNormal([gain, c01b])  He initializer with weights sampled from the Normal distribution.
+                # HeUniform([gain, c01b]) He initializer with weights sampled from the Uniform distribution.
+                # Orthogonal([gain])  Intialize weights as Orthogonal matrix.
+                # Sparse([sparsity, std]) Initialize weights as sparse matrix.            
+                "glorot_uniform": lasagne.init.GlorotUniform('relu')
+            }.get(layer_options["W"], None)
+            assert spec is not None
+
+            # W = lasagne.utils.create_param(spec, shape, name=None)
+            layer_options['W'] = spec
+            #TODO: change biases as well
+        else:
+            print "ajystvbkjdfhbvksuydbvwlrtv"*70
+            dfkdnfjvsndk
+
+        return layer_options
 
 
     def _add_layer(self, layer_dict, layer_name, input_layers, merge_mode=None, share_params_with=None):
@@ -171,13 +216,17 @@ class LoopyNetwork(AbstractLoopyNetwork):
         assert isinstance(input_layers, str) #TODO: remove after figuring out layers in lasagne
         
         layer_options = layer_dict["options"]
-        layer_options = self._convert_layer_options(layer_options)
+        layer_options = self._convert_layer_options(layer_options, layer_dict["type"])
         layer=None
 
         #===============================================================================
         # deal with parametere sharing
         if share_params_with is not None:
+            print self._names_to_layers[share_params_with].get_all_params()
+            layer_options["W"] = self._names_to_layers[share_params_with].W
+            layer_options["b"] = self._names_to_layers[share_params_with].b            
             layer_options.update(self.saved_params[share_params_with])
+
 
         #===============================================================================
         # layer-specific initializations
@@ -209,39 +258,14 @@ class LoopyNetwork(AbstractLoopyNetwork):
         return layer_name      
 
 
-    def _initialize_params(self, layer_options):
-        params_options = {}
-        if layer_options["type"]=="dense":
-            spec = {#TODO: expand to include all types
-                # Constant([val]) Initialize weights with constant value.
-                # Normal([std, mean]) Sample initial weights from the Gaussian distribution.
-                # Uniform([range, std, mean]) Sample initial weights from the uniform distribution.
-                # Glorot(initializer[, gain, c01b])   Glorot weight initialization.
-                # GlorotNormal([gain, c01b])  Glorot with weights sampled from the Normal distribution.
-                # GlorotUniform([gain, c01b]) Glorot with weights sampled from the Uniform distribution.
-                # He(initializer[, gain, c01b])   He weight initialization.
-                # HeNormal([gain, c01b])  He initializer with weights sampled from the Normal distribution.
-                # HeUniform([gain, c01b]) He initializer with weights sampled from the Uniform distribution.
-                # Orthogonal([gain])  Intialize weights as Orthogonal matrix.
-                # Sparse([sparsity, std]) Initialize weights as sparse matrix.            
-                "glorot_uniform": lasagne.init.GlorotUniform('relu')
-            }.get(layer_options["W"], None)
-            assert spec is not None
-
-            W = lasagne.utils.create_param(spec, shape, name=None)
-            params_options['W'] = W
-            #TODO: change biases as well
-        else:
-            print "ajystvbkjdfhbvksuydbvwlrtv"*70
-            dfkdnfjvsndk
-
 if __name__=="__main__":
-    model = LoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=3)
+    model = LoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=3, batch_size=1)
 
     print repr(model)
-    model.plot_model()
+    # model.plot_model()
     X_train = np.zeros((0,5))
-    y_train = np.zeros((0,2))
+    y_train_stacked = np.zeros((0,2))
+    y_train = np.zeros((0,1))
     with open("../data/toy_data_5d.txt", "r") as f:
         for line in f:
             splitline=line.split()
@@ -255,7 +279,12 @@ if __name__=="__main__":
             yi_expanded[0,yi] = 1.0
 
             X_train = np.vstack([X_train, xi])
-            y_train = np.vstack([y_train, yi_expanded])
+            y_train = np.vstack([y_train, yi])
+            y_train_stacked = np.vstack([y_train_stacked, yi_expanded])
+
+    X_train = X_train.astype(np.float32)
+    y_train = y_train.astype(np.int32)    
+    y_train = y_train[:, 0]
 
 
 
