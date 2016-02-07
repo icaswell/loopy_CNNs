@@ -3,7 +3,7 @@
 # @created: Jan 29 2016
 # 
 {
-"framework":"lasagne",
+"framework":"keras",
 
 "templates": 
 	{
@@ -36,7 +36,6 @@
 	"dense": 
 		{		
 		"W": "glorot_uniform",
-		"nonlinearity": "relu"
 
 
 

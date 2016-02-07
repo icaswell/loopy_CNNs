@@ -13,6 +13,7 @@
 
 #
 {
+"framework":"lasagne",
 #===============================================================================
 # templates: this is where you define the different types of layers your network 
 # will use.  Each template is required to have a "type" field.  The options may be 
@@ -48,7 +49,8 @@
 	"input":{"output_dim":374, "template": "input"},
 	"layer_1":{"output_dim":500, "template": "conv_1"},
 	"layer_2":{"output_dim":500, "template": "conv_1"}, 
-	"output":{"output_dim":10, "template": "dense"},
+	"layer_3":{"output_dim":10, "template": "dense"},
+	"layer_4":{"output_dim":10, "template": "dense"},	
 	#------------------------------------------------------------------------------
 	"loop_1.1":{"output_dim":500, "template": "conv_1"},
 
@@ -57,6 +59,8 @@
 	"loop_2.1":{"output_dim":500, "template": "conv_1", "init": "zero"},	
 	"loop_2.2":{"output_dim":500, "template": "conv_1", "init": "zero"},
 	},
+# defines which layers are to be used as outputs, and what cost is to be used with them.
+"outputs": {"layer_3": "mse"},
 #===============================================================================
 # the type must be one of the following:
 # 	"main" - a normal bit of architecture
@@ -66,7 +70,7 @@
 		  #and that there exists exactly one layer with output at the end of it.
 	{"main_stack": {
 		"type": "main",
-		"structure": ["input", "layer_1", "layer_2", "output"]
+		"structure": ["input", "layer_1", "layer_4", "layer_2", "layer_3"]
 		},
 	
 	# {"residual":
@@ -77,7 +81,7 @@
 		"type": "loop", 
 		# parser asserts that all loop layers have a composition_mode
 		"structure": ["layer_2", "loop_1.1", "layer_1"],
-		"composition_mode": "loop_composition"
+		"composition_mode": "mul"
 		},
 	"loop_2":{
 		"type": "loop", 
@@ -105,7 +109,7 @@
 		"activity_regularizer":None,
 		"W_constraint":None,
 		"b_constraint":None,
-		"input_dim":None,
+		# "input_dim":None,
 		},
 	"conv2d": # keras.layers.convolutional.Convolution2D(nb_filter,
 		{
