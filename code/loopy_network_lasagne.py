@@ -45,7 +45,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
         # unnecessary TODO: have input variable resized in train_model()?
         self.batch_size = batch_size
         self.outputs = {} # mapping from output layer name to the layer that it refers to.
-        # self.names_to_layers: a mapping of string (e.g. "layer_1_unroll=2") to a lasagne layer object
+        # self._names_to_layers: a mapping of string (e.g. "layer_1_unroll=2") to a lasagne layer object
         self._names_to_layers = {}
 
         self._build_architecture(self.architecture_dict)
@@ -55,6 +55,10 @@ class LoopyNetwork(AbstractLoopyNetwork):
         """
         """
         #--------------------------------------------------------------------------------------------------
+        N = X_train.shape[0]
+        if N%self.batch_size:
+            print "Warning: batchsize (%s) does not modulo evenly into number of training examples(%s).  %s training examples are being ignored:"%(self.batch_size, N, N - self.batch_size*(N/self.batch_size))
+
         network = self.network
         loss = self.loss
         # network = self.outputs.values()[1]
@@ -81,7 +85,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
             train_batches = 0
             start_time = time.time()
             #TODO: nee to modify al layer adding to take into account batches????
-            for batch in self._iterate_minibatches(X_train, y_train, 1, shuffle=True):
+            for batch in self._iterate_minibatches(X_train, y_train, self.batch_size, shuffle=True):
                 inputs, targets = batch
                 train_err += train_fn(inputs, targets)
                 train_batches += 1
@@ -121,6 +125,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
         order = range(N)
         if shuffle:
             np.random.shuffle(order)
+
         for i in range(N/batchsize):
             batch_idx = order[i:i + batchsize]
             yield X[batch_idx], y[batch_idx]
@@ -158,6 +163,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
         to
             "nonlinearity": lasagne.nonlinearities.rectify
         """
+
         parameter_name_mapping = {
                 "activation": "nonlinearity"
         }
@@ -171,9 +177,9 @@ class LoopyNetwork(AbstractLoopyNetwork):
             nonlinearity = {"relu": lasagne.nonlinearities.rectify,
                             "softmax": lasagne.nonlinearities.softmax,
                     }.get(layer_options["nonlinearity"], None)
-            assert nonlinearity is not None
-
-            layer_options["nonlinearity"] = nonlinearity
+            # assert nonlinearity is not None
+            if nonlinearity is not None:
+                layer_options["nonlinearity"] = nonlinearity
 
         # self._initialize_params(layer_options, layer_type)
         
@@ -195,10 +201,10 @@ class LoopyNetwork(AbstractLoopyNetwork):
                 # Sparse([sparsity, std]) Initialize weights as sparse matrix.            
                 "glorot_uniform": lasagne.init.GlorotUniform('relu')
             }.get(layer_options["W"], None)
-            assert spec is not None
-
-            # W = lasagne.utils.create_param(spec, shape, name=None)
-            layer_options['W'] = spec
+            # assert spec is not None
+            if nonlinearity is not None:
+                # W = lasagne.utils.create_param(spec, shape, name=None)
+                layer_options['W'] = spec
             #TODO: change biases as well
         else:
             print "ajystvbkjdfhbvksuydbvwlrtv"*70
@@ -206,6 +212,17 @@ class LoopyNetwork(AbstractLoopyNetwork):
 
         return layer_options
 
+    def _add_merge_layer(self, layer_name, input_layers):
+        """
+        TODO: theoretically it would be nice to be able to specify that the mode
+        is not just multiplication, but alas time is finite
+        """
+        merged_name = "\prod {%s}"%input_layers
+        layer = lasagne.layers.ElemwiseMergeLayer(incomings=[self._names_to_layers[name] for name in input_layers],
+                                                    merge_function=T.mul,
+                                                    name=merged_name)
+        self._names_to_layers[merged_name] = layer
+        return merged_name
 
     def _add_layer(self, layer_dict, layer_name, input_layers, merge_mode=None, share_params_with=None):
         """
@@ -213,19 +230,23 @@ class LoopyNetwork(AbstractLoopyNetwork):
             some loop input), all incoming acivations are merged via merge_mode.
         """
         layer_dict = dict(layer_dict)
-        assert isinstance(input_layers, str) #TODO: remove after figuring out layers in lasagne
+        # assert isinstance(input_layers, str) #TODO: remove after figuring out layers in lasagne
+        if isinstance(input_layers, list):
+            input_layers = self._add_merge_layer(layer_name, input_layers)
         
         layer_options = layer_dict["options"]
+        pprint(locals())
+        #TODO: this shouold be done higher up.  this function is called many times successively.
         layer_options = self._convert_layer_options(layer_options, layer_dict["type"])
         layer=None
 
         #===============================================================================
         # deal with parametere sharing
         if share_params_with is not None:
-            print self._names_to_layers[share_params_with].get_all_params()
+            # print dir(self._names_to_layers[share_params_with])
+            print self._names_to_layers[share_params_with].get_params()
             layer_options["W"] = self._names_to_layers[share_params_with].W
             layer_options["b"] = self._names_to_layers[share_params_with].b            
-            layer_options.update(self.saved_params[share_params_with])
 
 
         #===============================================================================
@@ -259,7 +280,8 @@ class LoopyNetwork(AbstractLoopyNetwork):
 
 
 if __name__=="__main__":
-    model = LoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=3, batch_size=1)
+    # model = LoopyNetwork(architecture_fpath="../architectures/toy_loopy_mlp_lasagne_config.py", n_unrolls=1, batch_size=1)
+    model = LoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=1, batch_size=24)    
 
     print repr(model)
     # model.plot_model()
@@ -288,4 +310,4 @@ if __name__=="__main__":
 
 
 
-    model.train_model(X_train, y_train, n_epochs=1000)
+    model.train_model(X_train, y_train, n_epochs=10)
