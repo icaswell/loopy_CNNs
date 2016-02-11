@@ -47,6 +47,8 @@ def sanity_check(architecture):
 
 	for layer_name, layer in architecture["layers"].items():
 		assert layer_name in all_used_layers
+
+	#TODO: assert that the top layer has softmax nonlinearity on it, or at least give big warning
 	print "Good job.  You have followed directions.  Asserter passes."
 
 if __name__=="__main__":

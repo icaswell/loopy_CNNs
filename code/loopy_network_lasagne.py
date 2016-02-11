@@ -28,6 +28,7 @@ import theano.tensor as T
 import lasagne
 
 from abstract_loopy_network import AbstractLoopyNetwork
+import util
 
 
 class LoopyNetwork(AbstractLoopyNetwork):
@@ -76,6 +77,8 @@ class LoopyNetwork(AbstractLoopyNetwork):
 
         input_var = self._names_to_layers["input"].input_var
         train_fn = theano.function([input_var, self.target_var], loss, updates=updates)
+        # train_updates_W1 = theano.function([input_var, self.target_var], updates[self._names_to_layers["layer_1"].W])
+        # train_updates_top_W = theano.function([input_var, self.target_var], updates[self._names_to_layers["top_layer"].W])        
         val_fn = theano.function([input_var, self.target_var], [test_loss, test_acc])
 
 
@@ -86,7 +89,11 @@ class LoopyNetwork(AbstractLoopyNetwork):
             start_time = time.time()
             #TODO: nee to modify al layer adding to take into account batches????
             for batch in self._iterate_minibatches(X_train, y_train, self.batch_size, shuffle=True):
+
                 inputs, targets = batch
+                # self._print_activations(input_var, inputs)
+                # print train_updates_W1(inputs, targets)
+                # print train_updates_top_W(inputs, targets)
                 train_err += train_fn(inputs, targets)
                 train_batches += 1
 
@@ -109,9 +116,16 @@ class LoopyNetwork(AbstractLoopyNetwork):
             # print("  validation loss:\t\t{:.6f}".format(val_err / val_batches))
             # print("  validation accuracy:\t\t{:.2f} %".format(
                 # val_acc / val_batches * 100))
- 
-    def classify_batch(self):
-        pass
+    
+    def _print_activations(self, input_var, x_minibatch):
+        # print lasagne.layers.get_all_layers(self.network)
+        print '-'*80
+        print "all layer activations:"
+        for layer_name, layer in self._names_to_layers.items():
+            self._debug_print("activation for %s:"%layer_name, 0)
+            activation = lasagne.layers.get_output(layer).eval({input_var:x_minibatch})
+            util.print_matrix(activation, newline=False, color = self.debug_colors[1])
+
 
     #===============================================================================
     # private functions
@@ -139,7 +153,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
 
     def _add_output(self, name, input_layer):
         """
-        input_layer is a string, e.g. "dense1"
+        input_layer is a string, e.g. "top_layer" or "dense5"
         Note that this assumes that there is only one output.  Other outputs will be overridden.
         """
         self.network = self._names_to_layers[input_layer]
@@ -181,6 +195,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
             if nonlinearity is not None:
                 layer_options["nonlinearity"] = nonlinearity
 
+
         # self._initialize_params(layer_options, layer_type)
         
 
@@ -202,7 +217,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
                 "glorot_uniform": lasagne.init.GlorotUniform('relu')
             }.get(layer_options["W"], None)
             # assert spec is not None
-            if nonlinearity is not None:
+            if spec is not None:
                 # W = lasagne.utils.create_param(spec, shape, name=None)
                 layer_options['W'] = spec
             #TODO: change biases as well
@@ -230,21 +245,22 @@ class LoopyNetwork(AbstractLoopyNetwork):
             some loop input), all incoming acivations are merged via merge_mode.
         """
         layer_dict = dict(layer_dict)
+        print layer_dict
         # assert isinstance(input_layers, str) #TODO: remove after figuring out layers in lasagne
         if isinstance(input_layers, list):
             input_layers = self._add_merge_layer(layer_name, input_layers)
+
         
         layer_options = layer_dict["options"]
-        pprint(locals())
         #TODO: this shouold be done higher up.  this function is called many times successively.
         layer_options = self._convert_layer_options(layer_options, layer_dict["type"])
         layer=None
 
         #===============================================================================
-        # deal with parametere sharing
+        # deal with parametere sharing among equivalent layers in an unroll
         if share_params_with is not None:
             # print dir(self._names_to_layers[share_params_with])
-            print self._names_to_layers[share_params_with].get_params()
+            # print self._names_to_layers[share_params_with].get_params()
             layer_options["W"] = self._names_to_layers[share_params_with].W
             layer_options["b"] = self._names_to_layers[share_params_with].b            
 
@@ -258,7 +274,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
             # layer = keras.layers.convolutional.Convolution2D(nb_filter, nb_row, nb_col, **layer_options)
         elif layer_dict["type"]=="dense":
             dim  = layer_dict["output_dim"]
-            # del layer_options["output_dim"]
+
             layer = lasagne.layers.DenseLayer(
                         self._names_to_layers[input_layers], 
                         name = layer_name,
@@ -280,8 +296,8 @@ class LoopyNetwork(AbstractLoopyNetwork):
 
 
 if __name__=="__main__":
-    # model = LoopyNetwork(architecture_fpath="../architectures/toy_loopy_mlp_lasagne_config.py", n_unrolls=1, batch_size=1)
-    model = LoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=1, batch_size=24)    
+    model = LoopyNetwork(architecture_fpath="../architectures/toy_loopy_mlp_lasagne_config.py", n_unrolls=1, batch_size=1)
+    # model = LoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=1, batch_size=24)    
 
     print repr(model)
     # model.plot_model()
@@ -310,4 +326,4 @@ if __name__=="__main__":
 
 
 
-    model.train_model(X_train, y_train, n_epochs=10)
+    model.train_model(X_train, y_train, n_epochs=3)
