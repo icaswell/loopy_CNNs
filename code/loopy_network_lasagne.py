@@ -66,7 +66,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
         params = lasagne.layers.get_all_params(network, trainable=True)
         #NOTE: assumes only one output
         #TODO: specify learning_rate and momentum elsewhere
-        updates = lasagne.updates.nesterov_momentum(loss, params, learning_rate=0.01, momentum=0.9)
+        updates = lasagne.updates.nesterov_momentum(loss, params, learning_rate=0.001, momentum=0.9)
 
         test_prediction = lasagne.layers.get_output(network, deterministic=True)
 
@@ -145,7 +145,9 @@ class LoopyNetwork(AbstractLoopyNetwork):
             yield X[batch_idx], y[batch_idx]
 
     def _add_input(self, name, input_shape):
-        input_shape = self.batch_size, input_shape
+        if not hasattr(input_shape, "__iter__"):
+            input_shape = [input_shape]
+        input_shape = tuple([self.batch_size] + list(input_shape))
         input_layer = lasagne.layers.InputLayer(shape=input_shape,
                                     input_var=None)
         # print input_layer.input_var.type() --> <TensorType(float64, matrix)>
@@ -201,7 +203,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
 
     # def _initialize_params(self, layer_options, layer_type):
     #     params_options = {}
-        if layer_type=="dense":
+        if layer_type=="dense" or layer_type=="conv2d":
             spec = {#TODO: expand to include all types
                 # Constant([val]) Initialize weights with constant value.
                 # Normal([std, mean]) Sample initial weights from the Gaussian distribution.
@@ -245,7 +247,6 @@ class LoopyNetwork(AbstractLoopyNetwork):
             some loop input), all incoming acivations are merged via merge_mode.
         """
         layer_dict = dict(layer_dict)
-        print layer_dict
         # assert isinstance(input_layers, str) #TODO: remove after figuring out layers in lasagne
         if isinstance(input_layers, list):
             input_layers = self._add_merge_layer(layer_name, input_layers)
@@ -257,7 +258,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
         layer=None
 
         #===============================================================================
-        # deal with parametere sharing among equivalent layers in an unroll
+        # deal with parameter sharing among equivalent layers in an unroll
         if share_params_with is not None:
             # print dir(self._names_to_layers[share_params_with])
             # print self._names_to_layers[share_params_with].get_params()
@@ -268,10 +269,11 @@ class LoopyNetwork(AbstractLoopyNetwork):
         #===============================================================================
         # layer-specific initializations
         if layer_dict["type"]=="conv2d":
-            #TODO: remove below
-            RaiseError()
-            # nb_filter, nb_row, nb_col = 3,3,3
-            # layer = keras.layers.convolutional.Convolution2D(nb_filter, nb_row, nb_col, **layer_options)
+            print layer_options
+            layer = lasagne.layers.Conv2DLayer(
+                        self._names_to_layers[input_layers], 
+                        name = layer_name,
+                        **layer_options )
         elif layer_dict["type"]=="dense":
             dim  = layer_dict["output_dim"]
 
@@ -294,9 +296,19 @@ class LoopyNetwork(AbstractLoopyNetwork):
         self._names_to_layers[layer_name] = layer
         return layer_name      
 
+def _make_1d_data_into_fake_image_volume(X):
+    N, D = X.shape
+    C = 3
+    fake_volume = np.zeros((N, C, D, D))
+    for i in range(N):
+        for j in range(C):
+            fake_volume[i, j, :, :] = np.outer(X[i,:], X[i,:])
+    return fake_volume
+
 
 if __name__=="__main__":
-    model = LoopyNetwork(architecture_fpath="../architectures/toy_loopy_mlp_lasagne_config.py", n_unrolls=1, batch_size=1)
+    model = LoopyNetwork(architecture_fpath="../architectures/toy_loopy_cnn_lasagne_config.py", n_unrolls=1, batch_size=1)
+    # model = LoopyNetwork(architecture_fpath="../architectures/toy_loopy_mlp_lasagne_config.py", n_unrolls=3, batch_size=1)    
     # model = LoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=1, batch_size=24)    
 
     print repr(model)
@@ -321,9 +333,10 @@ if __name__=="__main__":
             y_train_stacked = np.vstack([y_train_stacked, yi_expanded])
 
     X_train = X_train.astype(np.float32)
+    X_train = _make_1d_data_into_fake_image_volume(X_train)
     y_train = y_train.astype(np.int32)    
     y_train = y_train[:, 0]
 
 
 
-    model.train_model(X_train, y_train, n_epochs=3)
+    model.train_model(X_train, y_train, n_epochs=500)
