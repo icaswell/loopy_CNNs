@@ -52,7 +52,10 @@ class LoopyNetwork(AbstractLoopyNetwork):
         self._build_architecture(self.architecture_dict)
 
         
-    def train_model(self, X_train, y_train, n_epochs=10):
+    def train_model(self, X_train, y_train, X_val, y_val, n_epochs=10, 
+                            check_error_n_batches=20,
+                            get_validation_stats=True, #this will make it run a little more slowly
+                            ):
         """
         """
         #--------------------------------------------------------------------------------------------------
@@ -66,10 +69,10 @@ class LoopyNetwork(AbstractLoopyNetwork):
         params = lasagne.layers.get_all_params(network, trainable=True)
         #NOTE: assumes only one output
         #TODO: specify learning_rate and momentum elsewhere
+
         updates = lasagne.updates.nesterov_momentum(loss, params, learning_rate=0.001, momentum=0.9)
 
         test_prediction = lasagne.layers.get_output(network, deterministic=True)
-
         test_loss = lasagne.objectives.categorical_crossentropy(test_prediction, self.target_var)
         test_loss = test_loss.mean()
         test_acc = T.mean(T.eq(T.argmax(test_prediction, axis=1), self.target_var),
@@ -77,48 +80,67 @@ class LoopyNetwork(AbstractLoopyNetwork):
 
         input_var = self._names_to_layers["input"].input_var
         train_fn = theano.function([input_var, self.target_var], loss, updates=updates)
-        # train_updates_W1 = theano.function([input_var, self.target_var], updates[self._names_to_layers["layer_1"].W])
-        # train_updates_top_W = theano.function([input_var, self.target_var], updates[self._names_to_layers["top_layer"].W])        
         val_fn = theano.function([input_var, self.target_var], [test_loss, test_acc])
+
+        #===============================================================================
+        # history: 
+        performance_history = {
+            "train_acc":[0],   
+            "train_loss":[0],
+            "valid_acc":[0],
+            "valid_loss":[0],            
+        }
+
+        batches_since_last_check = 0
 
 
         for epoch in range(n_epochs):
             # In each epoch, we do a full pass over the training data:
-            train_err = 0
-            train_batches = 0
+            train_loss = 0
+            # train_batches = 0
             start_time = time.time()
             #TODO: nee to modify al layer adding to take into account batches????
-            for batch in self._iterate_minibatches(X_train, y_train, self.batch_size, shuffle=True):
+            for train_batch_i, batch in enumerate(self._iterate_minibatches(X_train, y_train, self.batch_size, shuffle=True)):
 
                 inputs, targets = batch
                 # self._print_activations(input_var, inputs)
                 # print train_updates_W1(inputs, targets)
                 # print train_updates_top_W(inputs, targets)
-                train_err += train_fn(inputs, targets)
-                train_batches += 1
+                batch_loss = train_fn(inputs, targets)
+                train_loss += batch_loss
+                # train_batches += 1
 
-            # TODO: uncomment below!
+                #===============================================================================
+                # populate performance_history:
+                performance_history["train_loss"][-1] += batch_loss
+
+                if (train_batch_i +1)%check_error_n_batches == 0:
+                    performance_history["train_loss"][-1] /= check_error_n_batches
+                    performance_history["train_loss"].append(0)
+
+ 
             # And a full pass over the validation data:
-            # val_err = 0
-            # val_acc = 0
-            # val_batches = 0
-            # for batch in iterate_minibatches(X_val, y_val, 500, shuffle=False):
-            #     inputs, targets = batch
-            #     err, acc = val_fn(inputs, targets)
-            #     val_err += err
-            #     val_acc += acc
-            #     val_batches += 1
+            val_loss = 0
+            val_acc = 0
+            val_batches = 0
+            for batch in self._iterate_minibatches(X_val, y_val, self.batch_size, shuffle=False):
+                inputs, targets = batch
+                batch_err, batch_acc = val_fn(inputs, targets)
+                val_loss += batch_err
+                val_acc += batch_acc
+                val_batches += 1
 
             # Then we print the results for this epoch:
             if 1:
                 print("Epoch {} of {} took {:.3f}s".format(
                     epoch + 1, n_epochs, time.time() - start_time))
-                print("  training loss:\t\t{:.6f}".format(train_err / train_batches))
-                # print("  validation loss:\t\t{:.6f}".format(val_err / val_batches))
-                # print("  validation accuracy:\t\t{:.2f} %".format(
-                    # val_acc / val_batches * 100))
+                print("  training loss:\t\t{:.6f}".format(train_loss / train_batch_i)) #implicitly relies on python scoping, maybe not good style
+                print("  validation loss:\t\t{:.6f}".format(val_loss / val_batches))
+                print("  validation accuracy:\t\t{:.2f} %".format(
+                    val_acc / val_batches * 100))
             else:
-                print "Epoch {} of {} ({:.3f}s) training loss:\t\t{:.6f}                        \r".format(epoch + 1, n_epochs, time.time() - start_time, train_err / train_batches),
+                print "Epoch {} of {} ({:.3f}s) training loss:\t\t{:.6f}                        \r".format(epoch + 1, n_epochs, time.time() - start_time, train_loss / train_batches),
+        return performance_history
 
     
     def _print_activations(self, input_var, x_minibatch):
@@ -317,7 +339,7 @@ def _make_1d_data_into_fake_image_volume(X):
 
 
 if __name__=="__main__":
-    model = LoopyNetwork(architecture_fpath="../architectures/toy_loopy_cnn_lasagne_config.py", n_unrolls=2, batch_size=5)
+    model = LoopyNetwork(architecture_fpath="../architectures/toy_loopy_cnn_lasagne_config.py", n_unrolls=2, batch_size=2)
     # model = LoopyNetwork(architecture_fpath="../architectures/toy_loopy_mlp_lasagne_config.py", n_unrolls=3, batch_size=1)    
     # model = LoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=1, batch_size=24)    
 
@@ -347,4 +369,11 @@ if __name__=="__main__":
     y_train = y_train.astype(np.int32)    
     y_train = y_train[:, 0]
 
-    model.train_model(X_train, y_train, n_epochs=500)
+
+    X_val = X_train
+    y_val = y_train.copy()
+    y_val[0:7] = 0
+
+
+    history = model.train_model(X_train, y_train, X_val, y_val, n_epochs=10)
+    print history
