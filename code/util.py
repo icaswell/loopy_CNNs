@@ -79,8 +79,7 @@ def plot_loss_acc(losses, train_accs, val_accs, xlabel, attributes):
         tl.set_color('r')
 
     plt.legend(handles=[losses_line, train_accs_line, val_accs_line],bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=2, mode="expand")
-
-    plt.show()
+    
     figure_filename = '../results/loss_plots/' + descriptive_filename(attributes, extension = '.png')
     fig.savefig(figure_filename)
 
