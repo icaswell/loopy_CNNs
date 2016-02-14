@@ -5,7 +5,7 @@
 # @author: Isaac Caswell
 # @created: 21 February 2015
 # File: util.py
-# @author: Isaac Caswell
+# @author: Isaac Caswell, Lisa Wang
 #===============================================================================
 # DESCRIPTION:
 #
@@ -41,6 +41,48 @@ import hashlib
 
 #-----------------------------------------------------------------------------------------            
 
+
+def plot_loss_acc(losses, train_accs, val_accs, xlabel, attributes):   
+    """
+    This function plots the loss, the train accuracies and the validation
+    accuracies. losses, train_accs and val_accs are expected to be lists of 
+    the same length.
+    Input:
+
+    -   losses:list of losses
+    -   train_accs: list of train accuracies
+    -   val_accs: list of validation accuracies
+    -   xlabel: string describing what the label of the x axis should be
+    -   attributes: a dictionary containing the attributes describing the
+        data set, hyperparameters and other factors pertaining to this
+        particular run. 
+        E.g.
+            -   lr: learning rate 
+            -   rg: regularization strength 
+            -   ep: number of epochs
+            -   data_set_name: a string with the name of the dataset
+    """
+    fig = plt.figure()
+    ax1 = fig.add_subplot(111)
+    train_accs_line, = ax1.plot(xrange(len(train_accs)), train_accs, 'b-', label='train accuracies')
+    val_accs_line, = ax1.plot(xrange(len(val_accs)), val_accs, 'g-', label='val accuracies')
+
+    ax1.set_ylabel('accuracies', color='b')
+    ax1.set_xlabel(x_unit)
+    for tl in ax1.get_yticklabels():
+        tl.set_color('b')
+
+    ax2 = ax1.twinx()
+    losses_line, = ax2.plot(xrange(len(losses)), losses, 'r-', label='losses')
+    ax2.set_ylabel('losses', color='r')
+    for tl in ax2.get_yticklabels():
+        tl.set_color('r')
+
+    plt.legend(handles=[losses_line, train_accs_line, val_accs_line],bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=2, mode="expand")
+
+    plt.show()
+    figure_filename = '../results/loss_plots/' + descriptive_filename(attributes, extension = '.png')
+    fig.savefig(figure_filename)
 
 def colorprint(message, color="rand", newline=True):
     """
