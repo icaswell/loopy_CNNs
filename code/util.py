@@ -89,7 +89,7 @@ def colorprint(message, color="rand", newline=True):
         print '\n',
 
 
-def print_matrix(mat, delimitor="\t", precision=3, color="bare", newline=True):
+def print_matrix(mat, delimitor="\t", precision=3, color="bare", newline=False):
     """
     prints the elements in a matrix in a nice way!
     """

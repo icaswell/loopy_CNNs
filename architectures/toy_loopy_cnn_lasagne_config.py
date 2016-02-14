@@ -10,6 +10,7 @@
 	{
 	"input": {"type": "input"},
 	"conv": {"type": "conv2d", "W": "glorot_uniform"},
+	"pool": {"type": "pool2d", "pool_size":2},
 	"dense": {"type": "dense", "W": "glorot_uniform"},
 	},
 
@@ -21,6 +22,7 @@
 	"input":{"output_dim":(3,5,5), "template": "input"},
 	"layer_1":{"num_filters":4, "template": "conv"},
 	"layer_2":{"num_filters":7, "template": "conv"},
+	"layer_2_pool":{"template": "pool"},
 	# "layer_3":{"num_filters":6, "template": "conv"},
 	
 	# "loop_layer_1":{"output_dim":11, "template": "conv"},
@@ -34,7 +36,7 @@
 	{
 	"main_stack": {
 		"type": "main",
-		"structure": ["input", "layer_1", "layer_2", "top_layer"]
+		"structure": ["input", "layer_1", "layer_2", "layer_2_pool", "top_layer"]
 		},
 	# "loop-1": {
 	# 	"type": "loop",
@@ -62,7 +64,12 @@
 		"filter_size": 3,
 		"pad": 1,
 		"nonlinearity": "relu"
-		},			
+		},
+
+		# class lasagne.layers.MaxPool2DLayer(incoming, pool_size, stride=None, pad=(0, 0), ignore_border=True, **kwargs)[source]	
+	"pool2d":
+		{
+		}
 	}
 }
 

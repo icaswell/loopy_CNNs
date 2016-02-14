@@ -242,7 +242,8 @@ class AbstractLoopyNetwork():
                 "input": 93,
                 "conv2d": 96,
                 "dense": 97,
-                "output": 98,   
+                "output": 98,  
+                "pool2d": 92, 
         }
         self.description = "LoopyCNN instance with the following hyperparameters, layers and loops:"
         self.description += "\033[%sm"%title_color + "\nHYPERPARAMETERS:" + '\033[0m'
@@ -260,6 +261,8 @@ class AbstractLoopyNetwork():
                 layer_desc = layer_name
                 if layer["type"] == "conv2d":
                     layer_desc += " [%s layer; num_filters=%s]"%(layer["type"], layer["num_filters"])
+                elif layer["type"] == "pool2d":
+                    layer_desc += " [pooling layer]" 
                 else:
                     layer_desc += " [%s layer; output_dim=%s]"%(layer["type"], layer["output_dim"])                    
                 layer_color = layer_colors[layer["type"]]

@@ -223,6 +223,8 @@ class LoopyNetwork(AbstractLoopyNetwork):
                 # W = lasagne.utils.create_param(spec, shape, name=None)
                 layer_options['W'] = spec
             #TODO: change biases as well
+        elif layer_type=="pool2d":
+            pass #there are no parameters to initialize
         else:
             print "ajystvbkjdfhbvksuydbvwlrtv"*70
             dfkdnfjvsndk
@@ -283,6 +285,10 @@ class LoopyNetwork(AbstractLoopyNetwork):
                         num_units=dim,
                         **layer_options 
                     )
+        elif layer_dict["type"]=="pool2d":
+            layer = lasagne.layers.MaxPool2DLayer(self._names_to_layers[input_layers], 
+                                                **layer_options
+                                                )  
         else:
             print "ur sol"
             RaiseError()
