@@ -14,7 +14,7 @@ def sanity_check(architecture):
 	assert architecture["framework"] in ["keras", "lasagne"]
 	for t_name, template in architecture['templates'].items():
 		assert "type" in template
-		assert template["type"] in ["conv2d", "dense", "dropout", "input"]
+		assert template["type"] in ["conv2d", "dense", "dropout", "input", "pool2d"]
 
 	assert "input" in architecture["layers"]
 	# assert "output" in architecture["layers"]

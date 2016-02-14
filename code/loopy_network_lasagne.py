@@ -110,12 +110,16 @@ class LoopyNetwork(AbstractLoopyNetwork):
             #     val_batches += 1
 
             # Then we print the results for this epoch:
-            print("Epoch {} of {} took {:.3f}s".format(
-                epoch + 1, n_epochs, time.time() - start_time))
-            print("  training loss:\t\t{:.6f}".format(train_err / train_batches))
-            # print("  validation loss:\t\t{:.6f}".format(val_err / val_batches))
-            # print("  validation accuracy:\t\t{:.2f} %".format(
-                # val_acc / val_batches * 100))
+            if 1:
+                print("Epoch {} of {} took {:.3f}s".format(
+                    epoch + 1, n_epochs, time.time() - start_time))
+                print("  training loss:\t\t{:.6f}".format(train_err / train_batches))
+                # print("  validation loss:\t\t{:.6f}".format(val_err / val_batches))
+                # print("  validation accuracy:\t\t{:.2f} %".format(
+                    # val_acc / val_batches * 100))
+            else:
+                print "Epoch {} of {} ({:.3f}s) training loss:\t\t{:.6f}                        \r".format(epoch + 1, n_epochs, time.time() - start_time, train_err / train_batches),
+
     
     def _print_activations(self, input_var, x_minibatch):
         # print lasagne.layers.get_all_layers(self.network)
@@ -313,7 +317,7 @@ def _make_1d_data_into_fake_image_volume(X):
 
 
 if __name__=="__main__":
-    model = LoopyNetwork(architecture_fpath="../architectures/toy_loopy_cnn_lasagne_config.py", n_unrolls=1, batch_size=1)
+    model = LoopyNetwork(architecture_fpath="../architectures/toy_loopy_cnn_lasagne_config.py", n_unrolls=2, batch_size=5)
     # model = LoopyNetwork(architecture_fpath="../architectures/toy_loopy_mlp_lasagne_config.py", n_unrolls=3, batch_size=1)    
     # model = LoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=1, batch_size=24)    
 
@@ -342,7 +346,5 @@ if __name__=="__main__":
     X_train = _make_1d_data_into_fake_image_volume(X_train)
     y_train = y_train.astype(np.int32)    
     y_train = y_train[:, 0]
-
-
 
     model.train_model(X_train, y_train, n_epochs=500)
