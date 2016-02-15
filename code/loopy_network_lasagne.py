@@ -52,7 +52,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
         self._build_architecture(self.architecture_dict)
 
         
-    def error_on_whole_set(self, X, y):
+    def performance_on_whole_set(self, X, y):
         """
         because the batch size is part of the architecture, we can't get the error all in one go.
         Therefore, we have to aggregate it over all the minibatches in something.
@@ -68,7 +68,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
             loss += batch_loss
             acc += batch_acc
 
-        return loss/batch_i, batch_acc/batch_i
+        return loss/(batch_i +1), acc/(batch_i+1)
 
       
     def train_model(self, X_train, y_train, X_val, y_val, n_epochs=10, 
@@ -107,11 +107,11 @@ class LoopyNetwork(AbstractLoopyNetwork):
         # history: 
         performance_history = {
             "batchly_train_loss": [0],
-            "cumulative_train_loss": [0],
-            "full_train_loss": [0],
-            "full_train_acc": [0],
-            "valid_loss": [0],
-            "valid_acc": [0],
+            "cumulative_train_loss": [],
+            "full_train_loss": [],
+            "full_train_acc": [],
+            "valid_loss": [],
+            "valid_acc": [],
         }
 
         batches_since_last_check = 0
@@ -123,7 +123,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
             # train_batches = 0
             start_time = time.time()
             #TODO: nee to modify al layer adding to take into account batches????
-            for train_batch_i, batch in enumerate(self._iterate_minibatches(X_train, y_train, self.batch_size, shuffle=True)):
+            for train_batch_i, batch in enumerate(self._iterate_minibatches(X_train, y_train, self.batch_size, shuffle=False)):
 
                 inputs, targets = batch
                 # self._print_activations(input_var, inputs)
@@ -138,45 +138,36 @@ class LoopyNetwork(AbstractLoopyNetwork):
                 performance_history["batchly_train_loss"][-1] += batch_loss
                 if (train_batch_i +1)%check_error_n_batches == 0:
                     performance_history["batchly_train_loss"][-1] /= check_error_n_batches
-                    performance_history["cumulative_train_loss"][-1] = train_loss/train_batch_i
-
                     performance_history["batchly_train_loss"].append(0)
-                    performance_history["cumulative_train_loss"].append(0)
+                    performance_history["cumulative_train_loss"].append(train_loss/train_batch_i)
 
                     if use_expensive_stats:
-                        valid_loss, valid_acc = self.error_on_whole_set(X_val, y_val)
-                        full_train_loss, full_train_acc = self.error_on_whole_set(X_train, y_train)                        
-                        performance_history["valid_loss"][-1] = valid_loss
-                        performance_history["valid_acc"][-1] = valid_acc
-
-                        performance_history["full_train_loss"][-1] = full_train_loss
-                        performance_history["full_train_acc"][-1] = full_train_acc
-
-                        performance_history["valid_loss"].append(0)
-                        performance_history["valid_acc"].append(0)
-
-                        performance_history["full_train_loss"].append(0)
-                        performance_history["full_train_acc"].append(0)
+                        valid_loss, valid_acc = self.performance_on_whole_set(X_val, y_val)
+                        full_train_loss, full_train_acc = self.performance_on_whole_set(X_train, y_train)                        
+                        performance_history["valid_loss"].append(valid_loss)
+                        performance_history["valid_acc"].append(valid_acc)
+                        performance_history["full_train_loss"].append(full_train_loss)
+                        performance_history["full_train_acc"].append(full_train_acc)
 
  
             # And a full pass over the validation data:
-            # val_loss = 0
-            # val_acc = 0
-            # for val_batch_i in self._iterate_minibatches(X_val, y_val, self.batch_size, shuffle=False):
-            #     inputs, targets = batch
-            #     batch_loss, batch_acc = val_fn(inputs, targets)
-            #     val_loss += batch_loss
-            #     val_acc += batch_acc
-            #     val_batches += 1
+            val_loss = 0
+            val_acc = 0
+            for val_batch_i, batch in enumerate(self._iterate_minibatches(X_val, y_val, self.batch_size, shuffle=False)):
+                inputs, targets = batch
+                batch_loss, batch_acc = self.val_fn(inputs, targets)
+                val_loss += batch_loss
+                val_acc += batch_acc
 
             # Then we print the results for this epoch:
+            print val_loss
+            print val_batch_i
             if 1:
                 print("Epoch {} of {} took {:.3f}s".format(
                     epoch + 1, n_epochs, time.time() - start_time))
-                print("  training loss:\t\t{:.6f}".format(train_loss / train_batch_i)) #implicitly relies on python scoping, maybe not good style
-                # print("  validation loss:\t\t{:.6f}".format(val_loss / val_batche_i))
-                # print("  validation accuracy:\t\t{:.2f} %".format(
-                    # val_acc / val_batches * 100))
+                print("  training loss:\t\t{:.6f}".format(train_loss / (train_batch_i+1))) #implicitly relies on python scoping, maybe not good style
+                print("  validation loss:\t\t{:.6f}".format(val_loss / (val_batch_i +1)))
+                print("  validation accuracy:\t\t{:.2f} %".format(val_acc / val_batch_i))
             else:
                 print "Epoch {} of {} ({:.3f}s) training loss:\t\t{:.6f}                        \r".format(epoch + 1, n_epochs, time.time() - start_time, train_loss / train_batches),
         return performance_history
@@ -414,5 +405,7 @@ if __name__=="__main__":
     y_val[0:6] = 0
 
 
-    history = model.train_model(X_train, y_train, X_val, y_val, n_epochs=10)
-    pprint(history)
+    check_error_n_batches = 2
+    history = model.train_model(X_train, y_train, X_val, y_val, n_epochs=50, check_error_n_batches=check_error_n_batches)
+
+    util.plot_loss_acc(history["full_train_loss"], history["full_train_acc"], history["valid_acc"], "batches*%s"%check_error_n_batches, attributes={"lol": 3})
