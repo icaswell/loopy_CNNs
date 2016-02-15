@@ -1,3 +1,7 @@
+Authors:
+--------
+Isaac Caswell, Chuanqi Shen, Lisa Wang
+
 Overview of the folders:
 ========================
 
@@ -26,6 +30,10 @@ A series of dated text files concisely summarizing results from different runs
 saved_models
 ------------
 This contains various checkpoints and saved models from during the training process.  They contain saved parameters and information about the run (how long it took to train, when it was trained, etc.), and a link to the architecture config file
+
+shellscripts
+------------
+Contains a collection of shellscripts, e.g. to download data.
 
 writeup
 ---------
