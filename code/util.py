@@ -72,7 +72,7 @@ def plot_loss_acc(losses, train_accs, val_accs, xlabel, attributes):
     val_accs_line, = ax1.plot(xrange(len(val_accs)), val_accs, 'g-', label='val accuracies')
 
     ax1.set_ylabel('accuracies', color='b')
-    ax1.set_xlabel(x_unit)
+    ax1.set_xlabel(xlabel)
     for tl in ax1.get_yticklabels():
         tl.set_color('b')
 
