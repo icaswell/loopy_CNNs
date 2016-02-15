@@ -295,7 +295,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
         merged_name = "\prod {%s}"%input_layers
         merge_fn = {
                 "mul":T.mul,
-                "sum":T.sum,
+                "sum":T.add,
         }[merge_mode]
         layer = lasagne.layers.ElemwiseMergeLayer(incomings=[self._names_to_layers[name] for name in input_layers],
                                                     merge_function=merge_fn,
@@ -311,7 +311,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
         layer_dict = dict(layer_dict)
         # assert isinstance(input_layers, str) #TODO: remove after figuring out layers in lasagne
         if isinstance(input_layers, list):
-            input_layers = self._add_merge_layer(layer_name, input_layers, merge_mode=mergemerge__mode)
+            input_layers = self._add_merge_layer(layer_name, input_layers, merge_mode=merge_mode)
 
         
         layer_options = layer_dict["options"]

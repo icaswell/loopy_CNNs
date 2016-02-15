@@ -25,7 +25,7 @@
 	"layer_3_pool":{"template": "pool"},
 	"layer_3":{"num_filters":6, "template": "conv"},
 	
-	# "loop_layer_1":{"num_filters":3, "template": "conv"},
+	"loop_layer_1":{"num_filters":3, "template": "conv"},
 
 	# "loop_layer_2":{"output_dim":14, "template": "conv"},
 	# "loop_layer_3":{"output_dim":11, "template": "conv"},	
@@ -38,11 +38,12 @@
 		"type": "main",
 		"structure": ["input", "layer_1", "layer_2", "layer_3", "layer_3_pool", "top_layer"]
 		},
-	# "loop-1": {
-	# 	"type": "loop",
-	# 	"structure": ["layer_3", "loop_layer_1", "layer_1"],
-	# 	"composition_mode": 'mul'
-	# 	},
+	"loop-1": {
+		"type": "loop",
+		"structure": ["layer_3", "loop_layer_1", "layer_1"],
+		"composition_mode": 'mul'
+		# "composition_mode": 'sum'		
+		},
 			
 	},
 
