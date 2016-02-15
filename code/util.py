@@ -340,11 +340,11 @@ def load_mnist(dataset="training", digits=np.arange(10), path="."):
     N = len(ind)
 
     images = zeros((N, 1, rows, cols), dtype=uint8)
-    labels = zeros((N, 1), dtype=int8)
+    labels = zeros(N, dtype=int8)
     for i in range(len(ind)):
         images[i][0] = array(img[ ind[i]*rows*cols : (ind[i]+1)*rows*cols ]).reshape((rows, cols))
         labels[i] = lbl[ind[i]]
-
+    
     return images, labels
 
 
