@@ -65,12 +65,15 @@ def load_mnist(dataset="training", digits=np.arange(10), path="."):
 
 def load_cifar10(num_training=49000, num_validation=1000, num_test=1000):
     """
+    WARNING: Needs to be run from code directory, otherwise relative path
+    will not work.
     Load the CIFAR-10 dataset from disk.
     Returns train, validation and test sets.
+    Note that num_training, num_validation and num_test have to be > 0.
     Adapted from CS231N assignment 1.
     """
     # Load the raw CIFAR-10 data
-    cifar10_dir = 'cs231n/datasets/cifar-10-batches-py'
+    cifar10_dir = '../data/cifar10'
     X_train, y_train, X_test, y_test = _load_CIFAR10(cifar10_dir)
         
     # Subsample the data
@@ -104,7 +107,7 @@ def _load_CIFAR10(ROOT):
   ys = []
   for b in range(1,6):
     f = os.path.join(ROOT, 'data_batch_%d' % (b, ))
-    X, Y = load_CIFAR_batch(f)
+    X, Y = _load_CIFAR_batch(f)
     xs.append(X)
     ys.append(Y)    
   Xtr = np.concatenate(xs)
@@ -113,7 +116,8 @@ def _load_CIFAR10(ROOT):
   Xte, Yte = _load_CIFAR_batch(os.path.join(ROOT, 'test_batch'))
   return Xtr, Ytr, Xte, Yte
 
- def _load_CIFAR_batch(filename):
+
+def _load_CIFAR_batch(filename):
   """ load single batch of cifar, adapted from CS231N assignment 1"""
   with open(filename, 'rb') as f:
     datadict = pickle.load(f)
@@ -122,3 +126,10 @@ def _load_CIFAR10(ROOT):
     X = X.reshape(10000, 3, 32, 32).transpose(0,2,3,1).astype("float")
     Y = np.array(Y)
     return X, Y
+
+
+if __name__=='__main__':
+	X_train, y_train, X_val, y_val, X_test, y_test = load_cifar10(num_training=49000, num_validation=1, num_test=1000)
+	print 'X_train shape: {}'.format(X_train.shape)
+	print 'X_val shape: {}'.format(X_val.shape)
+	print 'X_test shape: {}'.format(X_test.shape)
