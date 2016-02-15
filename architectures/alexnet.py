@@ -28,11 +28,12 @@
 	"max_pool_layer":{"filter_size":2, "stride":2}, # used after each of the first two conv layers
 	
 	"conv_layer_2":{"num_filters":256, "template": "conv", "filter_size":5, "stride":4, "pad":0},
-	"conv_layer_3":{"num_filters":384, "template": "conv"}, # used twice in a row
+	"conv_layer_3":{"num_filters":384, "template": "conv"},
+	"conv_layer_4":{"num_filters":384, "template": "conv"},
+	"conv_layer_5":{"num_filters":256, "template": "conv"},
 
-	"conv_layer_4":{"num_filters":256, "template": "conv"},
-
-	"dense_hidden_layer":{"output_dim":4096, "template": "dense"}, # used twice
+	"dense_hidden_layer1":{"output_dim":4096, "template": "dense"},
+	"dense_hidden_layer2":{"output_dim":4096, "template": "dense"},
 	"top_layer":{"output_dim":1000, "template": "dense", "nonlinearity":"softmax"},
 	},
 
@@ -49,10 +50,10 @@
 			# "local_response_normalization_layer"
 			"max_pool_layer", 
 			"conv_layer_3", 
-			"conv_layer_3", 
 			"conv_layer_4", 
-			"dense_hidden_layer", 
-			"dense_hidden_layer", 
+			"conv_layer_5", 
+			"dense_hidden_layer1", 
+			"dense_hidden_layer2", 
 			"top_layer"]
 		},			
 	},
