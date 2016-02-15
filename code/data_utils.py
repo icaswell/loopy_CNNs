@@ -14,46 +14,64 @@
 # USAGE: from data_utils import *
 # 
 
+import os, struct
+import numpy as np
+
+from array import array as pyarray
+from numpy import append, array, int8, uint8, zeros
 
 import cPickle as pickle
-import numpy as np
-import os
 from scipy.misc import imread
 
-def load_CIFAR_batch(filename):
-  """ load single batch of cifar, adopted from CS231N assignment 1"""
-  with open(filename, 'rb') as f:
-    datadict = pickle.load(f)
-    X = datadict['data']
-    Y = datadict['labels']
-    X = X.reshape(10000, 3, 32, 32).transpose(0,2,3,1).astype("float")
-    Y = np.array(Y)
-    return X, Y
-
-def load_CIFAR10(ROOT):
-  """ load all of cifar, adopted from CS231N assignment 1 """
-  xs = []
-  ys = []
-  for b in range(1,6):
-    f = os.path.join(ROOT, 'data_batch_%d' % (b, ))
-    X, Y = load_CIFAR_batch(f)
-    xs.append(X)
-    ys.append(Y)    
-  Xtr = np.concatenate(xs)
-  Ytr = np.concatenate(ys)
-  del X, Y
-  Xte, Yte = load_CIFAR_batch(os.path.join(ROOT, 'test_batch'))
-  return Xtr, Ytr, Xte, Yte
-
-def get_CIFAR10_data(num_training=49000, num_validation=1000, num_test=1000):
+def load_mnist(dataset="training", digits=np.arange(10), path="."):
     """
-    Load the CIFAR-10 dataset from disk and perform preprocessing to prepare
-    it for the two-layer neural net classifier. These are the same steps as
-    we used for the SVM, but condensed to a single function.  
+    Loads MNIST files into 3D numpy arrays
+
+    Adapted from: http://abel.ee.ucla.edu/cvxopt/_downloads/mnist.py
+
+    :param string dataset: a string that denotes whether you want the training set or the testing set
+    :param list digits (optional): use this if you only want data for a subset of digits.
+    :param string path: the absolute/relative path of the directory where data is stored
+    """
+    if dataset == "training":
+        fname_img = path + '/train-images-idx3-ubyte' #os.path.join(path, '/train-images-idx3-ubyte')
+        fname_lbl = path + '/train-images-idx3-ubyte' #os.path.join(path, '/train-labels-idx1-ubyte')
+    elif dataset == "testing":
+        fname_img = path + '/t10k-images-idx3-ubyte' #os.path.join(path, '/t10k-images-idx3-ubyte')
+        fname_lbl = path + '/t10k-labels-idx1-ubyte' #os.path.join(path, '/t10k-labels-idx1-ubyte')
+    else:
+        raise ValueError("dataset must be 'testing' or 'training'")
+    flbl = open(fname_lbl, 'rb')
+    magic_nr, size = struct.unpack(">II", flbl.read(8))
+    lbl = pyarray("b", flbl.read())
+    flbl.close()
+
+    fimg = open(fname_img, 'rb')
+    magic_nr, size, rows, cols = struct.unpack(">IIII", fimg.read(16))
+    img = pyarray("B", fimg.read())
+    fimg.close()
+
+    ind = [ k for k in range(size) if lbl[k] in digits ]
+    N = len(ind)
+
+    images = zeros((N, 1, rows, cols), dtype=uint8)
+    labels = zeros(N, dtype=int8)
+    for i in range(len(ind)):
+        images[i][0] = array(img[ ind[i]*rows*cols : (ind[i]+1)*rows*cols ]).reshape((rows, cols))
+        labels[i] = lbl[ind[i]]
+
+    return images, labels
+
+
+def load_cifar10(num_training=49000, num_validation=1000, num_test=1000):
+    """
+    Load the CIFAR-10 dataset from disk.
+    Returns train, validation and test sets.
+    Adapted from CS231N assignment 1.
     """
     # Load the raw CIFAR-10 data
     cifar10_dir = 'cs231n/datasets/cifar-10-batches-py'
-    X_train, y_train, X_test, y_test = load_CIFAR10(cifar10_dir)
+    X_train, y_train, X_test, y_test = _load_CIFAR10(cifar10_dir)
         
     # Subsample the data
     mask = range(num_training, num_training + num_validation)
@@ -78,3 +96,29 @@ def get_CIFAR10_data(num_training=49000, num_validation=1000, num_test=1000):
     X_test = X_test.reshape(num_test, -1)
 
     return X_train, y_train, X_val, y_val, X_test, y_test
+
+
+def _load_CIFAR10(ROOT):
+  """ load all of cifar, adapted from CS231N assignment 1 """
+  xs = []
+  ys = []
+  for b in range(1,6):
+    f = os.path.join(ROOT, 'data_batch_%d' % (b, ))
+    X, Y = load_CIFAR_batch(f)
+    xs.append(X)
+    ys.append(Y)    
+  Xtr = np.concatenate(xs)
+  Ytr = np.concatenate(ys)
+  del X, Y
+  Xte, Yte = _load_CIFAR_batch(os.path.join(ROOT, 'test_batch'))
+  return Xtr, Ytr, Xte, Yte
+
+ def _load_CIFAR_batch(filename):
+  """ load single batch of cifar, adapted from CS231N assignment 1"""
+  with open(filename, 'rb') as f:
+    datadict = pickle.load(f)
+    X = datadict['data']
+    Y = datadict['labels']
+    X = X.reshape(10000, 3, 32, 32).transpose(0,2,3,1).astype("float")
+    Y = np.array(Y)
+    return X, Y
