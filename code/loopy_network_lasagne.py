@@ -124,7 +124,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
             # train_batches = 0
             start_time = time.time()
             #TODO: nee to modify al layer adding to take into account batches????
-            for train_batch_i, batch in enumerate(self._iterate_minibatches(X_train, y_train, self.batch_size, shuffle=False)):
+            for train_batch_i, batch in enumerate(self._iterate_minibatches(X_train, y_train, self.batch_size, shuffle=True)):
 
                 inputs, targets = batch
                 # self._print_activations(input_var, inputs)
