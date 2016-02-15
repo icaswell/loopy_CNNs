@@ -74,6 +74,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
     def train_model(self, X_train, y_train, X_val, y_val, n_epochs=10, 
                             check_error_n_batches=20,
                             use_expensive_stats=True,
+                            check_valid_acc_every=1,
                             ):
         """
         :param bool use_expensive_stats: if this is true, the full training and validation accuracy and 
@@ -149,27 +150,26 @@ class LoopyNetwork(AbstractLoopyNetwork):
                         performance_history["full_train_loss"].append(full_train_loss)
                         performance_history["full_train_acc"].append(full_train_acc)
 
+
+
+            print("Epoch {} of {} took {:.3f}s".format(
+                epoch + 1, n_epochs, time.time() - start_time))
+            print("  training loss:\t\t{:.6f}".format(train_loss / (train_batch_i+1))) #implicitly relies on python scoping, maybe not good style
  
             # And a full pass over the validation data:
-            val_loss = 0
-            val_acc = 0
-            for val_batch_i, batch in enumerate(self._iterate_minibatches(X_val, y_val, self.batch_size, shuffle=False)):
-                inputs, targets = batch
-                batch_loss, batch_acc = self.val_fn(inputs, targets)
-                val_loss += batch_loss
-                val_acc += batch_acc
+            if not epoch%check_valid_acc_every:
+                val_loss = 0
+                val_acc = 0
+                for val_batch_i, batch in enumerate(self._iterate_minibatches(X_val, y_val, self.batch_size, shuffle=False)):
+                    inputs, targets = batch
+                    batch_loss, batch_acc = self.val_fn(inputs, targets)
+                    val_loss += batch_loss
+                    val_acc += batch_acc
 
-            # Then we print the results for this epoch:
-            print val_loss
-            print val_batch_i
-            if 1:
-                print("Epoch {} of {} took {:.3f}s".format(
-                    epoch + 1, n_epochs, time.time() - start_time))
-                print("  training loss:\t\t{:.6f}".format(train_loss / (train_batch_i+1))) #implicitly relies on python scoping, maybe not good style
+                # Then we print the results for this epoch:
                 print("  validation loss:\t\t{:.6f}".format(val_loss / (val_batch_i +1)))
                 print("  validation accuracy:\t\t{:.2f} %".format(val_acc / val_batch_i))
-            else:
-                print "Epoch {} of {} ({:.3f}s) training loss:\t\t{:.6f}                        \r".format(epoch + 1, n_epochs, time.time() - start_time, train_loss / train_batches),
+
         return performance_history
 
     
@@ -287,14 +287,18 @@ class LoopyNetwork(AbstractLoopyNetwork):
 
         return layer_options
 
-    def _add_merge_layer(self, layer_name, input_layers):
+    def _add_merge_layer(self, layer_name, input_layers, merge_mode):
         """
         TODO: theoretically it would be nice to be able to specify that the mode
         is not just multiplication, but alas time is finite
         """
         merged_name = "\prod {%s}"%input_layers
+        merge_fn = {
+                "mul":T.mul,
+                "sum":T.sum,
+        }[merge_mode]
         layer = lasagne.layers.ElemwiseMergeLayer(incomings=[self._names_to_layers[name] for name in input_layers],
-                                                    merge_function=T.mul,
+                                                    merge_function=merge_fn,
                                                     name=merged_name)
         self._names_to_layers[merged_name] = layer
         return merged_name
@@ -307,7 +311,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
         layer_dict = dict(layer_dict)
         # assert isinstance(input_layers, str) #TODO: remove after figuring out layers in lasagne
         if isinstance(input_layers, list):
-            input_layers = self._add_merge_layer(layer_name, input_layers)
+            input_layers = self._add_merge_layer(layer_name, input_layers, merge_mode=mergemerge__mode)
 
         
         layer_options = layer_dict["options"]
@@ -316,7 +320,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
         layer=None
 
         #===============================================================================
-        # deal with parameter sharing among equivalent layers in an unroll
+        # deal with parameter sharing among equivalent layers in an merge_unroll
         if share_params_with is not None:
             # print dir(self._names_to_layers[share_params_with])
             # print self._names_to_layers[share_params_with].get_params()
@@ -406,6 +410,6 @@ if __name__=="__main__":
 
 
     check_error_n_batches = 2
-    history = model.train_model(X_train, y_train, X_val, y_val, n_epochs=50, check_error_n_batches=check_error_n_batches)
+    history = model.train_model(X_train, y_train, X_val, y_val, n_epochs=50, check_error_n_batches=check_error_n_batches, check_valid_acc_every=4)
 
     util.plot_loss_acc(history["full_train_loss"], history["full_train_acc"], history["valid_acc"], "batches*%s"%check_error_n_batches, attributes={"lol": 3})
