@@ -1,4 +1,4 @@
 Example:
 
-Ran on architecture "deep-loop-1", which inserts a two-layer neural network as a loop between the output and the input.  Took 5 hours to train.  Failed miserably, with error of .66 on the validation set
+Ran on architecture "deep-loop-1", which inserts a two-layer neural network as a loop between the output and the input.  Took 59 hours to train.  Failed miserably, with error of .666 on the validation set
 --Isaac

@@ -1,0 +1,146 @@
+[Isaac] Tried to get some non-loopy CNNs going.  Don't know why these are performing sub-chance.  For the second one the loss is def. going down, even on the validation set, but the error is not.
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+LoopyCNN instance with the following hyperparameters, layers and loops:
+HYPERPARAMETERS:
+	n_unrolls=1
+
+ARCHITECTURE:
+main_stack:
+	input [input layer; output_dim=(1, 28, 28)]
+	conv_1 [conv2d layer; num_filters=6]
+	conv_2 [conv2d layer; num_filters=6]
+	conv_3 [conv2d layer; num_filters=6]
+	conv_4 [conv2d layer; num_filters=6]
+	fc_1 [dense layer; output_dim=200]
+	fc_2 [dense layer; output_dim=10]
+Epoch 1 of 10 took 3971.648s
+  training loss:		0.110703
+  validation loss:		9.550075
+  validation accuracy:		0.07 %
+Epoch 2 of 10 took 3911.546s
+  training loss:		0.037274
+  validation loss:		25.417550
+  validation accuracy:		0.07 %
+Epoch 3 of 10 took 2962.935s
+  training loss:		0.031888
+  validation loss:		17.052618
+  validation accuracy:		0.07 %
+Epoch 4 of 10 took 2779.513s
+  training loss:		0.013598
+  validation loss:		21.592437
+  validation accuracy:		0.07 %
+Epoch 5 of 10 took 2753.463s
+  training loss:		0.019668
+  validation loss:		20.586690
+  validation accuracy:		0.07 %
+Epoch 6 of 10 took 2744.374s
+  training loss:		0.024458
+  validation loss:		37.558051
+  validation accuracy:		0.07 %
+Epoch 7 of 10 took 2746.448s
+  training loss:		0.008766
+  validation loss:		13.770183
+  validation accuracy:		0.07 %
+Epoch 8 of 10 took 2452.788s
+  training loss:		0.003524
+  validation loss:		20.091728
+  validation accuracy:		0.07 %
+Epoch 9 of 10 took 1987.219s
+  training loss:		0.013829
+  validation loss:		13.578160
+  validation accuracy:		0.07 %
+Epoch 10 of 10 took 1987.583s
+  training loss:		0.014788
+  validation loss:		17.311275
+  validation accuracy:		0.07 %
+
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+HYPERPARAMETERS:
+	n_unrolls=1
+
+ARCHITECTURE:
+main_stack:
+	input [input layer; output_dim=(1, 28, 28)]
+	conv_1 [conv2d layer; num_filters=16]
+	conv_2 [conv2d layer; num_filters=8]
+	fc_1 [dense layer; output_dim=10]
+Epoch 1 of 10 took 3101.302s
+  training loss:		16.477186
+  validation loss:		4.301145
+  validation accuracy:		0.07 %
+Epoch 2 of 10 took 3097.333s
+  training loss:		0.109327
+  validation loss:		4.960586
+  validation accuracy:		0.07 %
+Epoch 3 of 10 took 2829.689s
+  training loss:		0.080841
+  validation loss:		5.325158
+  validation accuracy:		0.07 %
+Epoch 4 of 10 took 2048.893s
+  training loss:		0.077215
+  validation loss:		5.553768
+  validation accuracy:		0.07 %
+Epoch 5 of 10 took 2076.546s
+  training loss:		0.026995
+  validation loss:		5.812206
+  validation accuracy:		0.07 %
+Epoch 6 of 10 took 2054.342s
+  training loss:		0.055248
+  validation loss:		5.948174
+  validation accuracy:		0.07 %
+Epoch 7 of 10 took 2047.945s
+  training loss:		0.092528
+  validation loss:		5.984084
+  validation accuracy:		0.07 %
+Epoch 8 of 10 took 2047.910s
+  training loss:		0.076164
+  validation loss:		6.042021
+  validation accuracy:		0.07 %
+Epoch 9 of 10 took 2061.602s
+  training loss:		0.040859
+  validation loss:		6.159080
+  validation accuracy:		0.07 %
+Epoch 10 of 10 took 2072.331s
+  training loss:		0.045443
+  validation loss:		6.245397
+  validation accuracy:		0.07 %
+
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+LoopyCNN instance with the following hyperparameters, layers and loops:
+HYPERPARAMETERS:
+	n_unrolls=1
+
+ARCHITECTURE:
+main_stack:
+	input [input layer; output_dim=(1, 28, 28)]
+	layer_1 [conv2d layer; num_filters=16]
+	layer_2 [conv2d layer; num_filters=32]
+	layer_3 [dense layer; output_dim=200]
+	top_layer [dense layer; output_dim=10]
+Epoch 1 of 4 took 3823.534s
+  training loss:		0.114761
+  validation loss:		22.036933
+  validation accuracy:		0.07 %
+Epoch 2 of 4 took 3468.434s
+  training loss:		0.029883
+  validation loss:		9.634232
+  validation accuracy:		0.07 %
+Epoch 3 of 4 took 4214.664s
+  training loss:		0.034809
+  validation loss:		12.689159
+  validation accuracy:		0.07 %
+Epoch 4 of 4 took 7246.277s
+  training loss:		0.026665
+  validation loss:		11.943754
+  validation accuracy:		0.07 %
