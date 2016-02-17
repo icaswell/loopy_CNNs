@@ -82,8 +82,9 @@ def plot_loss_acc(losses, train_accs, val_accs, xlabel, attributes):
     for tl in ax2.get_yticklabels():
         tl.set_color('r')
 
-    plt.legend(handles=[losses_line, train_accs_line, val_accs_line],bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=2, mode="expand")
-    
+    # plt.legend(handles=[losses_line, train_accs_line, val_accs_line],bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=2, mode="expand")
+    plt.legend(handles=[losses_line, train_accs_line, val_accs_line])
+
     figure_filename = '../results/loss_plots/' + descriptive_filename(attributes, extension = '.png', random_stamp=True)
     fig.savefig(figure_filename)
 
@@ -319,17 +320,17 @@ def make_toy_data(outfile, dim=5, n_examples=100, misclassification_prob=0.1, pr
 if __name__ == '__main__':
     print 'You are running this script (util.py) as main, so you must be demoing it!'
 
-    print "NOW FOR A DEMO OF HOM YOU CAN MAKE NICE, HYPERDESCRIPRIVE FILENAMES FOR YOUR MILLION RUNA OF THAT SCRIPT"
-    run_attributes = {"alpha": 0.5, "epsilon": 0.001, "optimizer": "rmsprop", "nu": 16e-12}
-    omit = {"nu"}
-    print descriptive_filename(run_attributes)
-    print descriptive_filename(run_attributes, id="toy-test", truncate_decimals=3)
-    print descriptive_filename(run_attributes, id="toy-test", omit=omit)    
-    print descriptive_filename(run_attributes, shorten=True)
-    print descriptive_filename(run_attributes, timestamp_precision="second") 
-    print descriptive_filename(run_attributes, timestamp_precision="second", random_stamp=True, extension=".lol")
+    # print "NOW FOR A DEMO OF HOM YOU CAN MAKE NICE, HYPERDESCRIPRIVE FILENAMES FOR YOUR MILLION RUNA OF THAT SCRIPT"
+    # run_attributes = {"alpha": 0.5, "epsilon": 0.001, "optimizer": "rmsprop", "nu": 16e-12}
+    # omit = {"nu"}
+    # print descriptive_filename(run_attributes)
+    # print descriptive_filename(run_attributes, id="toy-test", truncate_decimals=3)
+    # print descriptive_filename(run_attributes, id="toy-test", omit=omit)    
+    # print descriptive_filename(run_attributes, shorten=True)
+    # print descriptive_filename(run_attributes, timestamp_precision="second") 
+    # print descriptive_filename(run_attributes, timestamp_precision="second", random_stamp=True, extension=".lol")
 
-    make_toy_data(outfile="../data/toy_data_5d.txt", dim=5, n_examples=100, misclassification_prob=0.0, predictor="dot", seeds=(2,3))
+    # make_toy_data(outfile="../data/toy_data_5d.txt", dim=5, n_examples=100, misclassification_prob=0.0, predictor="dot", seeds=(2,3))
 
     # parser = argparse.ArgumentParser()
     # parser.add_argument('-stuff', type=str, default="yeah")
@@ -338,7 +339,9 @@ if __name__ == '__main__':
 
 
 
-    colorprint("nyaan", color="demo")           
+    # colorprint("nyaan", color="demo")     
+
+    plot_loss_acc([1,2], [2,1], [3,1], 'its', {} )      
 
 
 
