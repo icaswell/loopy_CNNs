@@ -62,13 +62,15 @@ class LoopyNetwork(AbstractLoopyNetwork):
         """
         loss = 0
         acc = 0
+        n_batches = 0
         for batch_i, batch in enumerate(self._iterate_minibatches(X, y, self.batch_size, shuffle=False)):
             inputs, targets = batch
             batch_loss, batch_acc = self.val_fn(inputs, targets)
             loss += batch_loss
             acc += batch_acc
+            n_batches += 1
 
-        return loss/(batch_i +1), acc/(batch_i+1)
+        return loss/n_batches, acc/n_batches
 
       
     def train_model(self, X_train, y_train, X_val, y_val, n_epochs=10, 
@@ -92,7 +94,8 @@ class LoopyNetwork(AbstractLoopyNetwork):
         #NOTE: assumes only one output
         #TODO: specify learning_rate and momentum elsewhere
 
-        updates = lasagne.updates.nesterov_momentum(loss, params, learning_rate=0.001, momentum=0.9)
+        # updates = lasagne.updates.nesterov_momentum(loss, params, learning_rate=0.001, momentum=0.9)
+        updates = lasagne.updates.adam(loss, params, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-08)
 
         test_prediction = lasagne.layers.get_output(network, deterministic=True)
         test_loss = lasagne.objectives.categorical_crossentropy(test_prediction, self.target_var)
@@ -160,15 +163,17 @@ class LoopyNetwork(AbstractLoopyNetwork):
             if not epoch%check_valid_acc_every:
                 val_loss = 0
                 val_acc = 0
+                n_batches = 0
                 for val_batch_i, batch in enumerate(self._iterate_minibatches(X_val, y_val, self.batch_size, shuffle=False)):
                     inputs, targets = batch
                     batch_loss, batch_acc = self.val_fn(inputs, targets)
                     val_loss += batch_loss
                     val_acc += batch_acc
+                    n_batches += 1
 
                 # Then we print the results for this epoch:
-                print("  validation loss:\t\t{:.6f}".format(val_loss / (val_batch_i +1)))
-                print("  validation accuracy:\t\t{:.2f} %".format(val_acc / val_batch_i))
+                print("  validation loss:\t\t{:.6f}".format(val_loss / n_batches)
+                print("  validation accuracy:\t\t{:.2f} %".format(val_acc / n_batches))
 
         return performance_history
 
@@ -407,6 +412,7 @@ if __name__=="__main__":
     X_val = X_train
     y_val = y_train.copy()
     y_val[0:6] = 0
+
 
 
     check_error_n_batches = 2
