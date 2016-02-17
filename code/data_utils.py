@@ -23,7 +23,22 @@ from numpy import append, array, int8, uint8, zeros
 import cPickle as pickle
 from scipy.misc import imread
 
-def load_mnist(dataset="training", digits=np.arange(10), path="."):
+def load_mnist():
+  f = open('../data/mnist/mnist.pkl')
+  train, test, val = pickle.load(f)
+  f.close()
+  X_train, y_train = change_to_array(train, 28, 28)
+  X_val, y_val = change_to_array(val, 28, 28)
+  X_test, y_test = change_to_array(test, 28, 28)
+  return X_train, y_train, X_val, y_val, X_test, y_test
+
+def change_to_array(M, H, W):
+  N = len(M[0])
+  X = np.array(M[0]).reshape((N,1,H,W))
+  y = np.array(M[1])
+  return X.astype(int8), y.astype(int8)
+
+def load_mnist_fail(dataset="training", digits=np.arange(10), path="."):
     """
     Loads MNIST files into 3D numpy arrays
 
@@ -59,7 +74,9 @@ def load_mnist(dataset="training", digits=np.arange(10), path="."):
     for i in range(len(ind)):
         images[i][0] = array(img[ ind[i]*rows*cols : (ind[i]+1)*rows*cols ]).reshape((rows, cols))
         labels[i] = lbl[ind[i]]
-
+    for i in range(10):
+      print i, len([x for x in range(size) if lbl[x] == i])
+    print "WHEE", images.shape, labels.shape, N, digits, len(lbl)
     return images, labels
 
 
