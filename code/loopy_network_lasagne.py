@@ -141,9 +141,14 @@ class LoopyNetwork(AbstractLoopyNetwork):
                 # populate performance_history:
                 performance_history["batchly_train_loss"][-1] += batch_loss
                 if (train_batch_i +1)%check_error_n_batches == 0:
+                    print "*"+ "-"*78 + "*"
+                    print "Epoch %s, batch %s:"%(epoch, train_batch_i)
                     performance_history["batchly_train_loss"][-1] /= check_error_n_batches
-                    performance_history["batchly_train_loss"].append(0)
+                    performance_history["batchly_train_loss"].append(0.0)
                     performance_history["cumulative_train_loss"].append(train_loss/train_batch_i)
+
+                    print "batchly_train_loss: ", performance_history["batchly_train_loss"][-1]
+                    print "cumulative_train_loss: ", performance_history["cumulative_train_loss"][-1]
 
                     if use_expensive_stats:
                         valid_loss, valid_acc = self.performance_on_whole_set(X_val, y_val)
@@ -153,27 +158,36 @@ class LoopyNetwork(AbstractLoopyNetwork):
                         performance_history["full_train_loss"].append(full_train_loss)
                         performance_history["full_train_acc"].append(full_train_acc)
 
+                        
+                        print "valid_loss: ", performance_history["valid_loss"][-1]
+                        print "valid_acc: ", performance_history["valid_acc"][-1]
+                        print "full_train_loss: ", performance_history["full_train_loss"][-1]
+                        print "full_train_acc: ", performance_history["full_train_acc"][-1]
 
 
+
+            print "="*80
             print("Epoch {} of {} took {:.3f}s".format(
                 epoch + 1, n_epochs, time.time() - start_time))
             print("  training loss:\t\t{:.6f}".format(train_loss / (train_batch_i+1))) #implicitly relies on python scoping, maybe not good style
  
             # And a full pass over the validation data:
             if not epoch%check_valid_acc_every:
-                val_loss = 0
-                val_acc = 0
-                n_batches = 0
-                for val_batch_i, batch in enumerate(self._iterate_minibatches(X_val, y_val, self.batch_size, shuffle=False)):
-                    inputs, targets = batch
-                    batch_loss, batch_acc = self.val_fn(inputs, targets)
-                    val_loss += batch_loss
-                    val_acc += batch_acc
-                    n_batches += 1
+
+
+                valid_loss, valid_acc = self.performance_on_whole_set(X_val, y_val)
+                full_train_loss, full_train_acc = self.performance_on_whole_set(X_train, y_train)     
 
                 # Then we print the results for this epoch:
-                print("  validation loss:\t\t{:.6f}".format(val_loss / n_batches))
-                print("  validation accuracy:\t\t{:.2f} %".format(val_acc / n_batches))
+                print "VALID_LOSS: ", valid_loss
+                print "VALID_ACC: ", valid_acc
+                print "FULL_TRAIN_LOSS: ", full_train_loss
+                print "FULL_TRAIN_ACC: ", full_train_acc
+                if not use_expensive_stats:
+                    performance_history["valid_loss"].append(valid_loss)
+                    performance_history["valid_acc"].append(valid_acc)
+                    performance_history["full_train_loss"].append(full_train_loss)
+                    performance_history["full_train_acc"].append(full_train_acc)                
 
         return performance_history
 
