@@ -18,7 +18,7 @@ import os, struct
 import numpy as np
 
 from array import array as pyarray
-from numpy import append, array, int8, uint8, zeros
+from numpy import append, array, int8, uint8, zeros, int32
 
 import cPickle as pickle
 from scipy.misc import imread
@@ -34,9 +34,9 @@ def load_mnist():
 
 def change_to_array(M, H, W):
   N = len(M[0])
-  X = np.array(M[0]).reshape((N,1,H,W))
-  y = np.array(M[1])
-  return X.astype(int8), y.astype(int8)
+  X = np.array(M[0], dtype=float).reshape((N,1,H,W))
+  y = np.array(M[1], dtype=int32)
+  return X, y
 
 def load_mnist_fail(dataset="training", digits=np.arange(10), path="."):
     """
