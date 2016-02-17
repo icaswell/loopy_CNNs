@@ -16,7 +16,7 @@ print 'X_val shape: {}, y_val shape: {}'.format(X_val.shape, y_val.shape)
 print 'X_test shape: {}, y_test shape: {}'.format(X_test.shape, y_test.shape)
 num_test_samples = X_test.shape[0]
 
-model.train_model(X_train, y_train, X_val, y_val, use_expensive_stats=False, n_epochs=10)
+model.train_model(X_train, y_train, X_val, y_val, use_expensive_stats=True, n_epochs=10)
 
 util.plot_loss_acc(history["full_train_loss"], history["full_train_acc"], history["valid_acc"], "batches*%s"%check_error_n_batches, attributes={"lol": 3})
 
