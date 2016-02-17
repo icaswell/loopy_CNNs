@@ -172,7 +172,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
                     n_batches += 1
 
                 # Then we print the results for this epoch:
-                print("  validation loss:\t\t{:.6f}".format(val_loss / n_batches)
+                print("  validation loss:\t\t{:.6f}".format(val_loss / n_batches))
                 print("  validation accuracy:\t\t{:.2f} %".format(val_acc / n_batches))
 
         return performance_history
