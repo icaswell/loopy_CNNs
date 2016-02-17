@@ -111,9 +111,21 @@ def load_cifar10(num_training=49000, num_validation=1000, num_test=1000):
     X_test -= mean_image
 
     # Reshape data to rows
-    X_train = X_train.reshape(num_training, -1)
-    X_val = X_val.reshape(num_validation, -1)
-    X_test = X_test.reshape(num_test, -1)
+    # X_train = X_train.reshape(num_training, -1)
+    # X_val = X_val.reshape(num_validation, -1)
+    # X_test = X_test.reshape(num_test, -1)
+
+    X_train = X_train.transpose((0, 3, 1, 2))
+    X_val = X_val.transpose((0, 3, 1, 2))
+    X_test = X_test.transpose((0, 3, 1, 2))
+
+    X_train = X_train.astype(np.int32)
+    X_val = X_val.astype(np.int32)
+    X_test = X_test.astype(np.int32)  
+
+    y_train = y_train.astype(np.int32)
+    y_val = y_val.astype(np.int32)
+    y_test = y_test.astype(np.int32)            
 
     return X_train, y_train, X_val, y_val, X_test, y_test
 
