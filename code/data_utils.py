@@ -18,7 +18,7 @@ import os, struct
 import numpy as np
 
 from array import array as pyarray
-from numpy import append, array, int8, uint8, zeros, int32
+from numpy import append, array, int8, uint8, zeros, int32, float32
 
 import cPickle as pickle
 from scipy.misc import imread
@@ -34,7 +34,7 @@ def load_mnist():
 
 def change_to_array(M, H, W):
   N = len(M[0])
-  X = np.array(M[0], dtype=float).reshape((N,1,H,W))
+  X = np.array(M[0], dtype=float32).reshape((N,1,H,W))
   y = np.array(M[1], dtype=int32)
   return X, y
 
