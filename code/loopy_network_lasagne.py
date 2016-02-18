@@ -110,7 +110,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
         #===============================================================================
         # history: 
         performance_history = {
-            "batchly_train_loss": [0],
+            "batchly_train_loss": [0.00001],
             "cumulative_train_loss": [],
             "full_train_loss": [],
             "full_train_acc": [],
@@ -147,7 +147,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
                     performance_history["batchly_train_loss"].append(0.0)
                     performance_history["cumulative_train_loss"].append(train_loss/train_batch_i)
 
-                    print "batchly_train_loss: ", performance_history["batchly_train_loss"][-1]
+                    print "batchly_train_loss: ", performance_history["batchly_train_loss"][-2]
                     print "cumulative_train_loss: ", performance_history["cumulative_train_loss"][-1]
 
                     if use_expensive_stats:
@@ -301,7 +301,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
         elif layer_type=="pool2d":
             pass #there are no parameters to initialize
         else:
-            print "ajystvbkjdfhbvksuydbvwlrtv"*70
+            print layer_type, " ajystvbkjdfhbvksuydbvwlrtv"*70
             dfkdnfjvsndk
 
         return layer_options
