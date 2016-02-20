@@ -52,6 +52,9 @@ class LoopyNetwork(AbstractLoopyNetwork):
 
         self._build_architecture(self.architecture_dict)
 
+        self.compiled = False
+        self.n_pretrained_epochs = 0
+
 
     def performance_on_whole_set(self, X, y):
         """
@@ -78,6 +81,8 @@ class LoopyNetwork(AbstractLoopyNetwork):
         compiles the functions needed for loss and evaluation of the model.  Doesn't touch training-related functions.
         this is so that this can be called whether you're training or starting from scratch.
         """
+        if self.compiled: return
+        self.compiled=True
         test_prediction = lasagne.layers.get_output(self.network, deterministic=True)
         test_loss = lasagne.objectives.categorical_crossentropy(test_prediction, self.target_var)
         test_loss = test_loss.mean()
@@ -126,8 +131,8 @@ class LoopyNetwork(AbstractLoopyNetwork):
 
         batches_since_last_check = 0
 
-
         for epoch in range(n_epochs):
+            epoch = epoch + self.n_pretrained_epochs # self.n_pretrained_epochs is 0 unless you're loading from a previous training session
             # In each epoch, we do a full pass over the training data:
             train_loss = 0
             # train_batches = 0
@@ -171,10 +176,9 @@ class LoopyNetwork(AbstractLoopyNetwork):
                         print "full_train_acc: ", performance_history["full_train_acc"][-1]
 
 
-
             print "="*80
             print("Epoch {} of {} took {:.3f}s".format(
-                epoch + 1, n_epochs, time.time() - start_time))
+                epoch, n_epochs, time.time() - start_time))
             print("  training loss:\t\t{:.6f}".format(train_loss / (train_batch_i+1))) #implicitly relies on python scoping, maybe not good style
  
             # And a full pass over the validation data:
@@ -192,19 +196,22 @@ class LoopyNetwork(AbstractLoopyNetwork):
                     performance_history["valid_loss"].append(valid_loss)
                     performance_history["valid_acc"].append(valid_acc)
                     performance_history["full_train_loss"].append(full_train_loss)
-                    performance_history["full_train_acc"].append(full_train_acc)                
+                    performance_history["full_train_acc"].append(full_train_acc)
+
             if epoch and not epoch%save_model_every:
-                save_fname = "../saved_models/%s_%s_epoch=%s"%(self.architecture_name, util.time_string(precision='day'), epoch+1)
-                self.save_model(save_fname) 
+                self.save_model(epoch) 
 
         return performance_history
 
-    def save_model(self, fname):
-        print "saving model to %s"%fname
+    def save_model(self, epoch):
+        save_fname = "../saved_models/%s_%s_epoch=%s"%(self.architecture_name, util.time_string(precision='day'), epoch)
+        print "saving model to %s"%save_fname
         data = {"network": self.network,
                 "input_var": self.input_var,
-                "target_var": self.target_var}
-        with open(fname, "w") as f:
+                "target_var": self.target_var,
+                "trained_epochs": epoch,
+                "loss":self.loss}
+        with open(save_fname, "w") as f:
             pickle.dump(data, f)
 
     def load_model(self, fname):
@@ -212,7 +219,9 @@ class LoopyNetwork(AbstractLoopyNetwork):
             data = pickle.load(f)
         self.network = data["network"]
         self.input_var  = data["input_var"]
-        self.target_var  = data["target_var"]        
+        self.target_var  = data["target_var"]
+        self.n_pretrained_epochs = data["trained_epochs"]
+        self.loss = data["loss"]
         self.compile_model()
 
     
@@ -453,7 +462,6 @@ if __name__=="__main__":
     y_val[0:6] = 0
 
 
-
     check_error_n_batches = 2
     TRAIN_MODEL_FROM_SCRATCH = 0 # alternative is reload from saved file
     if TRAIN_MODEL_FROM_SCRATCH:
@@ -466,3 +474,9 @@ if __name__=="__main__":
 
         print "VALID_LOSS: ", valid_loss
         print "VALID_ACC: ", valid_acc
+
+        history = model.train_model(X_train, y_train, X_val, y_val, n_epochs=50, check_error_n_batches=check_error_n_batches, check_valid_acc_every=4)
+
+        util.plot_loss_acc(history["full_train_loss"], history["full_train_acc"], history["valid_acc"], "batches*%s"%check_error_n_batches, attributes={"lol": 3})        
+
+
