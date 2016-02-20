@@ -22,6 +22,7 @@ import sys
 import time
 from pprint import pprint
 sys.path.append("../architectures")
+import cPickle as pickle
 
 import theano
 import theano.tensor as T
@@ -51,7 +52,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
 
         self._build_architecture(self.architecture_dict)
 
-        
+
     def performance_on_whole_set(self, X, y):
         """
         because the batch size is part of the architecture, we can't get the error all in one go.
@@ -65,18 +66,32 @@ class LoopyNetwork(AbstractLoopyNetwork):
         n_batches = 0
         for batch_i, batch in enumerate(self._iterate_minibatches(X, y, self.batch_size, shuffle=False)):
             inputs, targets = batch
-            batch_loss, batch_acc = self.val_fn(inputs, targets)
+            batch_loss, batch_acc = self.evaluation_fn(inputs, targets)
             loss += batch_loss
             acc += batch_acc
             n_batches += 1
 
         return loss/n_batches, acc/n_batches
 
-      
+    def compile_model(self):
+        """
+        compiles the functions needed for loss and evaluation of the model.  Doesn't touch training-related functions.
+        this is so that this can be called whether you're training or starting from scratch.
+        """
+        test_prediction = lasagne.layers.get_output(self.network, deterministic=True)
+        test_loss = lasagne.objectives.categorical_crossentropy(test_prediction, self.target_var)
+        test_loss = test_loss.mean()
+        test_acc = T.mean(T.eq(T.argmax(test_prediction, axis=1), self.target_var),
+                  dtype=theano.config.floatX)
+        
+        self.evaluation_fn = theano.function([self.input_var, self.target_var], [test_loss, test_acc])   
+
+
     def train_model(self, X_train, y_train, X_val, y_val, n_epochs=10, 
                             check_error_n_batches=20,
                             use_expensive_stats=True,
-                            check_valid_acc_every=1,
+                            check_valid_acc_every=1, #in epochs
+                            save_model_every=1, #in epochs
                             ):
         """
         :param bool use_expensive_stats: if this is true, the full training and validation accuracy and 
@@ -87,25 +102,16 @@ class LoopyNetwork(AbstractLoopyNetwork):
         if N%self.batch_size:
             print "Warning: batchsize (%s) does not modulo evenly into number of training examples(%s).  %s training examples are being ignored:"%(self.batch_size, N, N - self.batch_size*(N/self.batch_size))
 
-        network = self.network
-        loss = self.loss
-        # network = self.outputs.values()[1]
-        params = lasagne.layers.get_all_params(network, trainable=True)
+        self.compile_model()
+        # self.network = self.outputs.values()[1]
+        params = lasagne.layers.get_all_params(self.network, trainable=True)
         #NOTE: assumes only one output
         #TODO: specify learning_rate and momentum elsewhere
 
-        # updates = lasagne.updates.nesterov_momentum(loss, params, learning_rate=0.001, momentum=0.9)
-        updates = lasagne.updates.adam(loss, params, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-08)
+        # updates = lasagne.updates.nesterov_momentum(self.loss, params, learning_rate=0.001, momentum=0.9)
+        updates = lasagne.updates.adam(self.loss, params, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-08)
+        train_fn = theano.function([self.input_var, self.target_var], self.loss, updates=updates)
 
-        test_prediction = lasagne.layers.get_output(network, deterministic=True)
-        test_loss = lasagne.objectives.categorical_crossentropy(test_prediction, self.target_var)
-        test_loss = test_loss.mean()
-        test_acc = T.mean(T.eq(T.argmax(test_prediction, axis=1), self.target_var),
-                  dtype=theano.config.floatX)
-
-        input_var = self._names_to_layers["input"].input_var
-        train_fn = theano.function([input_var, self.target_var], loss, updates=updates)
-        self.val_fn = theano.function([input_var, self.target_var], [test_loss, test_acc])
 
         #===============================================================================
         # history: 
@@ -174,7 +180,6 @@ class LoopyNetwork(AbstractLoopyNetwork):
             # And a full pass over the validation data:
             if not epoch%check_valid_acc_every:
 
-
                 valid_loss, valid_acc = self.performance_on_whole_set(X_val, y_val)
                 full_train_loss, full_train_acc = self.performance_on_whole_set(X_train, y_train)     
 
@@ -188,8 +193,27 @@ class LoopyNetwork(AbstractLoopyNetwork):
                     performance_history["valid_acc"].append(valid_acc)
                     performance_history["full_train_loss"].append(full_train_loss)
                     performance_history["full_train_acc"].append(full_train_acc)                
+            if epoch and not epoch%save_model_every:
+                save_fname = "../saved_models/%s_%s_epoch=%s"%(self.architecture_name, util.time_string(precision='day'), epoch+1)
+                self.save_model(save_fname) 
 
         return performance_history
+
+    def save_model(self, fname):
+        print "saving model to %s"%fname
+        data = {"network": self.network,
+                "input_var": self.input_var,
+                "target_var": self.target_var}
+        with open(fname, "w") as f:
+            pickle.dump(data, f)
+
+    def load_model(self, fname):
+        with open(fname, "r") as f:
+            data = pickle.load(f)
+        self.network = data["network"]
+        self.input_var  = data["input_var"]
+        self.target_var  = data["target_var"]        
+        self.compile_model()
 
     
     def _print_activations(self, input_var, x_minibatch):
@@ -226,6 +250,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
         input_layer = lasagne.layers.InputLayer(shape=input_shape,
                                     input_var=None)
         # print input_layer.input_var.type() --> <TensorType(float64, matrix)>
+        self.input_var = input_layer.input_var
         self._names_to_layers[name] = input_layer
 
     def _add_output(self, name, input_layer):
@@ -430,6 +455,14 @@ if __name__=="__main__":
 
 
     check_error_n_batches = 2
-    history = model.train_model(X_train, y_train, X_val, y_val, n_epochs=50, check_error_n_batches=check_error_n_batches, check_valid_acc_every=4)
+    TRAIN_MODEL_FROM_SCRATCH = 0 # alternative is reload from saved file
+    if TRAIN_MODEL_FROM_SCRATCH:
+        history = model.train_model(X_train, y_train, X_val, y_val, n_epochs=50, check_error_n_batches=check_error_n_batches, check_valid_acc_every=4)
 
-    util.plot_loss_acc(history["full_train_loss"], history["full_train_acc"], history["valid_acc"], "batches*%s"%check_error_n_batches, attributes={"lol": 3})
+        util.plot_loss_acc(history["full_train_loss"], history["full_train_acc"], history["valid_acc"], "batches*%s"%check_error_n_batches, attributes={"lol": 3})
+    else:
+        model.load_model("../saved_models/layers=5_loops=1_architecture-ID=10a222a5f3757ea7f2fa6cfafd3a514cdd22d8ca_Feb-20-2016_epoch=49")
+        valid_loss, valid_acc = model.performance_on_whole_set(X_train, y_train)
+
+        print "VALID_LOSS: ", valid_loss
+        print "VALID_ACC: ", valid_acc

@@ -274,6 +274,7 @@ class AbstractLoopyNetwork():
         n_loops = sum(1 for stack in architecture_dict["stacks"].values() if stack["type"] =="loop")
         n_layers_in_main_stack = len(architecture_dict["stacks"]["main_stack"]["structure"]) -1
         self.short_description = "\033[104m %s-layer network with %s loops (architecture ID: %s)\033[0m"%(n_layers_in_main_stack, n_loops, self._hash_id)
+        self.architecture_name = architecture_dict.get("name", "layers=%s_loops=%s_architecture-ID=%s"%(n_layers_in_main_stack, n_loops, self._hash_id))
 
 
 
