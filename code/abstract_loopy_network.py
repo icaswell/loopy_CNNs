@@ -248,6 +248,7 @@ class AbstractLoopyNetwork():
         self.description = "LoopyCNN instance with the following hyperparameters, layers and loops:"
         self.description += "\033[%sm"%title_color + "\nHYPERPARAMETERS:" + '\033[0m'
         self.description += "\n\tn_unrolls=%s"%self.n_unrolls
+        self.description += "\n\tuse_batchnorm=%s"%architecture_dict.get("run_params", {}).get("use_batchnorm", False)
         self.description += "\033[%sm"%title_color + "\n\nARCHITECTURE:" + '\033[0m'
         for stack_name, stack in architecture_dict["stacks"].items():
             self.description +="\n%s:"%stack_name
