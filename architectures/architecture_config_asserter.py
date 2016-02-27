@@ -10,6 +10,9 @@
 
 
 def sanity_check(architecture):
+	if "run_params" in architecture:
+		assert set(architecture["run_params"].keys()) == set(["use_batchnorm"]), "only use_batchnorm is implemented as a run param so far :P"
+
 	assert "framework" in architecture
 	assert architecture["framework"] in ["keras", "lasagne"]
 	for t_name, template in architecture['templates'].items():

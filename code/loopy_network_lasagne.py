@@ -27,6 +27,7 @@ import cPickle as pickle
 import theano
 import theano.tensor as T
 import lasagne
+from batchnorm_layer import batch_norm
 
 from abstract_loopy_network import AbstractLoopyNetwork
 import util
@@ -43,6 +44,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
         # super(LoopyNetwork, self).__init__(architecture_fpath, n_unrolls)
         AbstractLoopyNetwork.__init__(self, architecture_fpath, n_unrolls)
         assert self.architecture_dict["framework"] == "lasagne", "Don't try use this on a keras architecture!"
+        self.use_batchnorm = self.architecture_dict.get("run_params", {}).get("use_batchnorm", False)
 
         # unnecessary TODO: have input variable resized in train_model()?
         self.batch_size = batch_size
@@ -51,6 +53,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
         self._names_to_layers = {}
 
         self._build_architecture(self.architecture_dict)
+        util.colorprint("Model has %s total parameters"%(lasagne.layers.count_params(self.network)), 'red')
 
         self.compiled = False
         self.n_pretrained_epochs = 0
@@ -412,6 +415,8 @@ class LoopyNetwork(AbstractLoopyNetwork):
         # else:
         #     self.model.add_node(layer, name=layer_name, input=input_layers)
 
+        if self.use_batchnorm and layer_dict["type"] in ["conv2d"]:
+            layer = batch_norm(layer)
         self._names_to_layers[layer_name] = layer
         return layer_name      
 
@@ -462,11 +467,10 @@ if __name__=="__main__":
     y_val[0:6] = 0
 
 
-    check_error_n_batches = 2
-    TRAIN_MODEL_FROM_SCRATCH = 0 # alternative is reload from saved file
+    check_error_n_batches = 100
+    TRAIN_MODEL_FROM_SCRATCH = 1 # alternative is reload from saved file
     if TRAIN_MODEL_FROM_SCRATCH:
-        history = model.train_model(X_train, y_train, X_val, y_val, n_epochs=50, check_error_n_batches=check_error_n_batches, check_valid_acc_every=4)
-
+        history = model.train_model(X_train, y_train, X_val, y_val, n_epochs=100, check_error_n_batches=check_error_n_batches, check_valid_acc_every=4, use_expensive_stats=True)
         util.plot_loss_acc(history["full_train_loss"], history["full_train_acc"], history["valid_acc"], "batches*%s"%check_error_n_batches, attributes={"lol": 3})
     else:
         model.load_model("../saved_models/layers=5_loops=1_architecture-ID=10a222a5f3757ea7f2fa6cfafd3a514cdd22d8ca_Feb-20-2016_epoch=49")
