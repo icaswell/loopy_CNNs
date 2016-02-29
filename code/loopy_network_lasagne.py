@@ -35,7 +35,6 @@ import util
 
 class LoopyNetwork(AbstractLoopyNetwork):
     def __init__(self, architecture_fpath, 
-                    batch_size,
                     n_unrolls=2, 
                     optimizer = "rmsprop",
                     loss="mse"):
@@ -47,7 +46,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
         self.use_batchnorm = self.architecture_dict.get("run_params", {}).get("use_batchnorm", False)
 
         # unnecessary TODO: have input variable resized in train_model()?
-        self.batch_size = batch_size
+        # self.batch_size = batch_size
         self.outputs = {} # mapping from output layer name to the layer that it refers to.
         # self._names_to_layers: a mapping of string (e.g. "layer_1_unroll=2") to a lasagne layer object
         self._names_to_layers = {}
@@ -65,19 +64,23 @@ class LoopyNetwork(AbstractLoopyNetwork):
         Therefore, we have to aggregate it over all the minibatches in something.
         Alas, but a small alas.
 
+        After making the architecture batchsize independent, this function can be 
+        replaced by self.evaluation_fn(inputs, targets)
+
         :return: tuple of loss, accuracy
         """
-        loss = 0
-        acc = 0
-        n_batches = 0
-        for batch_i, batch in enumerate(self._iterate_minibatches(X, y, self.batch_size, shuffle=False)):
-            inputs, targets = batch
-            batch_loss, batch_acc = self.evaluation_fn(inputs, targets)
-            loss += batch_loss
-            acc += batch_acc
-            n_batches += 1
-
-        return loss/n_batches, acc/n_batches
+        # loss = 0
+        # acc = 0
+        # n_batches = 0
+        # for batch_i, batch in enumerate(self._iterate_minibatches(X, y, self.batch_size, shuffle=False)):
+        #     inputs, targets = batch
+        #     batch_loss, batch_acc = self.evaluation_fn(inputs, targets)
+        #     loss += batch_loss
+        #     acc += batch_acc
+        #     n_batches += 1
+        # return loss/n_batches, acc/n_batches
+        return self.evaluation_fn(X, y)
+        
 
     def compile_model(self):
         """
@@ -95,7 +98,9 @@ class LoopyNetwork(AbstractLoopyNetwork):
         self.evaluation_fn = theano.function([self.input_var, self.target_var], [test_loss, test_acc])   
 
 
-    def train_model(self, X_train, y_train, X_val, y_val, n_epochs=10, 
+    def train_model(self, X_train, y_train, X_val, y_val, 
+                            batchsize=32,
+                            n_epochs=10, 
                             check_error_n_batches=20,
                             use_expensive_stats=True,
                             check_valid_acc_every=1, #in epochs
@@ -107,8 +112,8 @@ class LoopyNetwork(AbstractLoopyNetwork):
         """
         #--------------------------------------------------------------------------------------------------
         N = X_train.shape[0]
-        if N%self.batch_size:
-            print "Warning: batchsize (%s) does not modulo evenly into number of training examples(%s).  %s training examples are being ignored:"%(self.batch_size, N, N - self.batch_size*(N/self.batch_size))
+        if N%batchsize:
+            print "Warning: batchsize (%s) does not modulo evenly into number of training examples(%s).  %s training examples are being ignored:"%(batchsize, N, N - batchsize*(N/batchsize))
 
         self.compile_model()
         # self.network = self.outputs.values()[1]
@@ -141,7 +146,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
             # train_batches = 0
             start_time = time.time()
             #TODO: nee to modify al layer adding to take into account batches????
-            for train_batch_i, batch in enumerate(self._iterate_minibatches(X_train, y_train, self.batch_size, shuffle=True)):
+            for train_batch_i, batch in enumerate(self._iterate_minibatches(X_train, y_train, batchsize, shuffle=True)):
 
                 inputs, targets = batch
                 # self._print_activations(input_var, inputs)
@@ -258,7 +263,8 @@ class LoopyNetwork(AbstractLoopyNetwork):
     def _add_input(self, name, input_shape):
         if not hasattr(input_shape, "__iter__"):
             input_shape = [input_shape]
-        input_shape = tuple([self.batch_size] + list(input_shape))
+        # input_shape = tuple([self.batch_size] + list(input_shape))
+        input_shape = tuple([None] + list(input_shape))
         input_layer = lasagne.layers.InputLayer(shape=input_shape,
                                     input_var=None)
         # print input_layer.input_var.type() --> <TensorType(float64, matrix)>
@@ -431,7 +437,7 @@ def _make_1d_data_into_fake_image_volume(X):
 
 
 if __name__=="__main__":
-    model = LoopyNetwork(architecture_fpath="../architectures/toy_loopy_cnn_lasagne_config.py", n_unrolls=2, batch_size=2)
+    model = LoopyNetwork(architecture_fpath="../architectures/toy_loopy_cnn_lasagne_config.py", n_unrolls=2)
     # model = LoopyNetwork(architecture_fpath="../architectures/toy_loopy_mlp_lasagne_config.py", n_unrolls=3, batch_size=1)    
     # model = LoopyNetwork(architecture_fpath="../architectures/toy_mlp_config.py", n_unrolls=1, batch_size=24)    
 
@@ -470,7 +476,7 @@ if __name__=="__main__":
     check_error_n_batches = 100
     TRAIN_MODEL_FROM_SCRATCH = 1 # alternative is reload from saved file
     if TRAIN_MODEL_FROM_SCRATCH:
-        history = model.train_model(X_train, y_train, X_val, y_val, n_epochs=100, check_error_n_batches=check_error_n_batches, check_valid_acc_every=4, use_expensive_stats=True)
+        history = model.train_model(X_train, y_train, X_val, y_val, batchsize=32, n_epochs=100, check_error_n_batches=check_error_n_batches, check_valid_acc_every=4, use_expensive_stats=True)
         util.plot_loss_acc(history["full_train_loss"], history["full_train_acc"], history["valid_acc"], "batches*%s"%check_error_n_batches, attributes={"lol": 3})
     else:
         model.load_model("../saved_models/layers=5_loops=1_architecture-ID=10a222a5f3757ea7f2fa6cfafd3a514cdd22d8ca_Feb-20-2016_epoch=49")
