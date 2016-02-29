@@ -38,13 +38,14 @@ import struct
 from array import array as pyarray
 from numpy import append, array, int8, uint8, zeros
 
+import image_utils
+
 #===============================================================================
 # FUNCTIONS
 #===============================================================================
 
 
 #-----------------------------------------------------------------------------------------            
-
 
 def plot_loss_acc(losses, train_accs, val_accs, xlabel, attributes):   
     """
