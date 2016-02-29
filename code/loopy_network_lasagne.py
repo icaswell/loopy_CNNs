@@ -56,30 +56,6 @@ class LoopyNetwork(AbstractLoopyNetwork):
 
         self.compiled = False
         self.n_pretrained_epochs = 0
-
-
-    def performance_on_whole_set(self, X, y):
-        """
-        because the batch size is part of the architecture, we can't get the error all in one go.
-        Therefore, we have to aggregate it over all the minibatches in something.
-        Alas, but a small alas.
-
-        After making the architecture batchsize independent, this function can be 
-        replaced by self.evaluation_fn(inputs, targets)
-
-        :return: tuple of loss, accuracy
-        """
-        # loss = 0
-        # acc = 0
-        # n_batches = 0
-        # for batch_i, batch in enumerate(self._iterate_minibatches(X, y, self.batch_size, shuffle=False)):
-        #     inputs, targets = batch
-        #     batch_loss, batch_acc = self.evaluation_fn(inputs, targets)
-        #     loss += batch_loss
-        #     acc += batch_acc
-        #     n_batches += 1
-        # return loss/n_batches, acc/n_batches
-        return self.evaluation_fn(X, y)
         
 
     def compile_model(self):
@@ -112,9 +88,6 @@ class LoopyNetwork(AbstractLoopyNetwork):
         """
         #--------------------------------------------------------------------------------------------------
         N = X_train.shape[0]
-        if N%batchsize:
-            print "Warning: batchsize (%s) does not modulo evenly into number of training examples(%s).  %s training examples are being ignored:"%(batchsize, N, N - batchsize*(N/batchsize))
-
         self.compile_model()
         # self.network = self.outputs.values()[1]
         params = lasagne.layers.get_all_params(self.network, trainable=True)
@@ -170,8 +143,8 @@ class LoopyNetwork(AbstractLoopyNetwork):
                     print "cumulative_train_loss: ", performance_history["cumulative_train_loss"][-1]
 
                     if use_expensive_stats:
-                        valid_loss, valid_acc = self.performance_on_whole_set(X_val, y_val)
-                        full_train_loss, full_train_acc = self.performance_on_whole_set(X_train, y_train)                        
+                        valid_loss, valid_acc = self.evaluation_fn(X_val, y_val)
+                        full_train_loss, full_train_acc = self.evaluation_fn(X_train, y_train)                        
                         performance_history["valid_loss"].append(valid_loss)
                         performance_history["valid_acc"].append(valid_acc)
                         performance_history["full_train_loss"].append(full_train_loss)
@@ -192,8 +165,8 @@ class LoopyNetwork(AbstractLoopyNetwork):
             # And a full pass over the validation data:
             if not epoch%check_valid_acc_every:
 
-                valid_loss, valid_acc = self.performance_on_whole_set(X_val, y_val)
-                full_train_loss, full_train_acc = self.performance_on_whole_set(X_train, y_train)     
+                valid_loss, valid_acc = self.evaluation_fn(X_val, y_val)
+                full_train_loss, full_train_acc = self.evaluation_fn(X_train, y_train)     
 
                 # Then we print the results for this epoch:
                 print "VALID_LOSS: ", valid_loss
@@ -256,8 +229,11 @@ class LoopyNetwork(AbstractLoopyNetwork):
         if shuffle:
             np.random.shuffle(order)
 
-        for i in range(N/batchsize):
-            batch_idx = order[i:i + batchsize]
+        for i in xrange(N/batchsize + 1):
+            if i + batchsize <= N:
+                batch_idx = order[i:i + batchsize]
+            else:
+                batch_idx = order[i:N]
             yield X[batch_idx], y[batch_idx]
 
     def _add_input(self, name, input_shape):
@@ -476,11 +452,11 @@ if __name__=="__main__":
     check_error_n_batches = 100
     TRAIN_MODEL_FROM_SCRATCH = 1 # alternative is reload from saved file
     if TRAIN_MODEL_FROM_SCRATCH:
-        history = model.train_model(X_train, y_train, X_val, y_val, batchsize=32, n_epochs=100, check_error_n_batches=check_error_n_batches, check_valid_acc_every=4, use_expensive_stats=True)
+        history = model.train_model(X_train, y_train, X_val, y_val, batchsize=16, n_epochs=100, check_error_n_batches=check_error_n_batches, check_valid_acc_every=4, use_expensive_stats=True)
         util.plot_loss_acc(history["full_train_loss"], history["full_train_acc"], history["valid_acc"], "batches*%s"%check_error_n_batches, attributes={"lol": 3})
     else:
         model.load_model("../saved_models/layers=5_loops=1_architecture-ID=10a222a5f3757ea7f2fa6cfafd3a514cdd22d8ca_Feb-20-2016_epoch=49")
-        valid_loss, valid_acc = model.performance_on_whole_set(X_train, y_train)
+        valid_loss, valid_acc = model.evaluation_fn(X_train, y_train)
 
         print "VALID_LOSS: ", valid_loss
         print "VALID_ACC: ", valid_acc
