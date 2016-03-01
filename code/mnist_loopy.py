@@ -5,7 +5,7 @@ import numpy as np
 from data_utils import load_mnist
 from loopy_network_lasagne import LoopyNetwork
 
-model = LoopyNetwork(architecture_fpath="../architectures/mnist_loopy_config.py", n_unrolls=1, batch_size=50)
+model = LoopyNetwork(architecture_fpath="../architectures/mnist_loopy_config.py", n_unrolls=1)
 print repr(model)
 
 X_train, y_train, X_val, y_val, X_test, y_test = load_mnist()
@@ -13,4 +13,4 @@ X_train, y_train, X_val, y_val, X_test, y_test = load_mnist()
 print X_train.shape, y_train.shape
 print X_test.shape, y_test.shape
 
-model.train_model(X_train, y_train, X_test, y_test, n_epochs=5, use_expensive_stats=False)
+model.train_model(X_train, y_train, X_test, y_test, batchsize=50, n_epochs=5, use_expensive_stats=False)

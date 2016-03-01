@@ -20,7 +20,7 @@ from data_utils import *
 
 saved_model = "../saved_models/mnist_c3_c3_c1_fc+addition-loop_Feb-27-2016_epoch=19"
 # saved_model = "../saved_models/layers=5_loops=1_architecture-ID=10a222a5f3757ea7f2fa6cfafd3a514cdd22d8ca_Feb-20-2016_epoch=25"
-model = LoopyNetwork(architecture_fpath="../architectures/mnist_c3_c3_c1_fc+loop.py", n_unrolls=2, batch_size=2)
+model = LoopyNetwork(architecture_fpath="../architectures/mnist_c3_c3_c1_fc+loop.py", n_unrolls=2)
 
 model.load_model(saved_model)
 
@@ -57,9 +57,7 @@ saliency = theano.grad(max_outp.sum(), wrt=inp)
 saliency_function = theano.function([inp], saliency)
 # saliency_function = theano.function([inp], [outp])
 
-batch_size = 36
-
-sal =  saliency_function(X_train[0:batch_size])
+sal =  saliency_function(X_train[0])
 pprint(sal.nonzero())
 print sal.shape
 

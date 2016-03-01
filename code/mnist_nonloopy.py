@@ -6,7 +6,7 @@ from data_utils import load_mnist
 import util
 from loopy_network_lasagne import LoopyNetwork
 
-model = LoopyNetwork(architecture_fpath="../architectures/mnist_nonloopy_config.py", n_unrolls=1, batch_size=36)
+model = LoopyNetwork(architecture_fpath="../architectures/mnist_nonloopy_config.py", n_unrolls=1)
 print repr(model)
 
 X_train, y_train, X_val, y_val, X_test, y_test = load_mnist()
@@ -14,6 +14,6 @@ X_train, y_train, X_val, y_val, X_test, y_test = load_mnist()
 print X_train.shape, y_train.shape
 print X_test.shape, y_test.shape
 
-history = model.train_model(X_train, y_train, X_test, y_test, use_expensive_stats=True, n_epochs=50)
+history = model.train_model(X_train, y_train, X_test, y_test, use_expensive_stats=True, batchsize=36, n_epochs=50)
 	
 util.plot_loss_acc(history["full_train_loss"], history["full_train_acc"], history["valid_acc"], "batches*%s"%check_error_n_batches, attributes={"augh": 3})
