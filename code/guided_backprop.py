@@ -1,4 +1,19 @@
-# guided_backprop.py
+# File: guided_backprop.py
+# @author: Isaac Caswell
+# @created: 29 Feb 2016
+#===============================================================================
+# DESCRIPTION:
+#
+# exports a function to take a trained lasagne model and an image, and then save 
+# the result to a filesystem with one folder per filter.  
+# Each file that is saved is numpy matrix, yet to be converted into an image by 
+# someone else
+#
+#===============================================================================
+# TODOS:
+# -put model modification into the function
+# - go over all filters, not just first, per layer
+#===============================================================================
 
 
 import numpy as np
@@ -75,9 +90,11 @@ def save_filter_visualizations_to_folder(model, dirname, X, layers_to_vis=None,
 			# Differentiating wrt this will give this filter's reaction to the image
 			filter_specific_cost = output_volume[:,filter_i].sum()
 
+			#===============================================================================
+			# make the theano symbolic variable and then make a function of it, and then 
+			# apply it to some input images 
 			filter_saliency = theano.grad(filter_specific_cost, wrt=input_var)
 			filter_saliency_fn = theano.function([input_var], filter_saliency)
-
 			filter_saliency_images = filter_saliency_fn(X)
 
 			filter_folder_name = os.path.join(layer_folder_name, "filter=%s"%filter_i)
@@ -86,11 +103,8 @@ def save_filter_visualizations_to_folder(model, dirname, X, layers_to_vis=None,
 			with open(filter_folder_name, "w") as outfile:
 				np.save(outfile, filter_saliency_images)
 
-
-
-
 #===============================================================================
-# 
+# Sample script
 X_train, y_train, X_val, y_val, X_test, y_test = load_mnist()
 
 
@@ -103,7 +117,8 @@ model.load_model(saved_model)
 
 
 #===============================================================================
-# TODO: export below to function
+# below: modify the network so the gradients prooagate only positively, as 
+# necessited by guided backprop.  This is necessary
 relu = lasagne.nonlinearities.rectify
 relu_layers = [layer for layer in lasagne.layers.get_all_layers(model.network)
                if getattr(layer, 'nonlinearity', None) is relu]
@@ -111,7 +126,8 @@ modded_relu = GuidedBackprop(relu)  # important: only instantiate this once!
 for layer in relu_layers:
     layer.nonlinearity = modded_relu
 
-
+#===============================================================================
+# Now actually visualize
 print X_train[0:2].shape
 save_filter_visualizations_to_folder(model, dirname="../pictures", X=X_train[0:36], layers_to_vis=None, 
 														filters_to_vis={}, 
