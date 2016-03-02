@@ -6,12 +6,11 @@
 #
 # exports a function to take a trained lasagne model and an image, and then save 
 # the result to a filesystem with one folder per filter.  
-# Each file that is saved is numpy matrix, yet to be converted into an image by 
-# someone else
+# Each file that is saved is a .png file
 #
 #===============================================================================
 # TODOS:
-# -put model modification into the function
+# - put model modification into the function
 # - go over all filters, not just first, per layer
 #===============================================================================
 
@@ -30,6 +29,7 @@ import lasagne
 
 from loopy_network_lasagne import LoopyNetwork
 import util
+from image_utils import visualize_image
 from guided_backprop_util import *
 from data_utils import *
 
@@ -38,12 +38,15 @@ from data_utils import *
 # 
 
 
-def save_filter_visualizations_to_folder(model, dirname, X, layers_to_vis=None, 
+def save_filter_visualizations_to_folder(model, dirname, X, 
+														layers_to_vis=None, 
 														filters_to_vis={}, 
-														run_stem="guided_backprop"):
+														run_stem="guided_backprop",
+														positivize_gradients=True):
 	"""
 	Uses guided backprop to visualize all filters in all relevant layers.  Makes a folder containing all these, and within 
-	that folder makes a folder for each layer.
+	that folder makes a folder for each layer, and within each one of those a folder for each filter, and with those reside
+	the images.
 
 	:param list layers_to_vis: a list of layer names to visualize.  If it is None, all layers are visualized.
 	:param list filters_to_vis: a dict mapping layers in layers_to_vis to indexes of filters to visualize.  
@@ -52,14 +55,24 @@ def save_filter_visualizations_to_folder(model, dirname, X, layers_to_vis=None,
 	:param string dirname: the name of the directory in which to save this folder
 	:param array-like X: images with respect to which to get the guided bp.  Shape N, C, H, W I think
 	:param LoopyNetwork model: a trained lasagne model.
+	:param bool positivize_gradients: a boolean being True if we want to destructively modify the model in oder to 
+		positivize gradients, as required by guided backprop
 	"""
+	if positivize_gradients:
+		positivize_relu_gradients(model)
+
 	input_var = model.input_var
 	names_to_layers = {layer.name:layer for layer in lasagne.layers.get_all_layers(model.network) if layer is not None and layer.name is not None}
 	N = X.shape[0]
 	# layer_id = 5
 	
 	run_folder_name = os.path.join(dirname, run_stem + "_" + util.time_string(precision="second"))
+	orig_folder_name = os.path.join(run_folder_name, "orig")	
 	os.mkdir(run_folder_name) #make the folder in which to store images for this run
+	os.mkdir(orig_folder_name) #make the folder for the original images
+	for image_i, image in enumerate(X):
+		saveto = os.path.join(orig_folder_name, "img_%s"%image_i)
+		visualize_image(image, dataset='mnist', saveto=saveto)
 
 	if layers_to_vis is None:
 		layers_to_vis = names_to_layers.keys()
@@ -98,39 +111,30 @@ def save_filter_visualizations_to_folder(model, dirname, X, layers_to_vis=None,
 			filter_saliency_images = filter_saliency_fn(X)
 
 			filter_folder_name = os.path.join(layer_folder_name, "filter=%s"%filter_i)
+			os.mkdir(filter_folder_name)
 			print "\t\tvisualizing filter %s"%filter_i
-
-			with open(filter_folder_name, "w") as outfile:
-				np.save(outfile, filter_saliency_images)
+			for image_i, image in enumerate(filter_saliency_images):
+				saveto = os.path.join(filter_folder_name, "img=%s"%image_i)
+				visualize_image(image, dataset='mnist', saveto=saveto)
+			# with open(filter_folder_name, "w") as outfile:
+			# 	np.save(outfile, filter_saliency_images)
 
 #===============================================================================
 # Sample script
 X_train, y_train, X_val, y_val, X_test, y_test = load_mnist()
 
-
 saved_model = "../saved_models/mnist_c3_c3_c1_fc+addition-loop_Feb-27-2016_epoch=19"
 # saved_model = "../saved_models/layers=5_loops=1_architecture-ID=10a222a5f3757ea7f2fa6cfafd3a514cdd22d8ca_Feb-20-2016_epoch=25"
 model = LoopyNetwork(architecture_fpath="../architectures/mnist_c3_c3_c1_fc+loop.py", n_unrolls=2)
-
 model.load_model(saved_model)
-
-
-
-#===============================================================================
-# below: modify the network so the gradients prooagate only positively, as 
-# necessited by guided backprop.  This is necessary
-relu = lasagne.nonlinearities.rectify
-relu_layers = [layer for layer in lasagne.layers.get_all_layers(model.network)
-               if getattr(layer, 'nonlinearity', None) is relu]
-modded_relu = GuidedBackprop(relu)  # important: only instantiate this once!
-for layer in relu_layers:
-    layer.nonlinearity = modded_relu
 
 #===============================================================================
 # Now actually visualize
-print X_train[0:2].shape
-save_filter_visualizations_to_folder(model, dirname="../pictures", X=X_train[0:36], layers_to_vis=None, 
-														filters_to_vis={}, 
-														run_stem="test_gbp")
+save_filter_visualizations_to_folder(model, dirname="../pictures", 
+											X=X_train[0:36], 
+											layers_to_vis=None, 
+											filters_to_vis={}, 
+											run_stem="test_gbp",
+											positivize_gradients=False)
 
 
