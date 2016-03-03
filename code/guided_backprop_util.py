@@ -1,4 +1,6 @@
+# This is all taken from online somewhere
 import theano
+import lasagne
 
 class ModifiedBackprop(object):
 
@@ -40,3 +42,14 @@ class GuidedBackprop(ModifiedBackprop):
         (grd,) = out_grads
         dtype = inp.dtype
         return (grd * (inp > 0).astype(dtype) * (grd > 0).astype(dtype),)
+
+#===============================================================================
+# below: modify the network so the gradients prooagate only positively, as 
+# necessited by guided backprop.  This is necessary
+def positivize_relu_gradients(model):
+    relu = lasagne.nonlinearities.rectify
+    relu_layers = [layer for layer in lasagne.layers.get_all_layers(model.network)
+                   if getattr(layer, 'nonlinearity', None) is relu]
+    modded_relu = GuidedBackprop(relu)  # important: only instantiate this once!
+    for layer in relu_layers:
+        layer.nonlinearity = modded_relu

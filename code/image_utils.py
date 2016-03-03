@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 from data_utils import load_mnist
 
-def visualize_image(img, dataset='mnist'):
+def visualize_image(img, dataset='mnist', saveto=None):
   """
   Input:
   - (1, 3, H, W) or (3, H, W)
@@ -16,7 +16,12 @@ def visualize_image(img, dataset='mnist'):
   plt.imshow(deprocess_image_without_mean(img, dataset=dataset, renorm=True))
   plt.gcf().set_size_inches(3, 3)
   plt.axis('off')
-  plt.show()
+  plt.plot(range(4), range(4))
+  if saveto is None:
+    print "showing....."
+    plt.show()
+  else:
+    plt.savefig(saveto)
 
 
 def deprocess_image_without_mean(img, dataset='mnist', renorm=True):
@@ -38,7 +43,7 @@ def deprocess_image_without_mean(img, dataset='mnist', renorm=True):
   if renorm:
     low, high = img.min(), img.max()
     img = 255.0 * (img - low) / (high - low)
-  print img.shape
+  # print img.shape
   return img.astype(np.uint8)
 
 """
@@ -120,5 +125,8 @@ if __name__ == '__main__':
     X_train, y_train, X_val, y_val, X_test, y_test = load_mnist()
     print X_train.shape
     sample_img = X_train[0]
-    visualize_image(sample_img, dataset='mnist')
+
+
+    visualize_image(sample_img, dataset='mnist', saveto="dejame")
+    print "done"
 
