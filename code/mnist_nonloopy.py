@@ -1,3 +1,5 @@
+#Chuanqi's other playground
+
 import os, struct
 from array import array as pyarray
 from numpy import append, array, int8, uint8, zeros
