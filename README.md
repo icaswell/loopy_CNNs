@@ -22,6 +22,7 @@ Contains the central scripts and models to our project.  All scripts have a demo
  + **guided_backprop.py**:  exports a function to take a trained LoopyCnn model and an image, perform guided backprop with respect to a user-defined set of convolutional filters. The result is saved to a timestamped filesystem with one folder per layer, and within each of those one folder per filter, each of which contains one .png file for each input  image.  The original input images are saved in a subdirectory called "orig".
  + **guided_backprop_util.py**:  util functions for guided_backprop.py.  Modified from saliency map scripts from Jan Schlüter.
  + **image_utils.py**: utility functions for plotting images.
+ + **mnist_loopy.py, mnist_nonloopy.py, mnist_lasagne_isaac.py**, etc. Scripts to test verious models
  + **extraneous_scripts**: a folder of whatever random scripts we may create for, say, plotting graphs, cleaning data, etc.
 
 data
