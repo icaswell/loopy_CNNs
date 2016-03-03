@@ -4,13 +4,14 @@
 #===============================================================================
 # DESCRIPTION:
 #
-# exports a function to take a trained lasagne model and an image, and then save 
-# the result to a filesystem with one folder per filter.  
-# Each file that is saved is a .png file
+# exports a function to take a trained lasagne model and an image, perform guided
+# backprop with respect to a user-defined set of convolutional filters.
+# The result is saved to a timestamped filesystem with one folder per layer, and within each of 
+# those one folder per filter, each of which contains one .png file for each input 
+# image.  The original input images are saved in a subdirectory called "orig".
 #
 #===============================================================================
 # TODOS:
-# - put model modification into the function
 # - go over all filters, not just first, per layer
 #===============================================================================
 
@@ -66,7 +67,7 @@ def save_filter_visualizations_to_folder(model, dirname, X,
 	N = X.shape[0]
 	# layer_id = 5
 	
-	run_folder_name = os.path.join(dirname, run_stem + "_" + util.time_string(precision="second"))
+	run_folder_name = os.path.join(dirname, run_stem + "_" + util.time_string(precision="minute"))
 	orig_folder_name = os.path.join(run_folder_name, "orig")	
 	os.mkdir(run_folder_name) #make the folder in which to store images for this run
 	os.mkdir(orig_folder_name) #make the folder for the original images
@@ -135,6 +136,6 @@ save_filter_visualizations_to_folder(model, dirname="../pictures",
 											layers_to_vis=None, 
 											filters_to_vis={}, 
 											run_stem="test_gbp",
-											positivize_gradients=False)
+											positivize_gradients=True)
 
 
