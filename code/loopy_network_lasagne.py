@@ -164,9 +164,9 @@ class LoopyNetwork(AbstractLoopyNetwork):
  
             # And a full pass over the validation data:
             if not epoch%check_valid_acc_every:
-
-                valid_loss, valid_acc = self.evaluation_fn(X_val, y_val)
-                full_train_loss, full_train_acc = self.evaluation_fn(X_train, y_train)     
+                print "evaluating model..."
+                valid_loss, valid_acc = self.performance_on_whole_set(X_val, y_val)
+                full_train_loss, full_train_acc = self.performance_on_whole_set(X_train, y_train)     
 
                 # Then we print the results for this epoch:
                 print "VALID_LOSS: ", valid_loss
@@ -324,6 +324,25 @@ class LoopyNetwork(AbstractLoopyNetwork):
             dfkdnfjvsndk
 
         return layer_options
+
+    def performance_on_whole_set(self, X, y):
+        """
+        we do this batch by batch for memory concerns!
+       
+        :return: tuple of loss, accuracy
+        """
+        loss = 0
+        acc = 0
+        n_batches = 0
+        for batch_i, batch in enumerate(self._iterate_minibatches(X, y, 100, shuffle=False)):
+            inputs, targets = batch
+            batch_loss, batch_acc = self.evaluation_fn(inputs, targets)
+            loss += batch_loss
+            acc += batch_acc
+            n_batches += 1
+      
+        return loss/n_batches, acc/n_batches
+
 
     def _add_merge_layer(self, layer_name, input_layers, merge_mode):
         """
