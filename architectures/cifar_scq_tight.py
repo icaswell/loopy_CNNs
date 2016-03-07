@@ -7,7 +7,7 @@
 "run_params":
         {"use_batchnorm":True},
 "framework":"lasagne",
-"name": "cifar_scq_loopy",
+"name": "cifar_scq_tight",
 
 "templates":
         {
@@ -40,7 +40,7 @@
                 },
          "loop": {
                 "type": "loop",
-                "structure": ["conv_5", "conv_1"],
+                "structure": ["conv_4", "conv_2"],
                 "composition_mode": "sum"
                 },
 
