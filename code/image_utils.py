@@ -4,7 +4,35 @@ import numpy as np
 from scipy.misc import imread
 import matplotlib.pyplot as plt
 
-from data_utils import load_mnist
+from data_utils import load_mnist, load_cifar10
+
+def cifar_imshow_noax(img, renorm=True, dataset='cifar10', saveto=None):
+    """ Tiny helper to show images as uint8 and remove axis labels """
+    img = deprocess_image_without_mean(img, dataset=dataset, renorm=renorm)
+    plt.imshow(img.astype('uint8'))
+    plt.gcf().set_size_inches(3, 3)
+    plt.gca().axis('off')
+    if saveto is None:
+      print "showing....."
+      plt.show()
+    else:
+      plt.savefig(saveto)
+
+    
+def imshow_noax(img, normalize=True, dataset='cifar10', saveto=None):
+  """ Tiny helper to show images as uint8 and remove axis labels """
+  if normalize:
+      img_max, img_min = np.max(img), np.min(img)
+      img = 255.0 * (img - img_min) / (img_max - img_min)
+  plt.imshow(img.astype('uint8'))
+  plt.gca().axis('off')
+  if saveto is None:
+    print "showing....."
+    plt.show()
+  else:
+    plt.savefig(saveto)
+
+
 
 def visualize_image(img, dataset='mnist', saveto=None):
   """
@@ -40,6 +68,7 @@ def deprocess_image_without_mean(img, dataset='mnist', renorm=True):
 
   if dataset == 'mnist':
     img = img[:,:,0]
+
   if renorm:
     low, high = img.min(), img.max()
     img = 255.0 * (img - low) / (high - low)
@@ -60,7 +89,7 @@ def preprocess_image(img, mean_img, mean='image'):
   - img: (H, W, 3)
   
   Returns:
-  - (1, 3, H, 3)
+  - (1, 3, H, W)
   """
   if mean == 'image':
     mean = mean_img
@@ -122,11 +151,19 @@ def image_from_url(url):
 
 if __name__ == '__main__':
     print 'You are running this script (image_utils.py) as main, so you must be demoing it!'
-    X_train, y_train, X_val, y_val, X_test, y_test = load_mnist()
-    print X_train.shape
-    sample_img = X_train[0]
+    # X_train, y_train, X_val, y_val, X_test, y_test = load_mnist()
+    # print X_train.shape
+    # sample_img = X_train[0]
+    # visualize_image(sample_img, dataset='mnist', saveto="dejame")
 
+    
 
-    visualize_image(sample_img, dataset='mnist', saveto="dejame")
+    # kitten, puppy = imread('kitten.jpg'), imread('puppy.jpg')
+    # print puppy.shape
+    # imshow_noax(puppy)
+
+    X_train, y_train, X_val, y_val, X_test, y_test = load_cifar10()
+    first_cifar_img =  X_train[0]
+    cifar_imshow_noax(first_cifar_img, renorm=True)
     print "done"
 
