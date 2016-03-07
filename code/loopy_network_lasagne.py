@@ -205,6 +205,24 @@ class LoopyNetwork(AbstractLoopyNetwork):
         self.loss = data["loss"]
         self.compile_model()
 
+    def performance_on_whole_set(self, X, y):
+        """
+        we do this batch by batch for memory concerns!
+       
+        :return: tuple of loss, accuracy
+        """
+        loss = 0
+        acc = 0
+        n_batches = 0
+        for batch_i, batch in enumerate(self._iterate_minibatches(X, y, 100, shuffle=False)):
+            inputs, targets = batch
+            batch_loss, batch_acc = self.evaluation_fn(inputs, targets)
+            loss += batch_loss
+            acc += batch_acc
+            n_batches += 1
+      
+        return loss/n_batches, acc/n_batches
+
     
     def _print_activations(self, input_var, x_minibatch):
         # print lasagne.layers.get_all_layers(self.network)
@@ -324,24 +342,6 @@ class LoopyNetwork(AbstractLoopyNetwork):
             dfkdnfjvsndk
 
         return layer_options
-
-    def performance_on_whole_set(self, X, y):
-        """
-        we do this batch by batch for memory concerns!
-       
-        :return: tuple of loss, accuracy
-        """
-        loss = 0
-        acc = 0
-        n_batches = 0
-        for batch_i, batch in enumerate(self._iterate_minibatches(X, y, 100, shuffle=False)):
-            inputs, targets = batch
-            batch_loss, batch_acc = self.evaluation_fn(inputs, targets)
-            loss += batch_loss
-            acc += batch_acc
-            n_batches += 1
-      
-        return loss/n_batches, acc/n_batches
 
 
     def _add_merge_layer(self, layer_name, input_layers, merge_mode):
