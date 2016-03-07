@@ -185,7 +185,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
         return performance_history
 
     def save_model(self, epoch):
-        save_fname = "../saved_models/%s_%s_epoch=%s"%(self.architecture_name, util.time_string(precision='day'), epoch)
+        save_fname = "../saved_models/%s_unrolls=%s_%s_epoch=%s"%(self.architecture_name, self.n_unrolls, util.time_string(precision='second'), epoch)
         print "saving model to %s"%save_fname
         data = {"network": self.network,
                 "input_var": self.input_var,
