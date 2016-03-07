@@ -6,7 +6,7 @@ from data_utils import load_cifar10
 from loopy_network_lasagne import LoopyNetwork
 import util 
 
-architecture_name = "cifar_c5-64_pool2_c3-64_c3-64_c3-64_c3-64_c3-64_c3-64_fc"
+ARCH_NAME = "cifar_c5-64_pool2_c3-64_c3-64_c3-64_c3-64_c3-64_c3-64_fc"
 
 model = LoopyNetwork(architecture_fpath="../architectures/cifar_resnet_inspired.py", n_unrolls=2)
 print repr(model)
