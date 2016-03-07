@@ -43,7 +43,8 @@ def save_filter_visualizations_to_folder(model, dirname, X,
 														layers_to_vis=None, 
 														filters_to_vis={}, 
 														run_stem="guided_backprop",
-														positivize_gradients=True):
+														positivize_gradients=True,
+														dataset_name="cifar10"):
 	"""
 	Uses guided backprop to visualize all filters in all relevant layers.  Makes a folder containing all these, and within 
 	that folder makes a folder for each layer, and within each one of those a folder for each filter, and with those reside
@@ -73,10 +74,11 @@ def save_filter_visualizations_to_folder(model, dirname, X,
 	os.mkdir(orig_folder_name) #make the folder for the original images
 	for image_i, image in enumerate(X):
 		saveto = os.path.join(orig_folder_name, "img_%s"%image_i)
-		visualize_image(image, dataset='mnist', saveto=saveto)
+		visualize_image(image, dataset=dataset_name, saveto=saveto)
 
 	if layers_to_vis is None:
 		layers_to_vis = names_to_layers.keys()
+	print "layers_to_vis: ", layers_to_vis
 	for layer_name, internal_top_layer in names_to_layers.iteritems():
 		if layer_name not in layers_to_vis: continue
 		layer_folder_name = os.path.join(run_folder_name, layer_name)
@@ -93,7 +95,8 @@ def save_filter_visualizations_to_folder(model, dirname, X,
 		if filters_to_vis_for_this_layer is None: # look at all filters in the layer if none is/are specified
 			# filters_to_vis_for_this_layer = range(output_volume.shape[1])
 			#TODO: how to access the number of filters per layer?  We want this to be the above line (with range())
-			filters_to_vis_for_this_layer = [0]
+			filters_to_vis_for_this_layer = range(12)
+
 
 		#===============================================================================
 		# No go through and do guided backprop for each filter:
@@ -116,26 +119,31 @@ def save_filter_visualizations_to_folder(model, dirname, X,
 			print "\t\tvisualizing filter %s"%filter_i
 			for image_i, image in enumerate(filter_saliency_images):
 				saveto = os.path.join(filter_folder_name, "img=%s"%image_i)
-				visualize_image(image, dataset='mnist', saveto=saveto)
+				visualize_image(image, dataset=dataset_name, saveto=saveto)
 			# with open(filter_folder_name, "w") as outfile:
 			# 	np.save(outfile, filter_saliency_images)
 
-#===============================================================================
-# Sample script
-X_train, y_train, X_val, y_val, X_test, y_test = load_mnist()
+if __name__=="__main__":
+	#===============================================================================
+	# Sample script
+	# X_train, y_train, X_val, y_val, X_test, y_test = load_mnist()
 
-saved_model = "../saved_models/mnist_c3_c3_c1_fc+addition-loop_Feb-27-2016_epoch=19"
-# saved_model = "../saved_models/layers=5_loops=1_architecture-ID=10a222a5f3757ea7f2fa6cfafd3a514cdd22d8ca_Feb-20-2016_epoch=25"
-model = LoopyNetwork(architecture_fpath="../architectures/mnist_c3_c3_c1_fc+loop.py", n_unrolls=2)
-model.load_model(saved_model)
+	# saved_model = "../saved_models/mnist_c3_c3_c1_fc+addition-loop_Feb-27-2016_epoch=19"
+	# saved_model = "../saved_models/layers=5_loops=1_architecture-ID=10a222a5f3757ea7f2fa6cfafd3a514cdd22d8ca_Feb-20-2016_epoch=25"
+	# arch_fpath = "../architectures/mnist_c3_c3_c1_fc+loop.py"
+	X_train, y_train, X_val, y_val, X_test, y_test = load_cifar10()
+	arch_fpath = "../architectures/cifar_isaac.py"
+	saved_model = "../saved_models/cifar_c3-32_c3-64_c3-64_c3-3_fc_sumloop_Mar--5-15:38:29-2016_epoch=6"
+	model = LoopyNetwork(architecture_fpath=arch_fpath, n_unrolls=2)
+	model.load_model(saved_model)
 
-#===============================================================================
-# Now actually visualize
-save_filter_visualizations_to_folder(model, dirname="../pictures", 
-											X=X_train[0:36], 
-											layers_to_vis=None, 
-											filters_to_vis={}, 
-											run_stem="test_gbp",
-											positivize_gradients=True)
+	#===============================================================================
+	# Now actually visualize
+	save_filter_visualizations_to_folder(model, dirname="../pictures", 
+												X=X_train[0:1], 
+												layers_to_vis=None, 
+												filters_to_vis={}, 
+												run_stem="test_gbp",
+												positivize_gradients=True)
 
 
