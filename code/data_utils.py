@@ -92,7 +92,7 @@ def load_cifar10(num_training=49000, num_validation=1000, num_test=1000):
     # Load the raw CIFAR-10 data
     cifar10_dir = '../data/cifar10'
     X_train, y_train, X_test, y_test = _load_CIFAR10(cifar10_dir)
-        
+    
     # Subsample the data
     mask = range(num_training, num_training + num_validation)
     X_val = X_train[mask]
