@@ -1,0 +1,410 @@
+Good job.  You have followed directions.  Asserter passes.
+[45mALN> [0m [45mloop outputs: [0m 
+[45mALN> [0m [91m[repeating section] adding layer conv_1_unroll=0 with input input[0m 
+{'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': <lasagne.init.GlorotUniform object at 0x7fc563acf350>, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_2_unroll=0 with input conv_1_unroll=0[0m 
+{'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': <lasagne.init.GlorotUniform object at 0x7fc563a6d350>, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_3_unroll=0 with input conv_2_unroll=0[0m 
+{'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': <lasagne.init.GlorotUniform object at 0x7fc563a6db90>, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_4_unroll=0 with input conv_3_unroll=0[0m 
+{'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': <lasagne.init.GlorotUniform object at 0x7fc563a7a150>, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_5_unroll=0 with input conv_4_unroll=0[0m 
+{'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': <lasagne.init.GlorotUniform object at 0x7fc563a7a6d0>, 'num_filters': 3}
+[45mALN> [0m [91madding loop:[0m 
+[45mALN> [0m [45mloop outputs: ('conv_1', ('conv_5_unroll=0', 'sum'))[0m 
+[45mALN> [0m [91m[repeating section] adding layer conv_1_unroll=1 with input ['input', 'conv_5_unroll=0'][0m 
+{'b': conv_1_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_1_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_2_unroll=1 with input conv_1_unroll=1[0m 
+{'b': conv_2_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_2_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_3_unroll=1 with input conv_2_unroll=1[0m 
+{'b': conv_3_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_3_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_4_unroll=1 with input conv_3_unroll=1[0m 
+{'b': conv_4_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_4_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_5_unroll=1 with input conv_4_unroll=1[0m 
+{'b': conv_5_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_5_unroll=0.W, 'num_filters': 3}
+[45mALN> [0m [91madding loop:[0m 
+[45mALN> [0m [45mloop outputs: ('conv_1', ('conv_5_unroll=1', 'sum'))[0m 
+[45mALN> [0m [91m[repeating section] adding layer conv_1_unroll=2 with input ['input', 'conv_5_unroll=1'][0m 
+{'b': conv_1_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_1_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_2_unroll=2 with input conv_1_unroll=2[0m 
+{'b': conv_2_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_2_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_3_unroll=2 with input conv_2_unroll=2[0m 
+{'b': conv_3_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_3_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_4_unroll=2 with input conv_3_unroll=2[0m 
+{'b': conv_4_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_4_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_5_unroll=2 with input conv_4_unroll=2[0m 
+{'b': conv_5_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_5_unroll=0.W, 'num_filters': 3}
+[45mALN> [0m [91madding loop:[0m 
+[45mALN> [0m [45mloop outputs: ('conv_1', ('conv_5_unroll=2', 'sum'))[0m 
+[45mALN> [0m [91m[repeating section] adding layer conv_1_unroll=3 with input ['input', 'conv_5_unroll=2'][0m 
+{'b': conv_1_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_1_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_2_unroll=3 with input conv_1_unroll=3[0m 
+{'b': conv_2_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_2_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_3_unroll=3 with input conv_2_unroll=3[0m 
+{'b': conv_3_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_3_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_4_unroll=3 with input conv_3_unroll=3[0m 
+{'b': conv_4_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_4_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_5_unroll=3 with input conv_4_unroll=3[0m 
+{'b': conv_5_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_5_unroll=0.W, 'num_filters': 3}
+[45mALN> [0m [91madding loop:[0m 
+[45mALN> [0m [45mloop outputs: ('conv_1', ('conv_5_unroll=3', 'sum'))[0m 
+[45mALN> [0m [91m[repeating section] adding layer conv_1_unroll=4 with input ['input', 'conv_5_unroll=3'][0m 
+{'b': conv_1_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_1_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_2_unroll=4 with input conv_1_unroll=4[0m 
+{'b': conv_2_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_2_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_3_unroll=4 with input conv_2_unroll=4[0m 
+{'b': conv_3_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_3_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_4_unroll=4 with input conv_3_unroll=4[0m 
+{'b': conv_4_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_4_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_5_unroll=4 with input conv_4_unroll=4[0m 
+{'b': conv_5_unroll=0.b, 'nonlinearity': <function rectify at 0x7fc5660a3050>, 'filter_size': 3, 'pad': 1, 'W': conv_5_unroll=0.W, 'num_filters': 3}
+[45mALN> [0m [94m[after repeating section] adding layer fc_1 with input conv_5_unroll=4[0m 
+[45mALN> [0m [45mmarking layer fc_1 as output[0m 
+[91mModel has 99625 total parameters[0m 
+LoopyCNN instance with the following hyperparameters, layers and loops:[95m
+HYPERPARAMETERS:[0m
+	n_unrolls=5
+	use_batchnorm=True[95m
+
+ARCHITECTURE:[0m
+main_stack:
+	[93minput [input layer; output_dim=(3, 32, 32)][0m
+	[96mconv_1 [conv2d layer; num_filters=48][0m
+	[96mconv_2 [conv2d layer; num_filters=48][0m
+	[96mconv_3 [conv2d layer; num_filters=48][0m
+	[96mconv_4 [conv2d layer; num_filters=48][0m
+	[96mconv_5 [conv2d layer; num_filters=3][0m
+	[97mfc_1 [dense layer; output_dim=10][0m
+loop:
+	[96mconv_5 [conv2d layer; num_filters=3][0m
+	[96mconv_1 [conv2d layer; num_filters=48][0m
+(20000, 3, 32, 32) (20000,)
+(1000, 3, 32, 32) (1000,)
+*------------------------------------------------------------------------------*
+Epoch 0, batch 499:
+batchly_train_loss:  2.34009499834
+cumulative_train_loss:  2.34478454744
+*------------------------------------------------------------------------------*
+Epoch 0, batch 999:
+batchly_train_loss:  2.12962048579
+cumulative_train_loss:  2.23709482689
+*------------------------------------------------------------------------------*
+Epoch 0, batch 1499:
+batchly_train_loss:  1.97840476897
+cumulative_train_loss:  2.15080728256
+*------------------------------------------------------------------------------*
+Epoch 0, batch 1999:
+batchly_train_loss:  2.03914357668
+cumulative_train_loss:  2.12287739114
+*------------------------------------------------------------------------------*
+Epoch 0, batch 2499:
+batchly_train_loss:  1.95034208059
+cumulative_train_loss:  2.08835652068
+*------------------------------------------------------------------------------*
+Epoch 0, batch 2999:
+batchly_train_loss:  1.84725325961
+cumulative_train_loss:  2.04815924475
+*------------------------------------------------------------------------------*
+Epoch 0, batch 3499:
+batchly_train_loss:  1.85616688829
+cumulative_train_loss:  2.02072392659
+*------------------------------------------------------------------------------*
+Epoch 0, batch 3999:
+batchly_train_loss:  1.86976646607
+cumulative_train_loss:  2.00184952542
+================================================================================
+Epoch 0 of 8 took 6445.252s
+  training loss:		2.001362
+evaluating model...
+VALID_LOSS:  1.97209380393
+VALID_ACC:  0.355454545455
+FULL_TRAIN_LOSS:  1.95451476893
+FULL_TRAIN_ACC:  0.298905472637
+*------------------------------------------------------------------------------*
+Epoch 1, batch 499:
+batchly_train_loss:  1.75626856066
+cumulative_train_loss:  1.75567147455
+*------------------------------------------------------------------------------*
+Epoch 1, batch 999:
+batchly_train_loss:  1.85267452075
+cumulative_train_loss:  1.80422154772
+*------------------------------------------------------------------------------*
+Epoch 1, batch 1499:
+batchly_train_loss:  1.76929034558
+cumulative_train_loss:  1.79257004601
+*------------------------------------------------------------------------------*
+Epoch 1, batch 1999:
+batchly_train_loss:  1.71685775791
+cumulative_train_loss:  1.77363250521
+*------------------------------------------------------------------------------*
+Epoch 1, batch 2499:
+batchly_train_loss:  1.69379750637
+cumulative_train_loss:  1.75765911609
+*------------------------------------------------------------------------------*
+Epoch 1, batch 2999:
+batchly_train_loss:  1.73210829101
+cumulative_train_loss:  1.75339922528
+*------------------------------------------------------------------------------*
+Epoch 1, batch 3499:
+batchly_train_loss:  1.63753783816
+cumulative_train_loss:  1.73684286816
+*------------------------------------------------------------------------------*
+Epoch 1, batch 3999:
+batchly_train_loss:  1.67217073039
+cumulative_train_loss:  1.72875682943
+================================================================================
+Epoch 1 of 8 took 6450.123s
+  training loss:		1.728367
+evaluating model...
+VALID_LOSS:  1.78926834697
+VALID_ACC:  0.415454545455
+FULL_TRAIN_LOSS:  1.64408934574
+FULL_TRAIN_ACC:  0.409751243781
+saving model to ../saved_models/cifar_scq_loopy_Mar--6-2016_epoch=1
+*------------------------------------------------------------------------------*
+Epoch 2, batch 499:
+batchly_train_loss:  1.58930679817
+cumulative_train_loss:  1.58868532677
+*------------------------------------------------------------------------------*
+Epoch 2, batch 999:
+batchly_train_loss:  1.65951985633
+cumulative_train_loss:  1.62413804427
+*------------------------------------------------------------------------------*
+Epoch 2, batch 1499:
+batchly_train_loss:  1.57898532376
+cumulative_train_loss:  1.6090770968
+*------------------------------------------------------------------------------*
+Epoch 2, batch 1999:
+batchly_train_loss:  1.62209377808
+cumulative_train_loss:  1.61233289502
+*------------------------------------------------------------------------------*
+Epoch 2, batch 2499:
+batchly_train_loss:  1.44969341246
+cumulative_train_loss:  1.57979198214
+*------------------------------------------------------------------------------*
+Epoch 2, batch 2999:
+batchly_train_loss:  1.64178735205
+cumulative_train_loss:  1.59012798913
+*------------------------------------------------------------------------------*
+Epoch 2, batch 3499:
+batchly_train_loss:  1.51644233229
+cumulative_train_loss:  1.57959845829
+*------------------------------------------------------------------------------*
+Epoch 2, batch 3999:
+batchly_train_loss:  1.56526558182
+cumulative_train_loss:  1.57780640071
+================================================================================
+Epoch 2 of 8 took 6441.504s
+  training loss:		1.577495
+evaluating model...
+VALID_LOSS:  1.6588711802
+VALID_ACC:  0.407272727273
+FULL_TRAIN_LOSS:  1.54103116552
+FULL_TRAIN_ACC:  0.453781094527
+saving model to ../saved_models/cifar_scq_loopy_Mar--6-2016_epoch=2
+*------------------------------------------------------------------------------*
+Epoch 3, batch 499:
+batchly_train_loss:  1.43823565638
+cumulative_train_loss:  1.43729117139
+*------------------------------------------------------------------------------*
+Epoch 3, batch 999:
+batchly_train_loss:  1.42668367017
+cumulative_train_loss:  1.43198211172
+*------------------------------------------------------------------------------*
+Epoch 3, batch 1499:
+batchly_train_loss:  1.50762365699
+cumulative_train_loss:  1.45721278059
+*------------------------------------------------------------------------------*
+Epoch 3, batch 1999:
+batchly_train_loss:  1.44203922852
+cumulative_train_loss:  1.45341749493
+*------------------------------------------------------------------------------*
+Epoch 3, batch 2499:
+batchly_train_loss:  1.46739112857
+cumulative_train_loss:  1.45621334
+*------------------------------------------------------------------------------*
+Epoch 3, batch 2999:
+batchly_train_loss:  1.52963979157
+cumulative_train_loss:  1.46845516253
+*------------------------------------------------------------------------------*
+Epoch 3, batch 3499:
+batchly_train_loss:  1.41729457623
+cumulative_train_loss:  1.46114441856
+*------------------------------------------------------------------------------*
+Epoch 3, batch 3999:
+batchly_train_loss:  1.46337934295
+cumulative_train_loss:  1.46142385397
+================================================================================
+Epoch 3 of 8 took 6439.077s
+  training loss:		1.461090
+evaluating model...
+VALID_LOSS:  1.55855296424
+VALID_ACC:  0.45
+FULL_TRAIN_LOSS:  1.26356163283
+FULL_TRAIN_ACC:  0.576169154229
+saving model to ../saved_models/cifar_scq_loopy_Mar--6-2016_epoch=3
+*------------------------------------------------------------------------------*
+Epoch 4, batch 499:
+batchly_train_loss:  1.4659577187
+cumulative_train_loss:  1.46571189216
+*------------------------------------------------------------------------------*
+Epoch 4, batch 999:
+batchly_train_loss:  1.35847683063
+cumulative_train_loss:  1.41204069019
+*------------------------------------------------------------------------------*
+Epoch 4, batch 1499:
+batchly_train_loss:  1.41903090256
+cumulative_train_loss:  1.4143723154
+*------------------------------------------------------------------------------*
+Epoch 4, batch 1999:
+batchly_train_loss:  1.37712133415
+cumulative_train_loss:  1.40505491139
+*------------------------------------------------------------------------------*
+Epoch 4, batch 2499:
+batchly_train_loss:  1.39406626276
+cumulative_train_loss:  1.40285630222
+*------------------------------------------------------------------------------*
+Epoch 4, batch 2999:
+batchly_train_loss:  1.37408197679
+cumulative_train_loss:  1.3980589822
+*------------------------------------------------------------------------------*
+Epoch 4, batch 3499:
+batchly_train_loss:  1.37044736193
+cumulative_train_loss:  1.3941133377
+*------------------------------------------------------------------------------*
+Epoch 4, batch 3999:
+batchly_train_loss:  1.35964572896
+cumulative_train_loss:  1.38980380922
+================================================================================
+Epoch 4 of 8 took 6440.830s
+  training loss:		1.389445
+evaluating model...
+VALID_LOSS:  1.34103354899
+VALID_ACC:  0.509090909091
+FULL_TRAIN_LOSS:  1.20910142971
+FULL_TRAIN_ACC:  0.54592039801
+saving model to ../saved_models/cifar_scq_loopy_Mar--6-2016_epoch=4
+*------------------------------------------------------------------------------*
+Epoch 5, batch 499:
+batchly_train_loss:  1.37825173769
+cumulative_train_loss:  1.37831695824
+*------------------------------------------------------------------------------*
+Epoch 5, batch 999:
+batchly_train_loss:  1.33022112347
+cumulative_train_loss:  1.35424496887
+*------------------------------------------------------------------------------*
+Epoch 5, batch 1499:
+batchly_train_loss:  1.38239328522
+cumulative_train_loss:  1.36363400034
+*------------------------------------------------------------------------------*
+Epoch 5, batch 1999:
+batchly_train_loss:  1.30979065856
+cumulative_train_loss:  1.35016643111
+*------------------------------------------------------------------------------*
+Epoch 5, batch 2499:
+batchly_train_loss:  1.34289156569
+cumulative_train_loss:  1.3487108758
+*------------------------------------------------------------------------------*
+Epoch 5, batch 2999:
+batchly_train_loss:  1.26946130006
+cumulative_train_loss:  1.33549820896
+*------------------------------------------------------------------------------*
+Epoch 5, batch 3499:
+batchly_train_loss:  1.31780399551
+cumulative_train_loss:  1.33296974176
+*------------------------------------------------------------------------------*
+Epoch 5, batch 3999:
+batchly_train_loss:  1.2979994918
+cumulative_train_loss:  1.32859736742
+================================================================================
+Epoch 5 of 8 took 6449.895s
+  training loss:		1.328316
+evaluating model...
+VALID_LOSS:  1.45669677592
+VALID_ACC:  0.501818181818
+FULL_TRAIN_LOSS:  1.31925214363
+FULL_TRAIN_ACC:  0.499502487562
+saving model to ../saved_models/cifar_scq_loopy_Mar--6-2016_epoch=5
+*------------------------------------------------------------------------------*
+Epoch 6, batch 499:
+batchly_train_loss:  1.25678932202
+cumulative_train_loss:  1.25624160743
+*------------------------------------------------------------------------------*
+Epoch 6, batch 999:
+batchly_train_loss:  1.35211534956
+cumulative_train_loss:  1.30422646335
+*------------------------------------------------------------------------------*
+Epoch 6, batch 1499:
+batchly_train_loss:  1.23566968908
+cumulative_train_loss:  1.28135896026
+*------------------------------------------------------------------------------*
+Epoch 6, batch 1999:
+batchly_train_loss:  1.27407117505
+cumulative_train_loss:  1.27953610253
+*------------------------------------------------------------------------------*
+Epoch 6, batch 2499:
+batchly_train_loss:  1.25318565277
+cumulative_train_loss:  1.2742639037
+*------------------------------------------------------------------------------*
+Epoch 6, batch 2999:
+batchly_train_loss:  1.27480886093
+cumulative_train_loss:  1.27435476019
+*------------------------------------------------------------------------------*
+Epoch 6, batch 3499:
+batchly_train_loss:  1.29176248568
+cumulative_train_loss:  1.27684228884
+*------------------------------------------------------------------------------*
+Epoch 6, batch 3999:
+batchly_train_loss:  1.27095822332
+cumulative_train_loss:  1.27610659672
+================================================================================
+Epoch 6 of 8 took 6447.487s
+  training loss:		1.275885
+evaluating model...
+VALID_LOSS:  1.45945683672
+VALID_ACC:  0.53
+FULL_TRAIN_LOSS:  1.17416187164
+FULL_TRAIN_ACC:  0.603830845771
+saving model to ../saved_models/cifar_scq_loopy_Mar--7-2016_epoch=6
+*------------------------------------------------------------------------------*
+Epoch 7, batch 499:
+batchly_train_loss:  1.20602771231
+cumulative_train_loss:  1.20510284587
+*------------------------------------------------------------------------------*
+Epoch 7, batch 999:
+batchly_train_loss:  1.19853678172
+cumulative_train_loss:  1.20181652747
+*------------------------------------------------------------------------------*
+Epoch 7, batch 1499:
+batchly_train_loss:  1.28996731552
+cumulative_train_loss:  1.23121972562
+*------------------------------------------------------------------------------*
+Epoch 7, batch 1999:
+batchly_train_loss:  1.20974921009
+cumulative_train_loss:  1.22584941158
+*------------------------------------------------------------------------------*
+Epoch 7, batch 2499:
+batchly_train_loss:  1.23737579475
+cumulative_train_loss:  1.22815561069
+*------------------------------------------------------------------------------*
+Epoch 7, batch 2999:
+batchly_train_loss:  1.26469431162
+cumulative_train_loss:  1.23424742479
+*------------------------------------------------------------------------------*
+Epoch 7, batch 3499:
+batchly_train_loss:  1.17884399195
+cumulative_train_loss:  1.22633038665
+*------------------------------------------------------------------------------*
+Epoch 7, batch 3999:
+batchly_train_loss:  1.22277155189
+cumulative_train_loss:  1.22588542107
+================================================================================
+Epoch 7 of 8 took 6446.847s
+  training loss:		1.225494
+evaluating model...
+VALID_LOSS:  1.40249758522
+VALID_ACC:  0.538181818182
+FULL_TRAIN_LOSS:  1.06092275292
+FULL_TRAIN_ACC:  0.62
+saving model to ../saved_models/cifar_scq_loopy_Mar--7-2016_epoch=7
+{'valid_loss': [1.9720938039263549, 1.7892683469685411, 1.6588711801979117, 1.5585529642351952, 1.3410335489884635, 1.4566967759174643, 1.459456836719891, 1.4024975852185149], 'full_train_acc': [0.29890547263681616, 0.40975124378109429, 0.45378109452736259, 0.5761691542288554, 0.5459203980099504, 0.49950248756218907, 0.60383084577114399, 0.62000000000000033], 'valid_acc': [0.35545454545454541, 0.41545454545454558, 0.40727272727272729, 0.45000000000000001, 0.50909090909090915, 0.50181818181818183, 0.53000000000000014, 0.53818181818181821], 'batchly_train_loss': [2.3400949983432975, 2.1296204857909027, 1.9784047689698789, 2.0391435766782053, 1.950342080593312, 1.8472532596074409, 1.8561668882896432, 1.8697664660739566, 1.7562685606603827, 1.8526745207539395, 1.7692903455780753, 1.7168577579139412, 1.6937975063696646, 1.7321082910092116, 1.6375378381551104, 1.6721707303907585, 1.5893067981708637, 1.6595198563301539, 1.5789853237600164, 1.622093778075913, 1.4496934124638614, 1.6417873520543191, 1.5164423322877418, 1.5652655818162118, 1.4382356563806755, 1.4266836701654018, 1.507623656994789, 1.4420392285200552, 1.4673911285745613, 1.5296397915726778, 1.4172945762262756, 1.4633793429461142, 1.4659577186992869, 1.3584768306322723, 1.4190309025610714, 1.3771213341542419, 1.3940662627566804, 1.3740819767854047, 1.3704473619251367, 1.3596457289585266, 1.3782517376850669, 1.3302211234692229, 1.3823932852209946, 1.3097906585556049, 1.3428915656928779, 1.269461300059102, 1.3178039955055492, 1.2979994917992201, 1.2567893220175756, 1.3521153495600704, 1.2356696890790342, 1.2740711750462854, 1.2531856527679077, 1.2748088609323405, 1.2917624856754617, 1.2709582233178347, 1.206027712314083, 1.1985367817176662, 1.2899673155161611, 1.2097492100876162, 1.2373757947462516, 1.2646943116182991, 1.1788439919463729, 1.222771551893963, 0.8845507870375503], 'cumulative_train_loss': [2.3447845474381737, 2.2370948268939967, 2.1508072825563969, 2.1228773911411412, 2.0883565206833925, 2.0481592447454222, 2.0207239265894108, 2.0018495254246864, 1.7556714745492961, 1.8042215477247949, 1.7925700460080796, 1.7736325052141502, 1.7576591160896022, 1.7533992252792667, 1.7368428681594943, 1.7287568294287186, 1.588685326768416, 1.6241380442667817, 1.6090770967995494, 1.6123328950177473, 1.5797919821418196, 1.5901279891295621, 1.5795984582862017, 1.5778064007130583, 1.4372911713886951, 1.4319821117173781, 1.4572127805890966, 1.4534174949290055, 1.4562133399961448, 1.4684551625330804, 1.4611444185624012, 1.4614238539692179, 1.4657118921600787, 1.4120406901942097, 1.4143723153999677, 1.4050549113865289, 1.4028563022168927, 1.3980589822049749, 1.394113337695138, 1.3898038092209413, 1.3783169582414529, 1.3542449688659621, 1.3636340003386198, 1.3501664311082509, 1.3487108758030528, 1.3354982089567795, 1.3329697417588335, 1.3285973674202958, 1.2562416074318441, 1.3042264633518792, 1.2813589602588689, 1.2795361025268559, 1.2742639036955334, 1.2743547601871661, 1.2768422888365372, 1.2761065967236718, 1.2051028458681607, 1.2018165274745185, 1.2312197256204978, 1.2258494115802565, 1.2281556106930991, 1.2342474247853306, 1.2263303866545856, 1.2258854210681112], 'full_train_loss': [1.9545147689259816, 1.6440893457377372, 1.5410311655188307, 1.2635616328337678, 1.2091014297123572, 1.3192521436269595, 1.1741618716436539, 1.0609227529153431]}
