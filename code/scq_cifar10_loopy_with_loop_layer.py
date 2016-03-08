@@ -20,6 +20,10 @@ check_error_n_batches = 500
 # saved_checkpoint = "../saved_models/cifar_c3-32_c3-64_c3-64_c3-1_fc_Mar--4-17:14:12-2016_epoch=8"
 # model.load_model(saved_checkpoint)
 
+saved_checkpoint ="../saved_models/cifar_scq_loopy_unrolls=5_Mar--8-10:12:20-2016_epoch=3"
+model.load_model(saved_checkpoint)
+
+
 history = model.train_model(X_train, y_train, X_test, y_test,
                                                 batchsize=5,
                                                 n_epochs=8,

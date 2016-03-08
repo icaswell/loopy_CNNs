@@ -1,0 +1,95 @@
+Good job.  You have followed directions.  Asserter passes.
+[45mALN> [0m [45mloop outputs: [0m 
+[45mALN> [0m [91m[repeating section] adding layer conv_1_unroll=0 with input input[0m 
+{'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': <lasagne.init.GlorotUniform object at 0x10b3ab250>, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_2_unroll=0 with input conv_1_unroll=0[0m 
+{'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': <lasagne.init.GlorotUniform object at 0x10b3ca210>, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_3_unroll=0 with input conv_2_unroll=0[0m 
+{'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': <lasagne.init.GlorotUniform object at 0x10b3caa50>, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_4_unroll=0 with input conv_3_unroll=0[0m 
+{'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': <lasagne.init.GlorotUniform object at 0x10b3cafd0>, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_5_unroll=0 with input conv_4_unroll=0[0m 
+{'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': <lasagne.init.GlorotUniform object at 0x10b3d6590>, 'num_filters': 3}
+[45mALN> [0m [91madding loop:[0m 
+[45mALN> [0m [45m[in loop] adding layer loop_layer with input conv_5_unroll=0, sharing parameters with None[0m 
+{'num_filters': 3,
+ 'options': {'W': 'glorot_uniform',
+             'filter_size': 3,
+             'nonlinearity': 'relu',
+             'num_filters': 3,
+             'pad': 1},
+ 'template': 'conv3',
+ 'type': 'conv2d'}
+{'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': <lasagne.init.GlorotUniform object at 0x10b3d6b50>, 'num_filters': 3}
+[45mALN> [0m [45mloop outputs: ('conv_1', ('loop_layer_unroll=0', 'sum'))[0m 
+[45mALN> [0m [91m[repeating section] adding layer conv_1_unroll=1 with input ['input', 'loop_layer_unroll=0'][0m 
+{'b': conv_1_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': conv_1_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_2_unroll=1 with input conv_1_unroll=1[0m 
+{'b': conv_2_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': conv_2_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_3_unroll=1 with input conv_2_unroll=1[0m 
+{'b': conv_3_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': conv_3_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_4_unroll=1 with input conv_3_unroll=1[0m 
+{'b': conv_4_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': conv_4_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_5_unroll=1 with input conv_4_unroll=1[0m 
+{'b': conv_5_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': conv_5_unroll=0.W, 'num_filters': 3}
+[45mALN> [0m [91madding loop:[0m 
+[45mALN> [0m [45m[in loop] adding layer loop_layer with input conv_5_unroll=1, sharing parameters with loop_layer_unroll=0[0m 
+{'num_filters': 3,
+ 'options': {'W': <lasagne.init.GlorotUniform object at 0x10b3d6b50>,
+             'filter_size': 3,
+             'nonlinearity': <function rectify at 0x10a4ba410>,
+             'num_filters': 3,
+             'pad': 1},
+ 'template': 'conv3',
+ 'type': 'conv2d'}
+{'b': loop_layer_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': loop_layer_unroll=0.W, 'num_filters': 3}
+[45mALN> [0m [45mloop outputs: ('conv_1', ('loop_layer_unroll=1', 'sum'))[0m 
+[45mALN> [0m [91m[repeating section] adding layer conv_1_unroll=2 with input ['input', 'loop_layer_unroll=1'][0m 
+{'b': conv_1_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': conv_1_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_2_unroll=2 with input conv_1_unroll=2[0m 
+{'b': conv_2_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': conv_2_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_3_unroll=2 with input conv_2_unroll=2[0m 
+{'b': conv_3_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': conv_3_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_4_unroll=2 with input conv_3_unroll=2[0m 
+{'b': conv_4_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': conv_4_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_5_unroll=2 with input conv_4_unroll=2[0m 
+{'b': conv_5_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': conv_5_unroll=0.W, 'num_filters': 3}
+[45mALN> [0m [91madding loop:[0m 
+[45mALN> [0m [45m[in loop] adding layer loop_layer with input conv_5_unroll=2, sharing parameters with loop_layer_unroll=0[0m 
+{'num_filters': 3,
+ 'options': {'W': loop_layer_unroll=0.W,
+             'b': loop_layer_unroll=0.b,
+             'filter_size': 3,
+             'nonlinearity': <function rectify at 0x10a4ba410>,
+             'num_filters': 3,
+             'pad': 1},
+ 'template': 'conv3',
+ 'type': 'conv2d'}
+{'b': loop_layer_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': loop_layer_unroll=0.W, 'num_filters': 3}
+[45mALN> [0m [45mloop outputs: ('conv_1', ('loop_layer_unroll=2', 'sum'))[0m 
+[45mALN> [0m [91m[repeating section] adding layer conv_1_unroll=3 with input ['input', 'loop_layer_unroll=2'][0m 
+{'b': conv_1_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': conv_1_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_2_unroll=3 with input conv_1_unroll=3[0m 
+{'b': conv_2_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': conv_2_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_3_unroll=3 with input conv_2_unroll=3[0m 
+{'b': conv_3_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': conv_3_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_4_unroll=3 with input conv_3_unroll=3[0m 
+{'b': conv_4_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': conv_4_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_5_unroll=3 with input conv_4_unroll=3[0m 
+{'b': conv_5_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': conv_5_unroll=0.W, 'num_filters': 3}
+[45mALN> [0m [91madding loop:[0m 
+[45mALN> [0m [45m[in loop] adding layer loop_layer with input conv_5_unroll=3, sharing parameters with loop_layer_unroll=0[0m 
+{'num_filters': 3,
+ 'options': {'W': loop_layer_unroll=0.W,
+             'b': loop_layer_unroll=0.b,
+             'filter_size': 3,
+             'nonlinearity': <function rectify at 0x10a4ba410>,
+             'num_filters': 3,
+             'pad': 1},
+ 'template': 'conv3',
+ 'type': 'conv2d'}
+{'b': loop_layer_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': loop_layer_unroll=0.W, 'num_filters': 3}
+[45mALN> [0m [45mloop outputs: ('conv_1', ('loop_layer_unroll=3', 'sum'))[0m 
+[45mALN> [0m [91m[repeating section] adding layer conv_1_unroll=4 with input ['input', 'loop_layer_unroll=3'][0m 
+{'b': conv_1_unroll=0.b, 'nonlinearity': <function rectify at 0x10a4ba410>, 'filter_size': 3, 'pad': 1, 'W': conv_1_unroll=0.W, 'num_filters': 48}
+[45mALN> [0m [91m[repeating section] adding layer conv_2_unroll=4 with input conv_1_unroll=4[

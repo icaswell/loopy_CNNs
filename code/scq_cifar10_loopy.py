@@ -11,7 +11,7 @@ import util
 # model = LoopyNetwork(architecture_fpath="../architectures/mnist_c3_c5_sm.py", n_unrolls=1, batch_size=36)
 #model = LoopyNetwork(architecture_fpath="../architectures/cifar_isaac.py", n_unrolls=3)
 sys.setrecursionlimit(100000000)
-model = LoopyNetwork(architecture_fpath="../architectures/cifar_scq_loopy.py",n_unrolls=5)
+model = LoopyNetwork(architecture_fpath="../architectures/cifar_scq_loopy.py",n_unrolls=3)
 print repr(model)
 
 X_train, y_train, X_val, y_val, X_test, y_test = load_cifar10(num_training=20000)
@@ -22,6 +22,7 @@ print X_test.shape, y_test.shape
 
 check_error_n_batches = 500
 saved_checkpoint = "../saved_models/cifar_c3-32_c3-64_c3-64_c3-1_fc_Mar--4-17:14:12-2016_epoch=8"
+
 # model.load_model(saved_checkpoint)
 
 history = model.train_model(X_train, y_train, X_test, y_test,
