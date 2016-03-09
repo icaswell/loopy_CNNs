@@ -7,7 +7,7 @@
 "run_params":
         {"use_batchnorm":True},
 "framework":"lasagne",
-"name": "cifar_scq_loopy",
+"name": "cifar_scq_loopy_with_loop_layer",
 
 "templates":
         {
