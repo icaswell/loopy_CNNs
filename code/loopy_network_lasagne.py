@@ -37,13 +37,15 @@ class LoopyNetwork(AbstractLoopyNetwork):
     def __init__(self, architecture_fpath, 
                     n_unrolls=2, 
                     optimizer = "rmsprop",
-                    loss="mse"):
+                    loss="mse", 
+                    tie_weights=True):
         #===============================================================================
         # Call the superclass init function.  The commented out line is for python 3.
         # super(LoopyNetwork, self).__init__(architecture_fpath, n_unrolls)
         AbstractLoopyNetwork.__init__(self, architecture_fpath, n_unrolls)
         assert self.architecture_dict["framework"] == "lasagne", "Don't try use this on a keras architecture!"
         self.use_batchnorm = self.architecture_dict.get("run_params", {}).get("use_batchnorm", False)
+        self.tie_weights = tie_weights
 
         # unnecessary TODO: have input variable resized in train_model()?
         # self.batch_size = batch_size
@@ -165,6 +167,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
             # And a full pass over the validation data:
             if not epoch%check_valid_acc_every:
                 print "evaluating model..."
+                st = time.time()
                 valid_loss, valid_acc = self.performance_on_whole_set(X_val, y_val)
                 full_train_loss, full_train_acc = self.performance_on_whole_set(X_train, y_train)     
 
@@ -179,8 +182,12 @@ class LoopyNetwork(AbstractLoopyNetwork):
                     performance_history["full_train_loss"].append(full_train_loss)
                     performance_history["full_train_acc"].append(full_train_acc)
 
+            print "time to evaluate model: %s"%(time.time() - st)
+
             if epoch and not epoch%save_model_every:
-                self.save_model(epoch) 
+                st = time.time()
+                self.save_model(epoch)
+                print "time to save model: %s"%(time.time() - st) 
 
         return performance_history
 
@@ -378,7 +385,7 @@ class LoopyNetwork(AbstractLoopyNetwork):
 
         #===============================================================================
         # deal with parameter sharing among equivalent layers in an merge_unroll
-        if share_params_with is not None:
+        if share_params_with is not None and self.tie_weights:
             # print dir(self._names_to_layers[share_params_with])
             # print self._names_to_layers[share_params_with].get_params()
             layer_options["W"] = self._names_to_layers[share_params_with].W
