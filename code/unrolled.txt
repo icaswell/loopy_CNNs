@@ -1,0 +1,1075 @@
+Good job.  You have followed directions.  Asserter passes.
+[45mALN> [0m [45mloop outputs: [0m 
+[45mALN> [0m [91m[repeating section] adding layer conv_1_unroll=0 with input input[0m 
+{'nonlinearity': <function rectify at 0x7f8b2e572848>, 'filter_size': 3, 'pad': 1, 'W': <lasagne.init.GlorotUniform object at 0x7f8b2bf5d150>, 'num_filters': 64}
+[45mALN> [0m [91m[repeating section] adding layer conv_2_unroll=0 with input conv_1_unroll=0[0m 
+{'nonlinearity': <function rectify at 0x7f8b2e572848>, 'filter_size': 3, 'pad': 1, 'W': <lasagne.init.GlorotUniform object at 0x7f8b2befb150>, 'num_filters': 64}
+[45mALN> [0m [91m[repeating section] adding layer conv_3_unroll=0 with input conv_2_unroll=0[0m 
+{'nonlinearity': <function rectify at 0x7f8b2e572848>, 'filter_size': 3, 'pad': 1, 'W': <lasagne.init.GlorotUniform object at 0x7f8b2befb990>, 'num_filters': 3}
+[45mALN> [0m [91madding loop:[0m 
+[45mALN> [0m [45mloop outputs: ('conv_1', ('conv_3_unroll=0', 'sum'))[0m 
+[45mALN> [0m [91m[repeating section] adding layer conv_1_unroll=1 with input ['input', 'conv_3_unroll=0'][0m 
+{'b': conv_1_unroll=0.b, 'nonlinearity': <function rectify at 0x7f8b2e572848>, 'filter_size': 3, 'pad': 1, 'W': conv_1_unroll=0.W, 'num_filters': 64}
+[45mALN> [0m [91m[repeating section] adding layer conv_2_unroll=1 with input conv_1_unroll=1[0m 
+{'b': conv_2_unroll=0.b, 'nonlinearity': <function rectify at 0x7f8b2e572848>, 'filter_size': 3, 'pad': 1, 'W': conv_2_unroll=0.W, 'num_filters': 64}
+[45mALN> [0m [91m[repeating section] adding layer conv_3_unroll=1 with input conv_2_unroll=1[0m 
+{'b': conv_3_unroll=0.b, 'nonlinearity': <function rectify at 0x7f8b2e572848>, 'filter_size': 3, 'pad': 1, 'W': conv_3_unroll=0.W, 'num_filters': 3}
+[45mALN> [0m [91madding loop:[0m 
+[45mALN> [0m [45mloop outputs: ('conv_1', ('conv_3_unroll=1', 'sum'))[0m 
+[45mALN> [0m [91m[repeating section] adding layer conv_1_unroll=2 with input ['input', 'conv_3_unroll=1'][0m 
+{'b': conv_1_unroll=0.b, 'nonlinearity': <function rectify at 0x7f8b2e572848>, 'filter_size': 3, 'pad': 1, 'W': conv_1_unroll=0.W, 'num_filters': 64}
+[45mALN> [0m [91m[repeating section] adding layer conv_2_unroll=2 with input conv_1_unroll=2[0m 
+{'b': conv_2_unroll=0.b, 'nonlinearity': <function rectify at 0x7f8b2e572848>, 'filter_size': 3, 'pad': 1, 'W': conv_2_unroll=0.W, 'num_filters': 64}
+[45mALN> [0m [91m[repeating section] adding layer conv_3_unroll=2 with input conv_2_unroll=2[0m 
+{'b': conv_3_unroll=0.b, 'nonlinearity': <function rectify at 0x7f8b2e572848>, 'filter_size': 3, 'pad': 1, 'W': conv_3_unroll=0.W, 'num_filters': 3}
+[45mALN> [0m [94m[after repeating section] adding layer fc_1 with input conv_3_unroll=2[0m 
+[45mALN> [0m [45mmarking layer fc_1 as output[0m 
+[91mModel has 72753 total parameters[0m 
+LoopyCNN instance with the following hyperparameters, layers and loops:[95m
+HYPERPARAMETERS:[0m
+	n_unrolls=3
+	use_batchnorm=True[95m
+
+ARCHITECTURE:[0m
+main_stack:
+	[93minput [input layer; output_dim=(3, 32, 32)][0m
+	[96mconv_1 [conv2d layer; num_filters=64][0m
+	[96mconv_2 [conv2d layer; num_filters=64][0m
+	[96mconv_3 [conv2d layer; num_filters=3][0m
+	[97mfc_1 [dense layer; output_dim=10][0m
+loop:
+	[96mconv_3 [conv2d layer; num_filters=3][0m
+	[96mconv_1 [conv2d layer; num_filters=64][0m
+(20000, 3, 32, 32) (20000,)
+(1000, 3, 32, 32) (1000,)
+*------------------------------------------------------------------------------*
+Epoch 0, batch 499:
+batchly_train_loss:  2.59644074313
+cumulative_train_loss:  2.60164401115
+*------------------------------------------------------------------------------*
+Epoch 0, batch 999:
+batchly_train_loss:  2.05972250262
+cumulative_train_loss:  2.3304120249
+*------------------------------------------------------------------------------*
+Epoch 0, batch 1499:
+batchly_train_loss:  1.89535892085
+cumulative_train_loss:  2.18529758059
+*------------------------------------------------------------------------------*
+Epoch 0, batch 1999:
+batchly_train_loss:  1.92014825682
+cumulative_train_loss:  2.1189770894
+*------------------------------------------------------------------------------*
+Epoch 0, batch 2499:
+batchly_train_loss:  1.91868444346
+cumulative_train_loss:  2.07890253039
+*------------------------------------------------------------------------------*
+Epoch 0, batch 2999:
+batchly_train_loss:  1.92711570539
+cumulative_train_loss:  2.05359629081
+*------------------------------------------------------------------------------*
+Epoch 0, batch 3499:
+batchly_train_loss:  1.92467436757
+cumulative_train_loss:  2.03517360958
+*------------------------------------------------------------------------------*
+Epoch 0, batch 3999:
+batchly_train_loss:  1.93353164886
+cumulative_train_loss:  2.02246518738
+================================================================================
+Epoch 0 of 24 took 2391.630s
+  training loss:		2.021970
+evaluating model...
+VALID_LOSS:  2.00692519843
+VALID_ACC:  0.321818181818
+FULL_TRAIN_LOSS:  1.92000432062
+FULL_TRAIN_ACC:  0.350845771144
+time to evaluate model: 849.939176083
+*------------------------------------------------------------------------------*
+Epoch 1, batch 499:
+batchly_train_loss:  1.82239027684
+cumulative_train_loss:  1.8219039723
+*------------------------------------------------------------------------------*
+Epoch 1, batch 999:
+batchly_train_loss:  1.8325826939
+cumulative_train_loss:  1.8272486778
+*------------------------------------------------------------------------------*
+Epoch 1, batch 1499:
+batchly_train_loss:  1.78392423519
+cumulative_train_loss:  1.81279756286
+*------------------------------------------------------------------------------*
+Epoch 1, batch 1999:
+batchly_train_loss:  1.92439548121
+cumulative_train_loss:  1.84071099916
+*------------------------------------------------------------------------------*
+Epoch 1, batch 2499:
+batchly_train_loss:  1.79062747661
+cumulative_train_loss:  1.83069028637
+*------------------------------------------------------------------------------*
+Epoch 1, batch 2999:
+batchly_train_loss:  1.68792198379
+cumulative_train_loss:  1.80688763505
+*------------------------------------------------------------------------------*
+Epoch 1, batch 3499:
+batchly_train_loss:  1.78396190017
+cumulative_train_loss:  1.80361159406
+*------------------------------------------------------------------------------*
+Epoch 1, batch 3999:
+batchly_train_loss:  1.73627841193
+cumulative_train_loss:  1.7951928416
+================================================================================
+Epoch 1 of 24 took 2397.253s
+  training loss:		1.794582
+evaluating model...
+VALID_LOSS:  1.76845213076
+VALID_ACC:  0.36
+FULL_TRAIN_LOSS:  1.64789110312
+FULL_TRAIN_ACC:  0.403631840796
+time to evaluate model: 849.918174982
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-00:06:54-2016_epoch=1
+time to save model: 0.1127140522
+*------------------------------------------------------------------------------*
+Epoch 2, batch 499:
+batchly_train_loss:  1.72667326309
+cumulative_train_loss:  1.72783765143
+*------------------------------------------------------------------------------*
+Epoch 2, batch 999:
+batchly_train_loss:  1.77834312011
+cumulative_train_loss:  1.75311566378
+*------------------------------------------------------------------------------*
+Epoch 2, batch 1499:
+batchly_train_loss:  1.73621945352
+cumulative_train_loss:  1.74747983647
+*------------------------------------------------------------------------------*
+Epoch 2, batch 1999:
+batchly_train_loss:  1.67084690609
+cumulative_train_loss:  1.72831201997
+*------------------------------------------------------------------------------*
+Epoch 2, batch 2499:
+batchly_train_loss:  1.67804138994
+cumulative_train_loss:  1.7182538707
+*------------------------------------------------------------------------------*
+Epoch 2, batch 2999:
+batchly_train_loss:  1.73271022537
+cumulative_train_loss:  1.72066406655
+*------------------------------------------------------------------------------*
+Epoch 2, batch 3499:
+batchly_train_loss:  1.65295880487
+cumulative_train_loss:  1.71098912204
+*------------------------------------------------------------------------------*
+Epoch 2, batch 3999:
+batchly_train_loss:  1.66467280492
+cumulative_train_loss:  1.70519813465
+================================================================================
+Epoch 2 of 24 took 2398.682s
+  training loss:		1.704853
+evaluating model...
+VALID_LOSS:  1.9338644611
+VALID_ACC:  0.363636363636
+FULL_TRAIN_LOSS:  1.67513463323
+FULL_TRAIN_ACC:  0.434427860697
+time to evaluate model: 850.255963087
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-01:01:03-2016_epoch=2
+time to save model: 0.111766815186
+*------------------------------------------------------------------------------*
+Epoch 3, batch 499:
+batchly_train_loss:  1.62685653943
+cumulative_train_loss:  1.62605166797
+*------------------------------------------------------------------------------*
+Epoch 3, batch 999:
+batchly_train_loss:  1.56192825897
+cumulative_train_loss:  1.59395786967
+*------------------------------------------------------------------------------*
+Epoch 3, batch 1499:
+batchly_train_loss:  1.63451903197
+cumulative_train_loss:  1.60748727671
+*------------------------------------------------------------------------------*
+Epoch 3, batch 1999:
+batchly_train_loss:  1.63308102436
+cumulative_train_loss:  1.61388891444
+*------------------------------------------------------------------------------*
+Epoch 3, batch 2499:
+batchly_train_loss:  1.61561542565
+cumulative_train_loss:  1.61423435486
+*------------------------------------------------------------------------------*
+Epoch 3, batch 2999:
+batchly_train_loss:  1.56975504143
+cumulative_train_loss:  1.60681866406
+*------------------------------------------------------------------------------*
+Epoch 3, batch 3499:
+batchly_train_loss:  1.55220676373
+cumulative_train_loss:  1.59901473432
+*------------------------------------------------------------------------------*
+Epoch 3, batch 3999:
+batchly_train_loss:  1.54200221884
+cumulative_train_loss:  1.5918863878
+================================================================================
+Epoch 3 of 24 took 2399.031s
+  training loss:		1.591514
+evaluating model...
+VALID_LOSS:  1.58988259032
+VALID_ACC:  0.44
+FULL_TRAIN_LOSS:  1.43494464979
+FULL_TRAIN_ACC:  0.45
+time to evaluate model: 847.425954103
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-01:55:10-2016_epoch=3
+time to save model: 0.111519098282
+*------------------------------------------------------------------------------*
+Epoch 4, batch 499:
+batchly_train_loss:  1.45244243546
+cumulative_train_loss:  1.45195867962
+*------------------------------------------------------------------------------*
+Epoch 4, batch 999:
+batchly_train_loss:  1.46436256294
+cumulative_train_loss:  1.45816682943
+*------------------------------------------------------------------------------*
+Epoch 4, batch 1499:
+batchly_train_loss:  1.39386557065
+cumulative_train_loss:  1.4367187778
+*------------------------------------------------------------------------------*
+Epoch 4, batch 1999:
+batchly_train_loss:  1.52541621593
+cumulative_train_loss:  1.45890423006
+*------------------------------------------------------------------------------*
+Epoch 4, batch 2499:
+batchly_train_loss:  1.52229247533
+cumulative_train_loss:  1.4715869522
+*------------------------------------------------------------------------------*
+Epoch 4, batch 2999:
+batchly_train_loss:  1.51089812487
+cumulative_train_loss:  1.478140999
+*------------------------------------------------------------------------------*
+Epoch 4, batch 3499:
+batchly_train_loss:  1.55789769364
+cumulative_train_loss:  1.48953806882
+*------------------------------------------------------------------------------*
+Epoch 4, batch 3999:
+batchly_train_loss:  1.48490510227
+cumulative_train_loss:  1.48895880319
+================================================================================
+Epoch 4 of 24 took 2398.233s
+  training loss:		1.488647
+evaluating model...
+VALID_LOSS:  1.74196398571
+VALID_ACC:  0.495454545455
+FULL_TRAIN_LOSS:  1.50494697484
+FULL_TRAIN_ACC:  0.469452736318
+time to evaluate model: 850.168344975
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-02:49:18-2016_epoch=4
+time to save model: 0.326616764069
+*------------------------------------------------------------------------------*
+Epoch 5, batch 499:
+batchly_train_loss:  1.46991429452
+cumulative_train_loss:  1.46939349164
+*------------------------------------------------------------------------------*
+Epoch 5, batch 999:
+batchly_train_loss:  1.33586927459
+cumulative_train_loss:  1.40256455418
+*------------------------------------------------------------------------------*
+Epoch 5, batch 1499:
+batchly_train_loss:  1.40846228512
+cumulative_train_loss:  1.40453177597
+*------------------------------------------------------------------------------*
+Epoch 5, batch 1999:
+batchly_train_loss:  1.41675273289
+cumulative_train_loss:  1.40758854359
+*------------------------------------------------------------------------------*
+Epoch 5, batch 2499:
+batchly_train_loss:  1.41083330875
+cumulative_train_loss:  1.4082377563
+*------------------------------------------------------------------------------*
+Epoch 5, batch 2999:
+batchly_train_loss:  1.39275726374
+cumulative_train_loss:  1.4056568139
+*------------------------------------------------------------------------------*
+Epoch 5, batch 3499:
+batchly_train_loss:  1.4344913728
+cumulative_train_loss:  1.40977721385
+*------------------------------------------------------------------------------*
+Epoch 5, batch 3999:
+batchly_train_loss:  1.43494117808
+cumulative_train_loss:  1.41292349595
+================================================================================
+Epoch 5 of 24 took 2398.056s
+  training loss:		1.412527
+evaluating model...
+VALID_LOSS:  1.75230348268
+VALID_ACC:  0.46
+FULL_TRAIN_LOSS:  1.44501883196
+FULL_TRAIN_ACC:  0.493383084577
+time to evaluate model: 846.648674965
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-03:43:23-2016_epoch=5
+time to save model: 0.110790967941
+*------------------------------------------------------------------------------*
+Epoch 6, batch 499:
+batchly_train_loss:  1.26242606075
+cumulative_train_loss:  1.26247169519
+*------------------------------------------------------------------------------*
+Epoch 6, batch 999:
+batchly_train_loss:  1.34945333164
+cumulative_train_loss:  1.30600604776
+*------------------------------------------------------------------------------*
+Epoch 6, batch 1499:
+batchly_train_loss:  1.481344115
+cumulative_train_loss:  1.36449106019
+*------------------------------------------------------------------------------*
+Epoch 6, batch 1999:
+batchly_train_loss:  1.33260461632
+cumulative_train_loss:  1.35651546142
+*------------------------------------------------------------------------------*
+Epoch 6, batch 2499:
+batchly_train_loss:  1.3908733564
+cumulative_train_loss:  1.36338979015
+*------------------------------------------------------------------------------*
+Epoch 6, batch 2999:
+batchly_train_loss:  1.29790703521
+cumulative_train_loss:  1.35247235852
+*------------------------------------------------------------------------------*
+Epoch 6, batch 3499:
+batchly_train_loss:  1.38713062376
+cumulative_train_loss:  1.35742495429
+*------------------------------------------------------------------------------*
+Epoch 6, batch 3999:
+batchly_train_loss:  1.4164309934
+cumulative_train_loss:  1.36480255358
+================================================================================
+Epoch 6 of 24 took 2397.635s
+  training loss:		1.364585
+evaluating model...
+VALID_LOSS:  1.51936531838
+VALID_ACC:  0.539090909091
+FULL_TRAIN_LOSS:  1.26661796264
+FULL_TRAIN_ACC:  0.57184079602
+time to evaluate model: 850.196007967
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-04:37:31-2016_epoch=6
+time to save model: 0.11292219162
+*------------------------------------------------------------------------------*
+Epoch 7, batch 499:
+batchly_train_loss:  1.38241403323
+cumulative_train_loss:  1.38145794778
+*------------------------------------------------------------------------------*
+Epoch 7, batch 999:
+batchly_train_loss:  1.32012787695
+cumulative_train_loss:  1.35076221664
+*------------------------------------------------------------------------------*
+Epoch 7, batch 1499:
+batchly_train_loss:  1.30446237177
+cumulative_train_loss:  1.3353186393
+*------------------------------------------------------------------------------*
+Epoch 7, batch 1999:
+batchly_train_loss:  1.36623147682
+cumulative_train_loss:  1.34305071471
+*------------------------------------------------------------------------------*
+Epoch 7, batch 2499:
+batchly_train_loss:  1.25937602639
+cumulative_train_loss:  1.3263090804
+*------------------------------------------------------------------------------*
+Epoch 7, batch 2999:
+batchly_train_loss:  1.29262883817
+cumulative_train_loss:  1.32069383494
+*------------------------------------------------------------------------------*
+Epoch 7, batch 3499:
+batchly_train_loss:  1.33488980558
+cumulative_train_loss:  1.32272241034
+*------------------------------------------------------------------------------*
+Epoch 7, batch 3999:
+batchly_train_loss:  1.30220893373
+cumulative_train_loss:  1.32015758456
+================================================================================
+Epoch 7 of 24 took 2396.659s
+  training loss:		1.319766
+evaluating model...
+VALID_LOSS:  1.29392731683
+VALID_ACC:  0.540909090909
+FULL_TRAIN_LOSS:  1.18616437848
+FULL_TRAIN_ACC:  0.573482587065
+time to evaluate model: 846.485157013
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-05:31:34-2016_epoch=7
+time to save model: 0.112567186356
+*------------------------------------------------------------------------------*
+Epoch 8, batch 499:
+batchly_train_loss:  1.28293215181
+cumulative_train_loss:  1.28334828052
+*------------------------------------------------------------------------------*
+Epoch 8, batch 999:
+batchly_train_loss:  1.22112654086
+cumulative_train_loss:  1.25220626868
+*------------------------------------------------------------------------------*
+Epoch 8, batch 1499:
+batchly_train_loss:  1.24988630261
+cumulative_train_loss:  1.25143243076
+*------------------------------------------------------------------------------*
+Epoch 8, batch 1999:
+batchly_train_loss:  1.32333994667
+cumulative_train_loss:  1.26941830268
+*------------------------------------------------------------------------------*
+Epoch 8, batch 2499:
+batchly_train_loss:  1.14312687543
+cumulative_train_loss:  1.24414990987
+*------------------------------------------------------------------------------*
+Epoch 8, batch 2999:
+batchly_train_loss:  1.21107145914
+cumulative_train_loss:  1.23863499644
+*------------------------------------------------------------------------------*
+Epoch 8, batch 3499:
+batchly_train_loss:  1.19568011927
+cumulative_train_loss:  1.23249683166
+*------------------------------------------------------------------------------*
+Epoch 8, batch 3999:
+batchly_train_loss:  1.31484290624
+cumulative_train_loss:  1.24279266494
+================================================================================
+Epoch 8 of 24 took 2396.522s
+  training loss:		1.242543
+evaluating model...
+VALID_LOSS:  1.43925820165
+VALID_ACC:  0.480909090909
+FULL_TRAIN_LOSS:  1.08225654025
+FULL_TRAIN_ACC:  0.630746268657
+time to evaluate model: 849.989169121
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-06:25:41-2016_epoch=8
+time to save model: 0.111788988113
+*------------------------------------------------------------------------------*
+Epoch 9, batch 499:
+batchly_train_loss:  1.22459458188
+cumulative_train_loss:  1.22407207897
+*------------------------------------------------------------------------------*
+Epoch 9, batch 999:
+batchly_train_loss:  1.22666130094
+cumulative_train_loss:  1.22536798586
+*------------------------------------------------------------------------------*
+Epoch 9, batch 1499:
+batchly_train_loss:  1.22045305758
+cumulative_train_loss:  1.2237285835
+*------------------------------------------------------------------------------*
+Epoch 9, batch 1999:
+batchly_train_loss:  1.32662631656
+cumulative_train_loss:  1.24946588542
+*------------------------------------------------------------------------------*
+Epoch 9, batch 2499:
+batchly_train_loss:  1.26715425551
+cumulative_train_loss:  1.25300497507
+*------------------------------------------------------------------------------*
+Epoch 9, batch 2999:
+batchly_train_loss:  1.17461237322
+cumulative_train_loss:  1.23993518483
+*------------------------------------------------------------------------------*
+Epoch 9, batch 3499:
+batchly_train_loss:  1.18196403079
+cumulative_train_loss:  1.23165122455
+*------------------------------------------------------------------------------*
+Epoch 9, batch 3999:
+batchly_train_loss:  1.1458433946
+cumulative_train_loss:  1.22092256364
+================================================================================
+Epoch 9 of 24 took 2421.160s
+  training loss:		1.220426
+evaluating model...
+VALID_LOSS:  1.591065759
+VALID_ACC:  0.61
+FULL_TRAIN_LOSS:  1.11263758386
+FULL_TRAIN_ACC:  0.609950248756
+time to evaluate model: 845.43214488
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-07:20:08-2016_epoch=9
+time to save model: 0.111111879349
+*------------------------------------------------------------------------------*
+Epoch 10, batch 499:
+batchly_train_loss:  1.1265744168
+cumulative_train_loss:  1.12791981034
+*------------------------------------------------------------------------------*
+Epoch 10, batch 999:
+batchly_train_loss:  1.11687261883
+cumulative_train_loss:  1.12239068546
+*------------------------------------------------------------------------------*
+Epoch 10, batch 1499:
+batchly_train_loss:  1.10385335669
+cumulative_train_loss:  1.11620745371
+*------------------------------------------------------------------------------*
+Epoch 10, batch 1999:
+batchly_train_loss:  1.12645510704
+cumulative_train_loss:  1.11877064864
+*------------------------------------------------------------------------------*
+Epoch 10, batch 2499:
+batchly_train_loss:  1.11531648386
+cumulative_train_loss:  1.11807953924
+*------------------------------------------------------------------------------*
+Epoch 10, batch 2999:
+batchly_train_loss:  1.2111248825
+cumulative_train_loss:  1.13359226736
+*------------------------------------------------------------------------------*
+Epoch 10, batch 3499:
+batchly_train_loss:  1.22592215884
+cumulative_train_loss:  1.1467860215
+*------------------------------------------------------------------------------*
+Epoch 10, batch 3999:
+batchly_train_loss:  1.21483638715
+cumulative_train_loss:  1.15529444431
+================================================================================
+Epoch 10 of 24 took 2394.740s
+  training loss:		1.155077
+evaluating model...
+VALID_LOSS:  1.52760106089
+VALID_ACC:  0.511818181818
+FULL_TRAIN_LOSS:  1.06703732011
+FULL_TRAIN_ACC:  0.628358208955
+time to evaluate model: 849.937026978
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-08:14:12-2016_epoch=10
+time to save model: 0.112996101379
+*------------------------------------------------------------------------------*
+Epoch 11, batch 499:
+batchly_train_loss:  1.1405588319
+cumulative_train_loss:  1.13995749437
+*------------------------------------------------------------------------------*
+Epoch 11, batch 999:
+batchly_train_loss:  1.23133670551
+cumulative_train_loss:  1.18569283528
+*------------------------------------------------------------------------------*
+Epoch 11, batch 1499:
+batchly_train_loss:  1.13498105208
+cumulative_train_loss:  1.16877763075
+*------------------------------------------------------------------------------*
+Epoch 11, batch 1999:
+batchly_train_loss:  1.15426336875
+cumulative_train_loss:  1.16514725006
+*------------------------------------------------------------------------------*
+Epoch 11, batch 2499:
+batchly_train_loss:  1.12514408331
+cumulative_train_loss:  1.15714341517
+*------------------------------------------------------------------------------*
+Epoch 11, batch 2999:
+batchly_train_loss:  1.15464968197
+cumulative_train_loss:  1.15672765439
+*------------------------------------------------------------------------------*
+Epoch 11, batch 3499:
+batchly_train_loss:  1.04793920893
+cumulative_train_loss:  1.14118200628
+*------------------------------------------------------------------------------*
+Epoch 11, batch 3999:
+batchly_train_loss:  1.18151292983
+cumulative_train_loss:  1.14622463238
+================================================================================
+Epoch 11 of 24 took 2395.647s
+  training loss:		1.145965
+evaluating model...
+VALID_LOSS:  1.43890065567
+VALID_ACC:  0.531818181818
+FULL_TRAIN_LOSS:  0.962583416067
+FULL_TRAIN_ACC:  0.639850746269
+time to evaluate model: 845.265186071
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-09:08:13-2016_epoch=11
+time to save model: 0.112426042557
+*------------------------------------------------------------------------------*
+Epoch 12, batch 499:
+batchly_train_loss:  1.01611694115
+cumulative_train_loss:  1.01563874836
+*------------------------------------------------------------------------------*
+Epoch 12, batch 999:
+batchly_train_loss:  1.16737090213
+cumulative_train_loss:  1.09158076726
+*------------------------------------------------------------------------------*
+Epoch 12, batch 1499:
+batchly_train_loss:  1.19140222644
+cumulative_train_loss:  1.12487678433
+*------------------------------------------------------------------------------*
+Epoch 12, batch 1999:
+batchly_train_loss:  1.06671372168
+cumulative_train_loss:  1.11032874465
+*------------------------------------------------------------------------------*
+Epoch 12, batch 2499:
+batchly_train_loss:  1.13918744031
+cumulative_train_loss:  1.1161027934
+*------------------------------------------------------------------------------*
+Epoch 12, batch 2999:
+batchly_train_loss:  1.12963085732
+cumulative_train_loss:  1.11835822253
+*------------------------------------------------------------------------------*
+Epoch 12, batch 3499:
+batchly_train_loss:  1.12711895831
+cumulative_train_loss:  1.1196101139
+*------------------------------------------------------------------------------*
+Epoch 12, batch 3999:
+batchly_train_loss:  1.25440398843
+cumulative_train_loss:  1.13646356158
+================================================================================
+Epoch 12 of 24 took 2396.201s
+  training loss:		1.136361
+evaluating model...
+VALID_LOSS:  1.57207160823
+VALID_ACC:  0.435454545455
+FULL_TRAIN_LOSS:  1.22634297587
+FULL_TRAIN_ACC:  0.57855721393
+time to evaluate model: 850.027397156
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-10:02:20-2016_epoch=12
+time to save model: 0.311461925507
+*------------------------------------------------------------------------------*
+Epoch 13, batch 499:
+batchly_train_loss:  1.01857701251
+cumulative_train_loss:  1.01688462836
+*------------------------------------------------------------------------------*
+Epoch 13, batch 999:
+batchly_train_loss:  1.04152414529
+cumulative_train_loss:  1.02921671891
+*------------------------------------------------------------------------------*
+Epoch 13, batch 1499:
+batchly_train_loss:  1.05153733625
+cumulative_train_loss:  1.03666188814
+*------------------------------------------------------------------------------*
+Epoch 13, batch 1999:
+batchly_train_loss:  1.11644606275
+cumulative_train_loss:  1.0566179098
+*------------------------------------------------------------------------------*
+Epoch 13, batch 2499:
+batchly_train_loss:  1.1257082485
+cumulative_train_loss:  1.07044150698
+*------------------------------------------------------------------------------*
+Epoch 13, batch 2999:
+batchly_train_loss:  1.12544417866
+cumulative_train_loss:  1.07961167565
+*------------------------------------------------------------------------------*
+Epoch 13, batch 3499:
+batchly_train_loss:  1.11268803882
+cumulative_train_loss:  1.08433822083
+*------------------------------------------------------------------------------*
+Epoch 13, batch 3999:
+batchly_train_loss:  1.05120137255
+cumulative_train_loss:  1.08019507901
+================================================================================
+Epoch 13 of 24 took 2396.216s
+  training loss:		1.080038
+evaluating model...
+VALID_LOSS:  1.52004414896
+VALID_ACC:  0.506363636364
+FULL_TRAIN_LOSS:  1.17362239963
+FULL_TRAIN_ACC:  0.606417910448
+time to evaluate model: 846.643625021
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-10:56:23-2016_epoch=13
+time to save model: 0.112478971481
+*------------------------------------------------------------------------------*
+Epoch 14, batch 499:
+batchly_train_loss:  1.03307672005
+cumulative_train_loss:  1.03208017455
+*------------------------------------------------------------------------------*
+Epoch 14, batch 999:
+batchly_train_loss:  1.04854121254
+cumulative_train_loss:  1.0403189323
+*------------------------------------------------------------------------------*
+Epoch 14, batch 1499:
+batchly_train_loss:  1.0550028404
+cumulative_train_loss:  1.0452168336
+*------------------------------------------------------------------------------*
+Epoch 14, batch 1999:
+batchly_train_loss:  1.06287438657
+cumulative_train_loss:  1.04963343014
+*------------------------------------------------------------------------------*
+Epoch 14, batch 2499:
+batchly_train_loss:  1.07311059041
+cumulative_train_loss:  1.05433074112
+*------------------------------------------------------------------------------*
+Epoch 14, batch 2999:
+batchly_train_loss:  1.00838167447
+cumulative_train_loss:  1.04667000977
+*------------------------------------------------------------------------------*
+Epoch 14, batch 3499:
+batchly_train_loss:  1.12803535524
+cumulative_train_loss:  1.05829695253
+*------------------------------------------------------------------------------*
+Epoch 14, batch 3999:
+batchly_train_loss:  1.08782237326
+cumulative_train_loss:  1.06198855303
+================================================================================
+Epoch 14 of 24 took 2396.836s
+  training loss:		1.061981
+evaluating model...
+VALID_LOSS:  1.50549895571
+VALID_ACC:  0.553636363636
+FULL_TRAIN_LOSS:  0.9261222161
+FULL_TRAIN_ACC:  0.678009950249
+time to evaluate model: 849.66288805
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-11:50:30-2016_epoch=14
+time to save model: 0.111851930618
+*------------------------------------------------------------------------------*
+Epoch 15, batch 499:
+batchly_train_loss:  0.954410405106
+cumulative_train_loss:  0.952130615605
+*------------------------------------------------------------------------------*
+Epoch 15, batch 999:
+batchly_train_loss:  0.978349561428
+cumulative_train_loss:  0.965253211112
+*------------------------------------------------------------------------------*
+Epoch 15, batch 1499:
+batchly_train_loss:  1.05118386653
+cumulative_train_loss:  0.993915871357
+*------------------------------------------------------------------------------*
+Epoch 15, batch 1999:
+batchly_train_loss:  1.09222954648
+cumulative_train_loss:  1.01850658549
+*------------------------------------------------------------------------------*
+Epoch 15, batch 2499:
+batchly_train_loss:  1.08441755707
+cumulative_train_loss:  1.0316940548
+*------------------------------------------------------------------------------*
+Epoch 15, batch 2999:
+batchly_train_loss:  1.02424263152
+cumulative_train_loss:  1.03045173681
+*------------------------------------------------------------------------------*
+Epoch 15, batch 3499:
+batchly_train_loss:  1.03362451466
+cumulative_train_loss:  1.03090512033
+*------------------------------------------------------------------------------*
+Epoch 15, batch 3999:
+batchly_train_loss:  1.02273008732
+cumulative_train_loss:  1.02988298567
+================================================================================
+Epoch 15 of 24 took 2381.110s
+  training loss:		1.029599
+evaluating model...
+VALID_LOSS:  1.30718323854
+VALID_ACC:  0.586363636364
+FULL_TRAIN_LOSS:  1.030673984
+FULL_TRAIN_ACC:  0.659701492537
+time to evaluate model: 849.875356197
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-12:44:21-2016_epoch=15
+time to save model: 0.112474918365
+*------------------------------------------------------------------------------*
+Epoch 16, batch 499:
+batchly_train_loss:  0.999787347847
+cumulative_train_loss:  0.999940788889
+*------------------------------------------------------------------------------*
+Epoch 16, batch 999:
+batchly_train_loss:  0.926794932507
+cumulative_train_loss:  0.96333125116
+*------------------------------------------------------------------------------*
+Epoch 16, batch 1499:
+batchly_train_loss:  1.11580552265
+cumulative_train_loss:  1.0141899141
+*------------------------------------------------------------------------------*
+Epoch 16, batch 1999:
+batchly_train_loss:  1.00542111743
+cumulative_train_loss:  1.01199661828
+*------------------------------------------------------------------------------*
+Epoch 16, batch 2499:
+batchly_train_loss:  1.04026596458
+cumulative_train_loss:  1.01765274999
+*------------------------------------------------------------------------------*
+Epoch 16, batch 2999:
+batchly_train_loss:  1.07437599878
+cumulative_train_loss:  1.02710977713
+*------------------------------------------------------------------------------*
+Epoch 16, batch 3499:
+batchly_train_loss:  1.01255176156
+cumulative_train_loss:  1.02502946625
+*------------------------------------------------------------------------------*
+Epoch 16, batch 3999:
+batchly_train_loss:  1.0260047167
+cumulative_train_loss:  1.02515140304
+================================================================================
+Epoch 16 of 24 took 2399.889s
+  training loss:		1.025050
+evaluating model...
+VALID_LOSS:  1.3694991459
+VALID_ACC:  0.537272727273
+FULL_TRAIN_LOSS:  0.951769888145
+FULL_TRAIN_ACC:  0.669402985075
+time to evaluate model: 849.913911819
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-13:38:31-2016_epoch=16
+time to save model: 0.113266944885
+*------------------------------------------------------------------------------*
+Epoch 17, batch 499:
+batchly_train_loss:  0.92823368352
+cumulative_train_loss:  0.926794431675
+*------------------------------------------------------------------------------*
+Epoch 17, batch 999:
+batchly_train_loss:  1.090511947
+cumulative_train_loss:  1.00873513004
+*------------------------------------------------------------------------------*
+Epoch 17, batch 1499:
+batchly_train_loss:  0.919036785155
+cumulative_train_loss:  0.978815735479
+*------------------------------------------------------------------------------*
+Epoch 17, batch 1999:
+batchly_train_loss:  1.02687716553
+cumulative_train_loss:  0.990837103675
+*------------------------------------------------------------------------------*
+Epoch 17, batch 2499:
+batchly_train_loss:  1.08260276199
+cumulative_train_loss:  1.00919757953
+*------------------------------------------------------------------------------*
+Epoch 17, batch 2999:
+batchly_train_loss:  1.10007775453
+cumulative_train_loss:  1.02434932595
+*------------------------------------------------------------------------------*
+Epoch 17, batch 3499:
+batchly_train_loss:  0.954718779272
+cumulative_train_loss:  1.01439926212
+*------------------------------------------------------------------------------*
+Epoch 17, batch 3999:
+batchly_train_loss:  0.963539277731
+cumulative_train_loss:  1.0080401743
+================================================================================
+Epoch 17 of 24 took 2393.240s
+  training loss:		1.007843
+evaluating model...
+VALID_LOSS:  1.464449795
+VALID_ACC:  0.56
+FULL_TRAIN_LOSS:  0.868821776921
+FULL_TRAIN_ACC:  0.71671641791
+time to evaluate model: 846.099183083
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-14:32:30-2016_epoch=17
+time to save model: 0.11231803894
+*------------------------------------------------------------------------------*
+Epoch 18, batch 499:
+batchly_train_loss:  1.02303464161
+cumulative_train_loss:  1.02262168013
+*------------------------------------------------------------------------------*
+Epoch 18, batch 999:
+batchly_train_loss:  0.999044471197
+cumulative_train_loss:  1.01082127526
+*------------------------------------------------------------------------------*
+Epoch 18, batch 1499:
+batchly_train_loss:  1.06537020271
+cumulative_train_loss:  1.02901638115
+*------------------------------------------------------------------------------*
+Epoch 18, batch 1999:
+batchly_train_loss:  0.928353375717
+cumulative_train_loss:  1.00383804062
+*------------------------------------------------------------------------------*
+Epoch 18, batch 2499:
+batchly_train_loss:  1.00305607596
+cumulative_train_loss:  1.00368158511
+*------------------------------------------------------------------------------*
+Epoch 18, batch 2999:
+batchly_train_loss:  0.970666306592
+cumulative_train_loss:  0.998177203894
+*------------------------------------------------------------------------------*
+Epoch 18, batch 3499:
+batchly_train_loss:  0.947399487811
+cumulative_train_loss:  0.990921171302
+*------------------------------------------------------------------------------*
+Epoch 18, batch 3999:
+batchly_train_loss:  0.918851052727
+cumulative_train_loss:  0.981910153725
+================================================================================
+Epoch 18 of 24 took 2398.904s
+  training loss:		0.981992
+evaluating model...
+VALID_LOSS:  1.40218055782
+VALID_ACC:  0.564545454545
+FULL_TRAIN_LOSS:  0.873997199804
+FULL_TRAIN_ACC:  0.702985074627
+time to evaluate model: 850.267467976
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-15:26:39-2016_epoch=18
+time to save model: 0.114421129227
+*------------------------------------------------------------------------------*
+Epoch 19, batch 499:
+batchly_train_loss:  0.932787813163
+cumulative_train_loss:  0.930066889192
+*------------------------------------------------------------------------------*
+Epoch 19, batch 999:
+batchly_train_loss:  0.902159934341
+cumulative_train_loss:  0.916099444322
+*------------------------------------------------------------------------------*
+Epoch 19, batch 1499:
+batchly_train_loss:  0.896674100908
+cumulative_train_loss:  0.909620010228
+*------------------------------------------------------------------------------*
+Epoch 19, batch 1999:
+batchly_train_loss:  0.841739068425
+cumulative_train_loss:  0.892641285414
+*------------------------------------------------------------------------------*
+Epoch 19, batch 2499:
+batchly_train_loss:  0.97555501573
+cumulative_train_loss:  0.90923066723
+*------------------------------------------------------------------------------*
+Epoch 19, batch 2999:
+batchly_train_loss:  0.923437598402
+cumulative_train_loss:  0.911599278629
+*------------------------------------------------------------------------------*
+Epoch 19, batch 3499:
+batchly_train_loss:  0.975793553729
+cumulative_train_loss:  0.920772510281
+*------------------------------------------------------------------------------*
+Epoch 19, batch 3999:
+batchly_train_loss:  0.899110914079
+cumulative_train_loss:  0.918064133662
+================================================================================
+Epoch 19 of 24 took 2381.148s
+  training loss:		0.917996
+evaluating model...
+VALID_LOSS:  1.42599268363
+VALID_ACC:  0.554545454545
+FULL_TRAIN_LOSS:  0.812915027262
+FULL_TRAIN_ACC:  0.72223880597
+time to evaluate model: 850.006363869
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-16:20:31-2016_epoch=19
+time to save model: 0.114459037781
+*------------------------------------------------------------------------------*
+Epoch 20, batch 499:
+batchly_train_loss:  0.833604067706
+cumulative_train_loss:  0.832143235001
+*------------------------------------------------------------------------------*
+Epoch 20, batch 999:
+batchly_train_loss:  0.890663826695
+cumulative_train_loss:  0.861432820433
+*------------------------------------------------------------------------------*
+Epoch 20, batch 1499:
+batchly_train_loss:  0.946298049853
+cumulative_train_loss:  0.889740101761
+*------------------------------------------------------------------------------*
+Epoch 20, batch 1999:
+batchly_train_loss:  1.01086740938
+cumulative_train_loss:  0.920037077152
+*------------------------------------------------------------------------------*
+Epoch 20, batch 2499:
+batchly_train_loss:  0.887117187899
+cumulative_train_loss:  0.913450464656
+*------------------------------------------------------------------------------*
+Epoch 20, batch 2999:
+batchly_train_loss:  0.847886709145
+cumulative_train_loss:  0.902519528426
+*------------------------------------------------------------------------------*
+Epoch 20, batch 3499:
+batchly_train_loss:  0.932598291915
+cumulative_train_loss:  0.906817722694
+*------------------------------------------------------------------------------*
+Epoch 20, batch 3999:
+batchly_train_loss:  1.08084435213
+cumulative_train_loss:  0.928576491066
+================================================================================
+Epoch 20 of 24 took 2380.951s
+  training loss:		0.928305
+evaluating model...
+VALID_LOSS:  1.45888541617
+VALID_ACC:  0.579090909091
+FULL_TRAIN_LOSS:  0.774896368442
+FULL_TRAIN_ACC:  0.756865671642
+time to evaluate model: 849.503914118
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-17:14:21-2016_epoch=20
+time to save model: 0.31038403511
+*------------------------------------------------------------------------------*
+Epoch 21, batch 499:
+batchly_train_loss:  0.878648853893
+cumulative_train_loss:  0.878861792306
+*------------------------------------------------------------------------------*
+Epoch 21, batch 999:
+batchly_train_loss:  0.878527142054
+cumulative_train_loss:  0.878694299688
+*------------------------------------------------------------------------------*
+Epoch 21, batch 1499:
+batchly_train_loss:  0.924759478027
+cumulative_train_loss:  0.894059602669
+*------------------------------------------------------------------------------*
+Epoch 21, batch 1999:
+batchly_train_loss:  0.830317105129
+cumulative_train_loss:  0.878116006486
+*------------------------------------------------------------------------------*
+Epoch 21, batch 2499:
+batchly_train_loss:  0.994303231805
+cumulative_train_loss:  0.901362750248
+*------------------------------------------------------------------------------*
+Epoch 21, batch 2999:
+batchly_train_loss:  0.903834648971
+cumulative_train_loss:  0.901774870742
+*------------------------------------------------------------------------------*
+Epoch 21, batch 3499:
+batchly_train_loss:  0.963022708835
+cumulative_train_loss:  0.910527062524
+*------------------------------------------------------------------------------*
+Epoch 21, batch 3999:
+batchly_train_loss:  0.871393629735
+cumulative_train_loss:  0.9056341602
+================================================================================
+Epoch 21 of 24 took 2397.167s
+  training loss:		0.905465
+evaluating model...
+VALID_LOSS:  1.44035039179
+VALID_ACC:  0.549090909091
+FULL_TRAIN_LOSS:  0.80794145007
+FULL_TRAIN_ACC:  0.715024875622
+time to evaluate model: 849.968513966
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-18:08:29-2016_epoch=21
+time to save model: 0.113487958908
+*------------------------------------------------------------------------------*
+Epoch 22, batch 499:
+batchly_train_loss:  0.893193597161
+cumulative_train_loss:  0.892710442795
+*------------------------------------------------------------------------------*
+Epoch 22, batch 999:
+batchly_train_loss:  0.876025160145
+cumulative_train_loss:  0.884359450478
+*------------------------------------------------------------------------------*
+Epoch 22, batch 1499:
+batchly_train_loss:  0.856099674782
+cumulative_train_loss:  0.874933241106
+*------------------------------------------------------------------------------*
+Epoch 22, batch 1999:
+batchly_train_loss:  0.812929218981
+cumulative_train_loss:  0.859424481195
+*------------------------------------------------------------------------------*
+Epoch 22, batch 2499:
+batchly_train_loss:  0.9169445422
+cumulative_train_loss:  0.870933096842
+*------------------------------------------------------------------------------*
+Epoch 22, batch 2999:
+batchly_train_loss:  0.912824313048
+cumulative_train_loss:  0.877917294276
+*------------------------------------------------------------------------------*
+Epoch 22, batch 3499:
+batchly_train_loss:  0.913341805463
+cumulative_train_loss:  0.882979385043
+*------------------------------------------------------------------------------*
+Epoch 22, batch 3999:
+batchly_train_loss:  0.936602245285
+cumulative_train_loss:  0.889683918706
+================================================================================
+Epoch 22 of 24 took 2388.774s
+  training loss:		0.889378
+evaluating model...
+VALID_LOSS:  1.42959818021
+VALID_ACC:  0.519090909091
+FULL_TRAIN_LOSS:  0.965810238496
+FULL_TRAIN_ACC:  0.666517412935
+time to evaluate model: 850.399145126
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-19:02:28-2016_epoch=22
+time to save model: 0.113221168518
+*------------------------------------------------------------------------------*
+Epoch 23, batch 499:
+batchly_train_loss:  0.878657746057
+cumulative_train_loss:  0.87930753353
+*------------------------------------------------------------------------------*
+Epoch 23, batch 999:
+batchly_train_loss:  0.900679487741
+cumulative_train_loss:  0.890004207309
+*------------------------------------------------------------------------------*
+Epoch 23, batch 1499:
+batchly_train_loss:  0.912500767857
+cumulative_train_loss:  0.897508063396
+*------------------------------------------------------------------------------*
+Epoch 23, batch 1999:
+batchly_train_loss:  0.831994051569
+cumulative_train_loss:  0.881121367091
+*------------------------------------------------------------------------------*
+Epoch 23, batch 2499:
+batchly_train_loss:  0.840281111287
+cumulative_train_loss:  0.872950047402
+*------------------------------------------------------------------------------*
+Epoch 23, batch 2999:
+batchly_train_loss:  0.890518173169
+cumulative_train_loss:  0.875879044696
+*------------------------------------------------------------------------------*
+Epoch 23, batch 3499:
+batchly_train_loss:  0.838092851676
+cumulative_train_loss:  0.870479474387
+*------------------------------------------------------------------------------*
+Epoch 23, batch 3999:
+batchly_train_loss:  0.863331878398
+cumulative_train_loss:  0.86958580147
+================================================================================
+Epoch 23 of 24 took 2376.516s
+  training loss:		0.869387
+evaluating model...
+VALID_LOSS:  1.37759467702
+VALID_ACC:  0.573636363636
+FULL_TRAIN_LOSS:  0.863862269585
+FULL_TRAIN_ACC:  0.725820895522
+time to evaluate model: 848.309112072
+saving model to ../saved_models/scq_unrolled_unrolls=3_Mar-12-19:56:13-2016_epoch=23
+time to save model: 0.113399028778
+{'valid_loss': [2.0069251984296028, 1.7684521307577272, 1.9338644611001761, 1.5898825903240066, 1.7419639857135716, 1.7523034826787176, 1.5193653183783373, 1.2939273168325611, 1.4392582016482944, 1.5910657590046398, 1.5276010608941737, 1.4389006556664676, 1.5720716082314878, 1.520044148956091, 1.505498955706728, 1.3071832385396609, 1.3694991458969978, 1.4644497949962108, 1.4021805578195961, 1.4259926836278392, 1.458885416168036, 1.4403503917867808, 1.4295981802053488, 1.3775946770240579], 'full_train_acc': [0.3508457711442784, 0.40363184079601938, 0.43442786069651718, 0.45000000000000018, 0.46945273631840817, 0.493383084577114, 0.57184079601990001, 0.57348258706467614, 0.63074626865671735, 0.60995024875621917, 0.62835820895522476, 0.63985074626865668, 0.57855721393034831, 0.60641791044776139, 0.67800995024875577, 0.65970149253731336, 0.66940298507462648, 0.71671641791044816, 0.70298507462686532, 0.72223880597014922, 0.75686567164179241, 0.71502487562188999, 0.66651741293532363, 0.72582089552238804], 'valid_acc': [0.32181818181818184, 0.35999999999999999, 0.3636363636363637, 0.44000000000000006, 0.49545454545454554, 0.46000000000000002, 0.53909090909090918, 0.54090909090909101, 0.4809090909090909, 0.60999999999999999, 0.51181818181818184, 0.53181818181818197, 0.43545454545454554, 0.50636363636363635, 0.55363636363636359, 0.58636363636363642, 0.53727272727272724, 0.56000000000000005, 0.56454545454545457, 0.55454545454545456, 0.57909090909090921, 0.54909090909090918, 0.51909090909090916, 0.57363636363636372], 'batchly_train_loss': [2.5964407431275531, 2.0597225026207133, 1.8953589208487909, 1.9201482568177459, 1.9186844434570853, 1.9271157053906927, 1.924674367565246, 1.9335316488646508, 1.8223902768440232, 1.8325826939002636, 1.7839242351909437, 1.9243954812081714, 1.7906274766087449, 1.6879219837901391, 1.7839619001749689, 1.7362784119313284, 1.7266732630948225, 1.7783431201064293, 1.7362194535209503, 1.6708469060853202, 1.6780413899378586, 1.7327102253716833, 1.6529588048691159, 1.664672804924521, 1.6268565394278713, 1.5619282589721781, 1.6345190319713945, 1.6330810243621321, 1.6156154256546698, 1.569755041432954, 1.5522067637335577, 1.5420022188378277, 1.4524424354626473, 1.4643625629425328, 1.3938655706482819, 1.5254162159259861, 1.5222924753275773, 1.5108981248713866, 1.5578976936377327, 1.484905102266618, 1.4699142945160617, 1.3358692745874639, 1.4084622851214457, 1.4167527328890259, 1.4108333087472849, 1.3927572637437831, 1.4344913727951498, 1.4349411780823891, 1.2624260607538784, 1.3494533316372661, 1.4813441150026438, 1.3326046163229717, 1.3908733564028757, 1.2979070352112481, 1.3871306237641756, 1.416430993395827, 1.3824140332275408, 1.3201278769518512, 1.3044623717684132, 1.3662314768203683, 1.2593760263929392, 1.2926288381711137, 1.3348898055833063, 1.3022089337281266, 1.2829321518092212, 1.2211265408631764, 1.2498863026066682, 1.3233399466703082, 1.1431268754279795, 1.2110714591380793, 1.1956801192707496, 1.3148429062435389, 1.2245945818753097, 1.2266613009406453, 1.2204530575793879, 1.3266263165569956, 1.267154255507845, 1.1746123732185372, 1.1819640307941257, 1.1458433945966979, 1.1265744167980036, 1.1168726188295131, 1.1038533566858622, 1.1264551070352198, 1.1153164838560023, 1.21112488250207, 1.2259221588368701, 1.2148363871479573, 1.1405588319018869, 1.2313367055087574, 1.1349810520814001, 1.1542633687519623, 1.1251440833056112, 1.1546496819703735, 1.0479392089284412, 1.1815129298257423, 1.0161169411483719, 1.1673709021262513, 1.1914022264445108, 1.0667137216791263, 1.1391874403146014, 1.1296308573247835, 1.1271189583124386, 1.2544039884285447, 1.0185770125135156, 1.0415241452888802, 1.0515373362528448, 1.1164460627547024, 1.1257082484990888, 1.1254441786613656, 1.112688038821072, 1.0512013725497289, 1.0330767200455371, 1.0485412125441911, 1.0550028403977467, 1.0628743865734804, 1.0731105904101603, 1.0083816744719607, 1.1280353552357103, 1.087822373263712, 0.95441040510614283, 0.9783495614282971, 1.0511838665255411, 1.092229546476392, 1.0844175570717598, 1.024242631516123, 1.0336245146579177, 1.0227300873215679, 0.99978734784746059, 0.92679493250715317, 1.1158055226538348, 1.0054211174258101, 1.0402659645756234, 1.0743759987770543, 1.0125517615570281, 1.0260047166959818, 0.92823368352015301, 1.0905119470011888, 0.91903678515459719, 1.0268771655260596, 1.0826027619932574, 1.1000777545319653, 0.95471877927168591, 0.9635392777309908, 1.0230346416111715, 0.99904447119715456, 1.0653702027145575, 0.92835337571658594, 1.0030560759645799, 0.97066630659170816, 0.94739948781141192, 0.91885105272745016, 0.93278781316272785, 0.9021599343413631, 0.89667410090773914, 0.8417390684248347, 0.97555501573008541, 0.9234375984019908, 0.97579355372936671, 0.89911091407854493, 0.83360406770623008, 0.8906638266945216, 0.94629804985318278, 1.0108674093752141, 0.88711718789850236, 0.84788670914499276, 0.9325982919147332, 1.0808443521332356, 0.87864885389252878, 0.8785271420543036, 0.92475947802742398, 0.83031710512932999, 0.99430323180517111, 0.90383464897097587, 0.96302270883534125, 0.87139362973473944, 0.89319359716131919, 0.87602516014471443, 0.85609967478229343, 0.81292921898050274, 0.91694454220019272, 0.91282431304813527, 0.91334180546309618, 0.93660224528520264, 0.87865774605721469, 0.90067948774140516, 0.91250076785736911, 0.83199405156880668, 0.84028111128654215, 0.89051817316874771, 0.83809285167619707, 0.86333187839793735, 0.94413643494208321], 'cumulative_train_loss': [2.6016440111498529, 2.3304120248990325, 2.1852975805860799, 2.1189770893984039, 2.0789025303865327, 2.0535962908073633, 2.0351736095781376, 2.0224651873834025, 1.8219039722958836, 1.8272486778035835, 1.8127975628560706, 1.8407109991622492, 1.8306902863664321, 1.806887635053281, 1.8036115940589523, 1.7951928416048846, 1.7278376514268132, 1.7531156637789735, 1.7474798364747626, 1.7283120199691488, 1.7182538707031825, 1.7206640665465458, 1.710989122037051, 1.7051981346511382, 1.62605166796629, 1.5939578696709396, 1.6074872767091186, 1.6138889144412385, 1.6142343548600917, 1.6068186640586331, 1.5990147343179848, 1.5918863877963343, 1.4519586796163508, 1.4581668294292554, 1.4367187778011818, 1.4589042300585107, 1.47158695220118, 1.4781409989951475, 1.489538068821183, 1.488958803185453, 1.4693934916406062, 1.4025645541765686, 1.4045317759727245, 1.4075885435856066, 1.4082377563030295, 1.4056568138956853, 1.4097772138527416, 1.4129234959519734, 1.262471695186451, 1.3060060477644369, 1.3644910601854536, 1.3565154614204513, 1.3633897901484291, 1.3524723585150207, 1.3574249542922669, 1.3648025535800339, 1.3814579477844804, 1.3507622166370192, 1.3353186392959224, 1.343050714714743, 1.3263090803966557, 1.3206938349439141, 1.3227224103425144, 1.320157584559271, 1.2833482805227969, 1.252206268681147, 1.251432430764378, 1.2694183026768175, 1.2441499098699271, 1.2386349964434769, 1.2324968316574336, 1.2427926649390164, 1.2240720789749864, 1.2253679858647044, 1.2237285835013567, 1.2494658854162239, 1.2530049750704089, 1.2399351848316826, 1.2316512245519502, 1.2209225636423187, 1.1279198103362003, 1.1223906854579788, 1.1162074537127771, 1.1187706486408515, 1.1180795392401219, 1.1335922673598193, 1.1467860215005816, 1.1552944443122075, 1.1399574943731894, 1.1856928352818839, 1.1687776307453641, 1.1651472500566702, 1.1571434151725035, 1.156727654385219, 1.141182006277649, 1.1462246323776857, 1.0156387483565545, 1.0915807672603073, 1.1248767843330896, 1.1103287446497585, 1.1161027934022274, 1.1183582225323612, 1.1196101138984753, 1.1364635615766532, 1.016884628356103, 1.029216718913049, 1.036661888139133, 1.0566179098038577, 1.070441506981773, 1.079611675651263, 1.0843382208312886, 1.0801950790106394, 1.0320801745483992, 1.0403189323040511, 1.0452168336028145, 1.0496334301437515, 1.054330741121422, 1.0466700097693951, 1.0582969525339432, 1.0619885530252868, 0.95213061560484091, 0.96525321111207574, 0.99391587135672721, 1.0185065854937125, 1.0316940547970443, 1.0304517368108963, 1.0309051203271893, 1.0298829856678211, 0.99994078888857252, 0.96333125116013396, 1.0141899140999946, 1.0119966182835387, 1.0176527499946395, 1.0271097771340885, 1.0250294662485402, 1.025151403038667, 0.92679443167487086, 1.0087351300363916, 0.97881573547942147, 0.99083710367517841, 1.0091975795291366, 1.0243493259450784, 1.0143992621163573, 1.0080401742962308, 1.0226216801331536, 1.0108212752602812, 1.0290163811489665, 1.0038380406206071, 1.0036815851071965, 0.99817720389421116, 0.99092117130164281, 0.98191015372547596, 0.93006688919160929, 0.91609944432161727, 0.90962001022759587, 0.8926412854144975, 0.90923066723034141, 0.91159927862941637, 0.9207725102813098, 0.91806413366180939, 0.83214323500083143, 0.86143282043310909, 0.88974010176068663, 0.92003707715201444, 0.91345046465631441, 0.90251952842568184, 0.90681772269390815, 0.92857649106591755, 0.87886179230595374, 0.87869429968751078, 0.89405960266946971, 0.8781160064863428, 0.90136275024761525, 0.90177487074167517, 0.91052706252413673, 0.90563416019988074, 0.89271044279542078, 0.88435945047774966, 0.87493324110634785, 0.85942448119493042, 0.87093309684224207, 0.87791729427570431, 0.88297938504269458, 0.88968391870642449, 0.87930753352977442, 0.89000420730936947, 0.89750806339609412, 0.88112136709112054, 0.87295004740232907, 0.87587904469583111, 0.87047947438722373, 0.8695858014703346], 'full_train_loss': [1.9200043206200408, 1.6478911031246002, 1.6751346332292942, 1.4349446497910938, 1.5049469748402444, 1.4450188319587531, 1.2666179626441476, 1.1861643784810645, 1.0822565402544579, 1.112637583855647, 1.0670373201068828, 0.9625834160671759, 1.2263429758687125, 1.1736223996300359, 0.92612221610018575, 1.0306739840018908, 0.95176988814530739, 0.86882177692098717, 0.87399719980441237, 0.81291502726228837, 0.7748963684418072, 0.80794145006952611, 0.96581023849615844, 0.86386226958487367]}
