@@ -13,7 +13,7 @@ N_IMAGES = 20
 X_train, y_train, X_val, y_val, X_test, y_test = load_cifar10()
 arch_fpath = "../architectures/scq_unrolled.py"
 saved_model = "../saved_models/scq_unrolled_unrolls=3_Mar-12-19:56:13-2016_epoch=23"
-model = LoopyNetwork(architecture_fpath=arch_fpath, n_unrolls=2)
+model = LoopyNetwork(architecture_fpath=arch_fpath, n_unrolls=3)
 model.load_model(saved_model)
 
 filters_per = 2 #visualize this many filters
@@ -21,12 +21,15 @@ filters_to_vis = {
  'conv_1_unroll=0': range(filters_per),
  'conv_1_unroll=1': range(filters_per),
  'conv_1_unroll=2': range(filters_per),
+ 'conv_1_unroll=3': range(filters_per),
  'conv_2_unroll=0': range(filters_per),
  'conv_2_unroll=1': range(filters_per),
  'conv_2_unroll=2': range(filters_per),
+ 'conv_1_unroll=3': range(filters_per),
  'conv_3_unroll=0': range(filters_per),
  'conv_3_unroll=1': range(filters_per),
  'conv_3_unroll=2': range(filters_per),
+ 'conv_1_unroll=3': range(filters_per),
  # "\\prod {['input', 'conv_4_unroll=0']}"
  }
 
@@ -36,5 +39,5 @@ save_filter_visualizations_to_folder(model, dirname="../pictures",
 											X=X_train[0:N_IMAGES], 
 											layers_to_vis=filters_to_vis.keys(), 
 											filters_to_vis=filters_to_vis, 
-											run_stem="gbp_cifar",
+											run_stem="gbp_scq_unrolled",
 											positivize_gradients=True)
