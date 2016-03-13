@@ -7,7 +7,7 @@
 "run_params":
 	{"use_batchnorm":True},
 "framework":"lasagne",
-"name": "cifar_c3-128_c3-128_c3-3_fc_sumloop_nounroll",
+"name": "deadweek_multiplication_loop",
 
 "templates": 
 	{
@@ -39,7 +39,7 @@
 	"loop": {
 		"type": "loop",
 		"structure": ["conv_2", "loop_21", "conv_1"],
-		"composition_mode": "sum"
+		"composition_mode": "mul"
 		},		
 			
 	},
